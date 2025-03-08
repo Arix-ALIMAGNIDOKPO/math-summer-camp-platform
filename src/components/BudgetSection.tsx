@@ -133,7 +133,7 @@ const BudgetSection = () => {
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
                   Répartition des fonds nécessaires pour l'organisation du Maths Summer Camp au Bénin - Édition II.
-                  100% des élèves participants sont boursiers et n'ont pas à payer pour la formation.
+                  <span className="block mt-2 font-medium text-primary">100% des élèves participants sont boursiers et n'ont aucun frais d'inscription à payer.</span>
                 </p>
               </div>
               
@@ -175,9 +175,10 @@ const BudgetSection = () => {
             <div>
               <h3 className="heading-sm mb-6">Impact Sur l'Éducation au Bénin</h3>
               <p className="text-muted-foreground mb-8">
-                Notre camp d'été offre un accès gratuit à une éducation mathématique avancée pour les jeunes talents 
-                au Bénin. Les élèves sélectionnés n'ont à couvrir que leurs frais de transport. Votre contribution 
-                permet de rendre cette opportunité accessible à davantage de jeunes défavorisés.
+                Notre camp d'été offre un accès entièrement gratuit à une éducation mathématique avancée pour les jeunes talents 
+                au Bénin. Les élèves sélectionnés n'ont à couvrir que leurs frais de transport. Ce programme non lucratif
+                vise à permettre aux étudiants des milieux défavorisés d'accéder à des concepts mathématiques 
+                qu'ils n'auraient pas l'opportunité d'explorer dans leur cursus habituel.
               </p>
               
               <div className="space-y-8">
@@ -217,7 +218,8 @@ const BudgetSection = () => {
             <div className="mb-10">
               <p className="mb-6 text-center">
                 Votre contribution, quelle que soit son montant, permet de transformer la vie d'un jeune talent 
-                béninois en lui donnant accès à une éducation mathématique de qualité.
+                béninois en lui donnant accès à une éducation mathématique de qualité, totalement gratuite.
+                Aucun frais d'inscription n'est demandé aux participants, seul le transport est à leur charge.
               </p>
               
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
@@ -343,7 +345,8 @@ const BudgetSection = () => {
                 
                 <p className="text-xs text-center text-muted-foreground mt-4">
                   100% de votre don est utilisé pour soutenir des élèves béninois talentueux. 
-                  Transaction sécurisée et confidentielle. Vous recevrez un reçu par email.
+                  Transaction sécurisée et confidentielle. Ce programme est entièrement non lucratif. 
+                  Vous recevrez un reçu par email.
                 </p>
               </form>
             </div>

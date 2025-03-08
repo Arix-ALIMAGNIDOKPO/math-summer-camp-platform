@@ -22,8 +22,9 @@ const Hero = () => {
           
           <AnimatedSection delay={300} className="max-w-2xl mx-auto">
             <p className="subheading">
-              Un camp d'été intensif en mathématiques pour les élèves du secondaire (14-18 ans) 
-              qui combinent ateliers, compétitions et sessions de mentorat avec des experts reconnus.
+              Un camp d'été intensif en mathématiques pour les élèves du secondaire 
+              qui combine ateliers, compétitions et sessions de mentorat avec des experts reconnus.
+              <span className="block mt-2 font-medium text-primary">Aucun frais d'inscription - Accès entièrement gratuit</span>
             </p>
           </AnimatedSection>
           
