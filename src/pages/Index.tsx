@@ -7,6 +7,7 @@ import GallerySection from "@/components/GallerySection";
 import BudgetSection from "@/components/BudgetSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
   return (
@@ -19,6 +20,7 @@ const Index = () => {
       <BudgetSection />
       <ContactSection />
       <Footer />
+      <Toaster />
     </div>
   );
 };

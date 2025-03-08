@@ -4,8 +4,34 @@ import { Chip } from "@/components/ui-custom/Chip";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 
 const BudgetSection = () => {
+  const [donationAmount, setDonationAmount] = useState<string>("");
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+  const handleDonationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    
+    // Simulate payment processing
+    setTimeout(() => {
+      setIsProcessing(false);
+      setDonationAmount("");
+      toast({
+        title: "Merci pour votre contribution!",
+        description: "Votre soutien permet à des jeunes talents au Bénin d'accéder à une éducation mathématique de qualité.",
+      });
+    }, 1500);
+  };
+
+  const handleQuickAmount = (amount: number) => {
+    setDonationAmount(amount.toString());
+  };
+
   const budgetData = [
     { name: "Matériel pédagogique", value: 15000, color: "#3b82f6" },
     { name: "Honoraires intervenants", value: 25000, color: "#10b981" },
@@ -88,11 +114,12 @@ const BudgetSection = () => {
       
       <div className="section-container">
         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
-          <Chip className="mb-4">Budget</Chip>
-          <h2 className="heading-lg mb-6">Budget Estimatif</h2>
+          <Chip className="mb-4">Financement</Chip>
+          <h2 className="heading-lg mb-6">Contribuez à l'Éducation au Bénin</h2>
           <p className="subheading">
-            Transparence et clarté sur l'utilisation des fonds pour assurer une gestion efficace et 
-            optimale des ressources.
+            Votre soutien permet d'offrir une formation mathématique avancée à des jeunes talents béninois 
+            qui n'auraient pas accès à ces concepts dans leur cursus habituel. Chaque contribution compte, 
+            quelle que soit sa taille.
           </p>
         </AnimatedSection>
         
@@ -105,7 +132,8 @@ const BudgetSection = () => {
                   <span className="text-2xl font-display font-bold">{totalBudget.toLocaleString()} €</span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Répartition des fonds nécessaires pour l'organisation du Maths Summer Camp - Édition II
+                  Répartition des fonds nécessaires pour l'organisation du Maths Summer Camp au Bénin - Édition II.
+                  100% des élèves participants sont boursiers et n'ont pas à payer pour la formation.
                 </p>
               </div>
               
@@ -145,10 +173,11 @@ const BudgetSection = () => {
           
           <AnimatedSection animation="slide-in-right">
             <div>
-              <h3 className="heading-sm mb-6">Impact Attendu</h3>
+              <h3 className="heading-sm mb-6">Impact Sur l'Éducation au Bénin</h3>
               <p className="text-muted-foreground mb-8">
-                Nous suivons méticuleusement nos objectifs pour assurer que les investissements produisent 
-                un impact significatif sur l'éducation et le développement des jeunes talents.
+                Notre camp d'été offre un accès gratuit à une éducation mathématique avancée pour les jeunes talents 
+                au Bénin. Les élèves sélectionnés n'ont à couvrir que leurs frais de transport. Votre contribution 
+                permet de rendre cette opportunité accessible à davantage de jeunes défavorisés.
               </p>
               
               <div className="space-y-8">
@@ -181,35 +210,155 @@ const BudgetSection = () => {
           </AnimatedSection>
         </div>
         
-        <AnimatedSection className="mt-20 text-center max-w-3xl mx-auto">
-          <h3 className="heading-sm mb-6">Devenez Partenaire</h3>
-          <p className="text-muted-foreground mb-8">
-            Nous proposons différentes modalités de partenariat adaptées à vos objectifs. Investissez dans 
-            l'éducation et le développement des futurs talents en mathématiques.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Card className="p-6 border border-primary/20">
-              <h4 className="font-semibold mb-2">Partenaire Or</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Visibilité maximale pendant l'événement et sur tous les supports de communication.
+        <AnimatedSection className="mt-20 max-w-3xl mx-auto">
+          <Card className="p-6 sm:p-10 border-0 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10">
+            <h3 className="heading-sm text-center mb-8">Soutenez les Talents Mathématiques au Bénin</h3>
+
+            <div className="mb-10">
+              <p className="mb-6 text-center">
+                Votre contribution, quelle que soit son montant, permet de transformer la vie d'un jeune talent 
+                béninois en lui donnant accès à une éducation mathématique de qualité.
               </p>
-              <div className="font-display font-bold text-2xl text-primary">10 000 €</div>
-            </Card>
-            <Card className="p-6 border border-primary/20">
-              <h4 className="font-semibold mb-2">Partenaire Argent</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Visibilité lors des moments clés du camp et sur les supports principaux.
+              
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleQuickAmount(10)}
+                  className="border-primary/20 hover:bg-primary/10 hover:text-primary"
+                >
+                  10€
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleQuickAmount(25)}
+                  className="border-primary/20 hover:bg-primary/10 hover:text-primary"
+                >
+                  25€
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleQuickAmount(50)}
+                  className="border-primary/20 hover:bg-primary/10 hover:text-primary"
+                >
+                  50€
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleQuickAmount(100)}
+                  className="border-primary/20 hover:bg-primary/10 hover:text-primary"
+                >
+                  100€
+                </Button>
+              </div>
+              
+              <form onSubmit={handleDonationSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="donation-amount" className="block text-sm font-medium mb-2">
+                    Montant personnalisé (€)
+                  </label>
+                  <Input
+                    id="donation-amount"
+                    type="number"
+                    min="1"
+                    step="1"
+                    placeholder="Entrez votre montant"
+                    value={donationAmount}
+                    onChange={(e) => setDonationAmount(e.target.value)}
+                    className="bg-white"
+                    required
+                  />
+                </div>
+                
+                <div className="flex flex-col gap-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="card-name" className="block text-sm font-medium mb-2">
+                        Nom sur la carte
+                      </label>
+                      <Input id="card-name" className="bg-white" required />
+                    </div>
+                    <div>
+                      <label htmlFor="card-number" className="block text-sm font-medium mb-2">
+                        Numéro de carte
+                      </label>
+                      <Input id="card-number" className="bg-white" required />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="expiry" className="block text-sm font-medium mb-2">
+                        Date d'expiration
+                      </label>
+                      <Input 
+                        id="expiry" 
+                        placeholder="MM/AA" 
+                        className="bg-white" 
+                        required 
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="cvv" className="block text-sm font-medium mb-2">
+                        CVV
+                      </label>
+                      <Input 
+                        id="cvv" 
+                        type="password" 
+                        maxLength={4} 
+                        className="bg-white" 
+                        required 
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <Button 
+                    type="submit" 
+                    className="w-full py-6 text-lg rounded-xl shadow-lg" 
+                    disabled={isProcessing || !donationAmount}
+                  >
+                    {isProcessing ? "Traitement en cours..." : "Faire un don maintenant"}
+                  </Button>
+                  
+                  <div className="flex items-center justify-center gap-2 mt-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                      <rect x="2" y="5" width="20" height="14" rx="2" />
+                      <path d="M2 10h20" />
+                    </svg>
+                    
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                      <path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z" />
+                      <path d="M6 7v10" />
+                      <path d="M18 7v10" />
+                      <path d="M2 11h20" />
+                    </svg>
+                    
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                      <circle cx="9" cy="12" r="7" />
+                      <circle cx="15" cy="12" r="7" />
+                    </svg>
+                  </div>
+                </div>
+                
+                <p className="text-xs text-center text-muted-foreground mt-4">
+                  100% de votre don est utilisé pour soutenir des élèves béninois talentueux. 
+                  Transaction sécurisée et confidentielle. Vous recevrez un reçu par email.
+                </p>
+              </form>
+            </div>
+            
+            <div className="mt-6 p-4 bg-primary/5 rounded-lg">
+              <h4 className="font-semibold mb-2 text-center">Avantages pour les Partenaires Entreprises</h4>
+              <p className="text-sm text-muted-foreground text-center mb-4">
+                Les entreprises qui contribuent bénéficient d'une visibilité sur nos supports de communication, 
+                de la mention de leur soutien lors des événements, et d'interactions avec les participants.
               </p>
-              <div className="font-display font-bold text-2xl text-primary">5 000 €</div>
-            </Card>
-            <Card className="p-6 border border-primary/20">
-              <h4 className="font-semibold mb-2">Partenaire Bronze</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Mention du partenariat sur le site et dans le programme du camp.
-              </p>
-              <div className="font-display font-bold text-2xl text-primary">2 000 €</div>
-            </Card>
-          </div>
+              <Button variant="outline" className="w-full border-primary/20">
+                Contactez-nous pour un partenariat entreprise
+              </Button>
+            </div>
+          </Card>
         </AnimatedSection>
       </div>
     </section>
