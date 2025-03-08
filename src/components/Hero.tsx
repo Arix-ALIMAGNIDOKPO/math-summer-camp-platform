@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Chip } from "@/components/ui-custom/Chip";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -24,16 +25,12 @@ const Hero = () => {
             <p className="subheading">
               Un camp d'été intensif en mathématiques pour les élèves du secondaire 
               qui combine ateliers, compétitions et sessions de mentorat avec des experts reconnus.
-              <span className="block mt-2 font-medium text-primary">Aucun frais d'inscription - Accès entièrement gratuit</span>
             </p>
           </AnimatedSection>
           
           <AnimatedSection delay={500} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-            <Button size="lg" className="rounded-full px-8 shadow-lg hover:shadow-xl transition-all">
-              S'inscrire maintenant
-            </Button>
-            <Button size="lg" variant="outline" className="rounded-full px-8">
-              En savoir plus
+            <Button size="lg" className="rounded-full px-8 shadow-lg hover:shadow-xl transition-all" asChild>
+              <Link to="/inscription">S'inscrire maintenant</Link>
             </Button>
           </AnimatedSection>
           
