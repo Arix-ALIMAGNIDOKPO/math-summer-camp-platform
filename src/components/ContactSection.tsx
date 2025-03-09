@@ -18,6 +18,7 @@ const ContactSection = () => {
     message: "",
     interest: "participant" // Default value
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -28,18 +29,39 @@ const ContactSection = () => {
     setFormData(prev => ({ ...prev, interest: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    toast.success("Votre message a été envoyé avec succès !");
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-      interest: "participant"
-    });
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        toast.success("Votre message a été envoyé avec succès !");
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          interest: "participant"
+        });
+      } else {
+        const errorData = await response.json();
+        toast.error(`Erreur: ${errorData.message || "Une erreur est survenue"}`);
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      toast.error("Impossible d'envoyer le message. Veuillez réessayer plus tard.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -139,8 +161,8 @@ const ContactSection = () => {
                   />
                 </div>
                 
-                <Button type="submit" className="w-full rounded-full">
-                  Envoyer
+                <Button type="submit" className="w-full rounded-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Envoi en cours..." : "Envoyer"}
                 </Button>
               </form>
             </Card>

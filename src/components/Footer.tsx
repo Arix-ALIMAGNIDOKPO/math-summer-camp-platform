@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
       <div className="section-container px-4 py-16">
-        <div className="grid md:grid-cols-4 gap-12">
+        <div className="grid md:grid-cols-3 gap-12">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 font-display font-bold text-xl mb-4">
               <span className="text-primary">Maths</span>
@@ -46,17 +46,6 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-medium text-base mb-4">Navigation</h3>
-            <ul className="space-y-2">
-              <li><a href="#about" className="text-muted-foreground hover:text-primary transition-colors">À propos</a></li>
-              <li><a href="#program" className="text-muted-foreground hover:text-primary transition-colors">Programme</a></li>
-              <li><a href="#gallery" className="text-muted-foreground hover:text-primary transition-colors">Galerie</a></li>
-              <li><a href="#budget" className="text-muted-foreground hover:text-primary transition-colors">Budget</a></li>
-              <li><a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</a></li>
-            </ul>
-          </div>
-          
-          <div>
             <h3 className="font-medium text-base mb-4">Contact</h3>
             <ul className="space-y-2">
               <li className="text-muted-foreground">+33 (0)1 23 45 67 89</li>
@@ -69,15 +58,10 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-gray-200 mt-12 pt-8 flex justify-center">
           <p className="text-sm text-muted-foreground">
             © {currentYear} Maths Summer Camp. Tous droits réservés.
           </p>
-          <div className="flex gap-6">
-            <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Mentions légales</a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Politique de confidentialité</a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Conditions d'utilisation</a>
-          </div>
         </div>
       </div>
     </footer>

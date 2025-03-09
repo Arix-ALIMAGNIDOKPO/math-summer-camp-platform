@@ -1,34 +1,42 @@
+
 import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Chip } from "@/components/ui-custom/Chip";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const BudgetSection = () => {
-  const [donationAmount, setDonationAmount] = useState<string>("");
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-
-  const handleDonationSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    
-    // Simulate payment processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      setDonationAmount("");
-      toast({
-        title: "Merci pour votre contribution!",
-        description: "Votre soutien permet à des jeunes talents au Bénin d'accéder à une éducation mathématique de qualité.",
-      });
-    }, 1500);
-  };
-
+  const [donationAmount, setDonationAmount] = useState<string>("25");
+  
   const handleQuickAmount = (amount: number) => {
     setDonationAmount(amount.toString());
+  };
+
+  const openKkiapayWidget = () => {
+    if (!donationAmount || isNaN(parseInt(donationAmount))) {
+      toast.error("Veuillez entrer un montant valide");
+      return;
+    }
+    
+    // Check if kkiapay widget is available
+    if (window.Kkiapay) {
+      window.Kkiapay.initialize({
+        key: 'KKIAPAY-PUBLIC-KEY', // Replace with actual public key
+        amount: parseInt(donationAmount),
+        callback: "https://mathssummercamp.fr/donation-success",
+        theme: "blue",
+        name: "Don pour Maths Summer Camp",
+        description: "Soutien au programme Math Summer Camp Bénin"
+      });
+      
+      window.Kkiapay.openPaymentWidget();
+    } else {
+      toast.error("Le service de paiement n'est pas disponible. Veuillez réessayer plus tard.");
+    }
   };
 
   const budgetData = [
@@ -240,94 +248,37 @@ const BudgetSection = () => {
                 </Button>
               </div>
               
-              <form onSubmit={handleDonationSubmit} className="space-y-6">
+              <div className="space-y-6">
                 <div>
                   <label htmlFor="donation-amount" className="block text-sm font-medium mb-2">
                     Montant personnalisé (€)
                   </label>
-                  <Input
-                    id="donation-amount"
-                    type="number"
-                    min="1"
-                    step="1"
-                    placeholder="Entrez votre montant"
-                    value={donationAmount}
-                    onChange={(e) => setDonationAmount(e.target.value)}
-                    className="bg-white"
-                    required
-                  />
-                </div>
-                
-                <div className="flex flex-col gap-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="card-name" className="block text-sm font-medium mb-2">
-                        Nom sur la carte
-                      </label>
-                      <Input id="card-name" className="bg-white" required />
-                    </div>
-                    <div>
-                      <label htmlFor="card-number" className="block text-sm font-medium mb-2">
-                        Numéro de carte
-                      </label>
-                      <Input id="card-number" className="bg-white" required />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="expiry" className="block text-sm font-medium mb-2">
-                        Date d'expiration
-                      </label>
-                      <Input 
-                        id="expiry" 
-                        placeholder="MM/AA" 
-                        className="bg-white" 
-                        required 
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="cvv" className="block text-sm font-medium mb-2">
-                        CVV
-                      </label>
-                      <Input 
-                        id="cvv" 
-                        type="password" 
-                        maxLength={4} 
-                        className="bg-white" 
-                        required 
-                      />
-                    </div>
+                  <div className="relative">
+                    <input
+                      id="donation-amount"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Entrez votre montant"
+                      value={donationAmount}
+                      onChange={(e) => setDonationAmount(e.target.value)}
+                      className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm"
+                      required
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2">€</span>
                   </div>
                 </div>
                 
-                <div>
-                  <Button 
-                    type="submit" 
-                    className="w-full py-6 text-lg rounded-xl shadow-lg" 
-                    disabled={isProcessing || !donationAmount}
-                  >
-                    {isProcessing ? "Traitement en cours..." : "Faire un don maintenant"}
-                  </Button>
-                  
-                  <div className="flex items-center justify-center gap-2 mt-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                      <rect x="2" y="5" width="20" height="14" rx="2" />
-                      <path d="M2 10h20" />
-                    </svg>
-                    
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                      <path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z" />
-                      <path d="M6 7v10" />
-                      <path d="M18 7v10" />
-                      <path d="M2 11h20" />
-                    </svg>
-                    
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                      <circle cx="9" cy="12" r="7" />
-                      <circle cx="15" cy="12" r="7" />
-                    </svg>
-                  </div>
+                <Button 
+                  onClick={openKkiapayWidget}
+                  className="w-full py-6 text-lg rounded-xl shadow-lg bg-[#00B2FF] hover:bg-[#00A0E0]" 
+                  disabled={!donationAmount}
+                >
+                  Faire un don avec KkiaPay
+                </Button>
+                
+                <div className="flex items-center justify-center gap-4 mt-4">
+                  <img src="https://cdn.kkiapay.me/logo/kkiapay-blue.png" alt="KkiaPay" className="h-8" />
                 </div>
                 
                 <p className="text-xs text-center text-muted-foreground mt-4">
@@ -335,7 +286,7 @@ const BudgetSection = () => {
                   Transaction sécurisée et confidentielle. Ce programme est entièrement non lucratif. 
                   Vous recevrez un reçu par email.
                 </p>
-              </form>
+              </div>
             </div>
             
             <div className="mt-6 p-4 bg-primary/5 rounded-lg">
@@ -344,8 +295,8 @@ const BudgetSection = () => {
                 Les entreprises qui contribuent bénéficient d'une visibilité sur nos supports de communication, 
                 de la mention de leur soutien lors des événements, et d'interactions avec les participants.
               </p>
-              <Button variant="outline" className="w-full border-primary/20">
-                Contactez-nous pour un partenariat entreprise
+              <Button variant="outline" className="w-full border-primary/20" asChild>
+                <Link to="/contact#partenariat">Contactez-nous pour un partenariat entreprise</Link>
               </Button>
             </div>
           </Card>

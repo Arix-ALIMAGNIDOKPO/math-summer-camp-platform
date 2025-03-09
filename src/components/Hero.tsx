@@ -38,13 +38,6 @@ const Hero = () => {
             <div className="relative">
               <div className="aspect-video w-full max-w-5xl mx-auto overflow-hidden rounded-2xl shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Button size="icon" variant="outline" className="w-20 h-20 rounded-full bg-white/90 hover:bg-white hover:scale-105 transition-all duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                  </Button>
-                </div>
                 <img 
                   src="/lovable-uploads/86a866cd-2f9b-4f2b-8673-02416547a832.png" 
                   alt="Maths Summer Camp" 
