@@ -16,11 +16,15 @@ const Index = () => {
     const script = document.createElement('script');
     script.src = 'https://cdn.kkiapay.me/k.js';
     script.async = true;
+    
+    // Add script to body
     document.body.appendChild(script);
     
     return () => {
-      // Clean up on component unmount
-      document.body.removeChild(script);
+      // Clean up script on component unmount
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
   
