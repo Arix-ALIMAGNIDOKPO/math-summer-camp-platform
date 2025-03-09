@@ -1,5 +1,7 @@
 
 import { Button } from "@/components/ui/button";
+import { MscLogo } from "./ui-custom/MscLogo";
+import { Phone, Mail, MapPin } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -9,9 +11,8 @@ const Footer = () => {
       <div className="section-container px-4 py-16">
         <div className="grid md:grid-cols-3 gap-12">
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-2 font-display font-bold text-xl mb-4">
-              <span className="text-primary">Maths</span>
-              <span>Summer Camp</span>
+            <div className="mb-4">
+              <MscLogo />
             </div>
             <p className="text-muted-foreground mb-6 max-w-md">
               Un programme intensif pour les jeunes passionnés de mathématiques, 
@@ -47,12 +48,21 @@ const Footer = () => {
           
           <div>
             <h3 className="font-medium text-base mb-4">Contact</h3>
-            <ul className="space-y-2">
-              <li className="text-muted-foreground">+33 (0)1 23 45 67 89</li>
-              <li className="text-muted-foreground">contact@mathssummercamp.fr</li>
-              <li className="text-muted-foreground">
-                123 Avenue des Sciences<br />
-                75000 Paris, France
+            <ul className="space-y-3">
+              <li className="flex items-center text-muted-foreground gap-2">
+                <Phone size={18} />
+                <span>+33 (0)1 23 45 67 89</span>
+              </li>
+              <li className="flex items-center text-muted-foreground gap-2">
+                <Mail size={18} />
+                <span>contact@mathssummercamp.fr</span>
+              </li>
+              <li className="flex items-start text-muted-foreground gap-2">
+                <MapPin size={18} className="mt-0.5 flex-shrink-0" />
+                <span>
+                  123 Avenue des Sciences<br />
+                  75000 Paris, France
+                </span>
               </li>
             </ul>
           </div>
