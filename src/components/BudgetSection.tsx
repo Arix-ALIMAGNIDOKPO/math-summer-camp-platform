@@ -30,7 +30,7 @@ const BudgetSection = () => {
         callback: "https://mathssummercamp.fr/donation-success",
         theme: "blue",
         name: "Don pour Maths Summer Camp",
-        description: "Soutien au programme Math Summer Camp Bénin"
+        description: "Soutien au programme Math Summer Camp"
       });
       
       window.Kkiapay.openPaymentWidget();
@@ -110,9 +110,9 @@ const BudgetSection = () => {
       <div className="section-container">
         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
           <Chip className="mb-4">Financement</Chip>
-          <h2 className="heading-lg mb-6">Contribuez à l'Éducation au Bénin</h2>
+          <h2 className="heading-lg mb-6">Contribuez à l'Éducation</h2>
           <p className="subheading">
-            Votre soutien permet d'offrir une formation mathématique avancée à des jeunes talents béninois 
+            Votre soutien permet d'offrir une formation mathématique avancée à des jeunes talents 
             qui n'auraient pas accès à ces concepts dans leur cursus habituel. Chaque contribution compte, 
             quelle que soit sa taille.
           </p>
@@ -127,7 +127,7 @@ const BudgetSection = () => {
                   <span className="text-2xl font-display font-bold">{totalBudget.toLocaleString()} €</span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Répartition des fonds nécessaires pour l'organisation du Maths Summer Camp au Bénin - Édition II.
+                  Répartition des fonds nécessaires pour l'organisation du Maths Summer Camp - Édition II.
                   <span className="block mt-2 font-medium text-primary">100% des élèves participants sont boursiers et n'ont aucun frais d'inscription à payer.</span>
                 </p>
               </div>
@@ -168,7 +168,7 @@ const BudgetSection = () => {
           
           <AnimatedSection animation="slide-in-right">
             <div>
-              <h3 className="heading-sm mb-6">Impact Sur l'Éducation au Bénin</h3>
+              <h3 className="heading-sm mb-6">Impact Sur l'Éducation</h3>
               <p className="text-muted-foreground mb-8">
                 Notre camp d'été offre un accès entièrement gratuit à une éducation mathématique avancée pour les jeunes talents 
                 au Bénin. Les élèves sélectionnés n'ont à couvrir que leurs frais de transport. Ce programme non lucratif
@@ -208,12 +208,12 @@ const BudgetSection = () => {
         
         <AnimatedSection className="mt-20 max-w-3xl mx-auto">
           <Card className="p-6 sm:p-10 border-0 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10">
-            <h3 className="heading-sm text-center mb-8">Soutenez les Talents Mathématiques au Bénin</h3>
+            <h3 className="heading-sm text-center mb-8">Soutenez les Talents Mathématiques</h3>
 
             <div className="mb-10">
               <p className="mb-6 text-center">
                 Votre contribution, quelle que soit son montant, permet de transformer la vie d'un jeune talent 
-                béninois en lui donnant accès à une éducation mathématique de qualité, totalement gratuite.
+                en lui donnant accès à une éducation mathématique de qualité, totalement gratuite.
                 Aucun frais d'inscription n'est demandé aux participants, seul le transport est à leur charge.
               </p>
               
@@ -274,15 +274,11 @@ const BudgetSection = () => {
                   className="w-full py-6 text-lg rounded-xl shadow-lg bg-[#00B2FF] hover:bg-[#00A0E0]" 
                   disabled={!donationAmount}
                 >
-                  Faire un don avec KkiaPay
+                  Faire un don
                 </Button>
                 
-                <div className="flex items-center justify-center gap-4 mt-4">
-                  <img src="https://cdn.kkiapay.me/logo/kkiapay-blue.png" alt="KkiaPay" className="h-8" />
-                </div>
-                
                 <p className="text-xs text-center text-muted-foreground mt-4">
-                  100% de votre don est utilisé pour soutenir des élèves béninois talentueux. 
+                  100% de votre don est utilisé pour soutenir des élèves talentueux. 
                   Transaction sécurisée et confidentielle. Ce programme est entièrement non lucratif. 
                   Vous recevrez un reçu par email.
                 </p>
