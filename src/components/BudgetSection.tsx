@@ -1,4 +1,3 @@
-
 import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Chip } from "@/components/ui-custom/Chip";
 import { Card } from "@/components/ui/card";
@@ -292,7 +291,7 @@ const BudgetSection = () => {
                 de la mention de leur soutien lors des événements, et d'interactions avec les participants.
               </p>
               <Button variant="outline" className="w-full border-primary/20" asChild>
-                <Link to="/contact#partenariat">Contactez-nous pour un partenariat entreprise</Link>
+                <a href="#contact">Contactez-nous pour un partenariat entreprise</a>
               </Button>
             </div>
           </Card>
