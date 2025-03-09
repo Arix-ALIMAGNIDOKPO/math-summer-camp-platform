@@ -46,7 +46,7 @@ const Hero = () => {
                   </Button>
                 </div>
                 <img 
-                  src="https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1332&q=80" 
+                  src="/lovable-uploads/86a866cd-2f9b-4f2b-8673-02416547a832.png" 
                   alt="Maths Summer Camp" 
                   className="w-full h-full object-cover"
                 />

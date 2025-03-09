@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -50,7 +51,9 @@ const Header = () => {
               {item.label}
             </a>
           ))}
-          <Button className="rounded-full">S'inscrire</Button>
+          <Button className="rounded-full" asChild>
+            <Link to="/inscription">S'inscrire</Link>
+          </Button>
         </nav>
 
         {/* Mobile Menu Toggle */}
@@ -92,7 +95,9 @@ const Header = () => {
               {item.label}
             </a>
           ))}
-          <Button className="w-full rounded-full mt-4">S'inscrire</Button>
+          <Button className="w-full rounded-full mt-4" asChild>
+            <Link to="/inscription" onClick={() => setMobileMenuOpen(false)}>S'inscrire</Link>
+          </Button>
         </div>
       </div>
     </header>

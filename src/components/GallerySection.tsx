@@ -9,29 +9,29 @@ const GallerySection = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const photos = [
-    "https://images.unsplash.com/photo-1679669693237-74d556d6b5ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=986&q=80",
-    "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1772&q=80",
-    "https://images.unsplash.com/photo-1581288756149-518e6b0818b9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1064&q=80",
-    "https://images.unsplash.com/photo-1581078426770-6d336e5de7bf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
-    "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
-    "https://images.unsplash.com/photo-1629123355035-cbb93cb20a1e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80"
+    "/lovable-uploads/56d44f87-ea9a-4216-843a-ce33f1a71d56.png",
+    "/lovable-uploads/96f366bf-9171-465d-b3ac-c4ecafee7c2c.png",
+    "/lovable-uploads/7522ded7-e67e-492a-849f-061bd5289354.png",
+    "/lovable-uploads/86a866cd-2f9b-4f2b-8673-02416547a832.png",
+    "/lovable-uploads/5f042cb2-0d95-4f15-9668-a724a29e8982.png",
+    "/lovable-uploads/f77bd2f7-64b2-432b-a419-9e108afe5cb0.png"
   ];
 
   const testimonials = [
     {
       quote: "Ce camp a complètement transformé ma vision des mathématiques. J'ai découvert des concepts fascinants et fait des rencontres incroyables.",
       author: "Sophie M., 16 ans, participante 2024",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=928&q=80",
+      image: "/lovable-uploads/56d44f87-ea9a-4216-843a-ce33f1a71d56.png",
     },
     {
       quote: "En tant qu'intervenant, j'ai été impressionné par la curiosité et le talent des jeunes participants. Une expérience enrichissante pour tous.",
       author: "Dr. Alexandre Laurent, Professeur de mathématiques",
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
+      image: "/lovable-uploads/96f366bf-9171-465d-b3ac-c4ecafee7c2c.png",
     },
     {
       quote: "Mon fils est revenu du camp avec une nouvelle passion pour les mathématiques. Les activités variées et l'encadrement de qualité ont fait toute la différence.",
       author: "Corinne D., parent d'un participant",
-      image: "https://images.unsplash.com/photo-1619335680874-59eb2f06356a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
+      image: "/lovable-uploads/7522ded7-e67e-492a-849f-061bd5289354.png",
     }
   ];
 
