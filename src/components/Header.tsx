@@ -57,13 +57,13 @@ const Header = () => {
           
           <Button 
             variant="outline" 
-            size="icon" 
-            className="rounded-full mr-2" 
+            size="sm"
+            className="rounded-full flex items-center gap-1.5 px-3 border border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 group"
             onClick={toggleLanguage}
             title={language === 'fr' ? 'Switch to English' : 'Passer en français'}
           >
-            <Globe className="h-4 w-4" />
-            <span className="ml-1 font-medium">{language.toUpperCase()}</span>
+            <Globe className="h-3.5 w-3.5 text-primary group-hover:rotate-12 transition-transform duration-300" />
+            <span className="font-medium text-xs uppercase">{language === 'fr' ? 'FR' : 'EN'}</span>
           </Button>
           
           <Button className="rounded-full" asChild>
@@ -113,11 +113,13 @@ const Header = () => {
           
           <Button 
             variant="outline" 
-            className="w-full justify-center items-center flex gap-2 rounded-lg"
+            className="w-full justify-center items-center gap-2 py-6 rounded-full border border-primary/20 bg-background/70 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 group"
             onClick={toggleLanguage}
           >
-            <Globe className="h-4 w-4" />
-            {language === 'fr' ? 'Switch to English' : 'Passer en français'}
+            <Globe className="h-4 w-4 text-primary group-hover:rotate-12 transition-transform duration-300" />
+            <span className="font-medium">
+              {language === 'fr' ? 'Switch to English' : 'Passer en français'}
+            </span>
           </Button>
           
           <Button className="w-full rounded-full mt-4" asChild>
