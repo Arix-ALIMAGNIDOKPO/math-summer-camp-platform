@@ -9,7 +9,7 @@ interface MscLogoProps {
 export const MscLogo = ({ className, variant = "full" }: MscLogoProps) => {
   return (
     <div className={cn("flex items-center font-display", className)}>
-      <div className="relative h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
+      <div className="relative h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center mr-2 overflow-hidden">
         <svg
           width="32"
           height="32"
@@ -43,7 +43,8 @@ export const MscLogo = ({ className, variant = "full" }: MscLogoProps) => {
       </div>
       {variant === "full" && (
         <div className="font-bold text-xl">
-          <span className="text-primary">MSC</span>
+          <span className="text-primary">Maths</span>
+          <span className="ml-1">Summer Camp</span>
         </div>
       )}
     </div>
