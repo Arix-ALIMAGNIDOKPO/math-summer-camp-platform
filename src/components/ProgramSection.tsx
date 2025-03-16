@@ -3,13 +3,16 @@ import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Chip } from "@/components/ui-custom/Chip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLanguage } from "@/context/LanguageContext";
 
 const ProgramSection = () => {
+  const { t } = useLanguage();
+  
   const activities = [
     {
-      title: "Ateliers pratiques",
-      time: "9h - 12h",
-      description: "Sessions interactives pour approfondir des concepts mathématiques avancés à travers des exercices pratiques.",
+      title: t("program.activities.workshops"),
+      time: t("program.activities.workshops.time"),
+      description: t("program.activities.workshops.description"),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
           <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -18,9 +21,9 @@ const ProgramSection = () => {
       )
     },
     {
-      title: "Conférences d'experts",
-      time: "14h - 16h",
-      description: "Présentations par des professionnels reconnus dans le domaine des mathématiques et des sciences.",
+      title: t("program.activities.lectures"),
+      time: t("program.activities.lectures.time"),
+      description: t("program.activities.lectures.description"),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
           <path d="M12 14c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5Z"></path>
@@ -30,9 +33,9 @@ const ProgramSection = () => {
       )
     },
     {
-      title: "Sessions de mentorat",
-      time: "16h - 17h30",
-      description: "Coaching personnalisé en petits groupes pour répondre aux questions et approfondir des sujets spécifiques.",
+      title: t("program.activities.mentoring"),
+      time: t("program.activities.mentoring.time"),
+      description: t("program.activities.mentoring.description"),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -43,9 +46,9 @@ const ProgramSection = () => {
       )
     },
     {
-      title: "Compétitions mathématiques",
-      time: "18h - 20h",
-      description: "Défis et tournois pour stimuler l'émulation et l'esprit d'équipe entre les participants.",
+      title: t("program.activities.competitions"),
+      time: t("program.activities.competitions.time"),
+      description: t("program.activities.competitions.description"),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -57,21 +60,21 @@ const ProgramSection = () => {
 
   const weeks = [
     {
-      name: "Semaine 1",
+      name: t("program.week1"),
       themes: [
-        "Algèbre et structures algébriques",
-        "Analyse mathématique",
-        "Géométrie avancée",
-        "Théorie des nombres"
+        t("program.week1.theme1"),
+        t("program.week1.theme2"),
+        t("program.week1.theme3"),
+        t("program.week1.theme4")
       ]
     },
     {
-      name: "Semaine 2",
+      name: t("program.week2"),
       themes: [
-        "Statistiques et probabilités",
-        "Mathématiques discrètes",
-        "Applications pratiques",
-        "Préparation aux olympiades"
+        t("program.week2.theme1"),
+        t("program.week2.theme2"),
+        t("program.week2.theme3"),
+        t("program.week2.theme4")
       ]
     }
   ];
@@ -82,11 +85,10 @@ const ProgramSection = () => {
       
       <div className="section-container">
         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
-          <Chip className="mb-4">Programme</Chip>
-          <h2 className="heading-lg mb-6">Détails du Programme</h2>
+          <Chip className="mb-4">{t("program")}</Chip>
+          <h2 className="heading-lg mb-6">{t("program.title")}</h2>
           <p className="subheading">
-            Un programme soigneusement conçu pour offrir un équilibre parfait entre théorie, pratique 
-            et interaction sociale, dans un environnement favorisant l'apprentissage.
+            {t("program.subtitle")}
           </p>
         </AnimatedSection>
         
@@ -94,8 +96,8 @@ const ProgramSection = () => {
           <Tabs defaultValue="week1" className="w-full">
             <div className="flex justify-center mb-8">
               <TabsList className="grid grid-cols-2 w-full max-w-md">
-                <TabsTrigger value="week1" className="text-sm rounded-full data-[state=active]:bg-primary">Semaine 1</TabsTrigger>
-                <TabsTrigger value="week2" className="text-sm rounded-full data-[state=active]:bg-primary">Semaine 2</TabsTrigger>
+                <TabsTrigger value="week1" className="text-sm rounded-full data-[state=active]:bg-primary">{t("program.week1")}</TabsTrigger>
+                <TabsTrigger value="week2" className="text-sm rounded-full data-[state=active]:bg-primary">{t("program.week2")}</TabsTrigger>
               </TabsList>
             </div>
             
@@ -105,12 +107,11 @@ const ProgramSection = () => {
                   <div className="space-y-6">
                     <h3 className="heading-md mb-4">{week.name}</h3>
                     <p className="text-muted-foreground mb-8">
-                      Pendant cette semaine, les participants exploreront une variété de thèmes mathématiques 
-                      à travers des activités engageantes et stimulantes.
+                      {t(`program.week${weekIndex + 1}.description`)}
                     </p>
                     
                     <div className="space-y-3">
-                      <h4 className="font-medium text-lg">Thèmes abordés :</h4>
+                      <h4 className="font-medium text-lg">{t("program.themes")}</h4>
                       <ul className="space-y-2">
                         {week.themes.map((theme, index) => (
                           <li key={index} className="flex items-start gap-2">
@@ -154,23 +155,23 @@ const ProgramSection = () => {
         
         <AnimatedSection className="mt-20 text-center">
           <div className="glass-effect rounded-xl p-8 md:p-12 max-w-4xl mx-auto">
-            <h3 className="heading-sm mb-6">Un camp spécialement conçu pour les passionnés de mathématiques</h3>
+            <h3 className="heading-sm mb-6">{t("program.specially.designed")}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
               <div className="flex flex-col items-center">
                 <div className="font-display text-4xl font-bold text-primary mb-2">2</div>
-                <div className="text-sm text-center">Semaines d'immersion</div>
+                <div className="text-sm text-center">{t("program.stats.weeks")}</div>
               </div>
               <div className="flex flex-col items-center">
                 <div className="font-display text-4xl font-bold text-primary mb-2">30+</div>
-                <div className="text-sm text-center">Ateliers interactifs</div>
+                <div className="text-sm text-center">{t("program.stats.workshops")}</div>
               </div>
               <div className="flex flex-col items-center">
                 <div className="font-display text-4xl font-bold text-primary mb-2">10+</div>
-                <div className="text-sm text-center">Experts reconnus</div>
+                <div className="text-sm text-center">{t("program.stats.experts")}</div>
               </div>
               <div className="flex flex-col items-center">
                 <div className="font-display text-4xl font-bold text-primary mb-2">50+</div>
-                <div className="text-sm text-center">Participants attendus</div>
+                <div className="text-sm text-center">{t("program.stats.participants")}</div>
               </div>
             </div>
           </div>

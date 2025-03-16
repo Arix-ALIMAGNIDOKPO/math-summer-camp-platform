@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type Language = 'fr' | 'en';
@@ -118,6 +117,134 @@ const translations: Record<string, Record<Language, string>> = {
   "program": {
     fr: "Programme",
     en: "Program"
+  },
+  "program.title": {
+    fr: "Détails du Programme",
+    en: "Program Details"
+  },
+  "program.subtitle": {
+    fr: "Un programme soigneusement conçu pour offrir un équilibre parfait entre théorie, pratique et interaction sociale, dans un environnement favorisant l'apprentissage.",
+    en: "A carefully designed program offering a perfect balance between theory, practice, and social interaction in an environment conducive to learning."
+  },
+  "program.week1": {
+    fr: "Semaine 1",
+    en: "Week 1"
+  },
+  "program.week2": {
+    fr: "Semaine 2",
+    en: "Week 2"
+  },
+  "program.week1.description": {
+    fr: "Pendant cette semaine, les participants exploreront une variété de thèmes mathématiques à travers des activités engageantes et stimulantes.",
+    en: "During this week, participants will explore a variety of mathematical topics through engaging and stimulating activities."
+  },
+  "program.week2.description": {
+    fr: "Pendant cette semaine, les participants exploreront une variété de thèmes mathématiques à travers des activités engageantes et stimulantes.",
+    en: "During this week, participants will explore a variety of mathematical topics through engaging and stimulating activities."
+  },
+  "program.themes": {
+    fr: "Thèmes abordés :",
+    en: "Topics covered:"
+  },
+  "program.week1.theme1": {
+    fr: "Algèbre et structures algébriques",
+    en: "Algebra and algebraic structures"
+  },
+  "program.week1.theme2": {
+    fr: "Analyse mathématique",
+    en: "Mathematical analysis"
+  },
+  "program.week1.theme3": {
+    fr: "Géométrie avancée",
+    en: "Advanced geometry"
+  },
+  "program.week1.theme4": {
+    fr: "Théorie des nombres",
+    en: "Number theory"
+  },
+  "program.week2.theme1": {
+    fr: "Statistiques et probabilités",
+    en: "Statistics and probability"
+  },
+  "program.week2.theme2": {
+    fr: "Mathématiques discrètes",
+    en: "Discrete mathematics"
+  },
+  "program.week2.theme3": {
+    fr: "Applications pratiques",
+    en: "Practical applications"
+  },
+  "program.week2.theme4": {
+    fr: "Préparation aux olympiades",
+    en: "Olympiad preparation"
+  },
+  "program.activities.workshops": {
+    fr: "Ateliers pratiques",
+    en: "Practical workshops"
+  },
+  "program.activities.workshops.time": {
+    fr: "9h - 12h",
+    en: "9 AM - 12 PM"
+  },
+  "program.activities.workshops.description": {
+    fr: "Sessions interactives pour approfondir des concepts mathématiques avancés à travers des exercices pratiques.",
+    en: "Interactive sessions to explore advanced mathematical concepts through practical exercises."
+  },
+  "program.activities.lectures": {
+    fr: "Conférences d'experts",
+    en: "Expert lectures"
+  },
+  "program.activities.lectures.time": {
+    fr: "14h - 16h",
+    en: "2 PM - 4 PM"
+  },
+  "program.activities.lectures.description": {
+    fr: "Présentations par des professionnels reconnus dans le domaine des mathématiques et des sciences.",
+    en: "Presentations by recognized professionals in the field of mathematics and science."
+  },
+  "program.activities.mentoring": {
+    fr: "Sessions de mentorat",
+    en: "Mentoring sessions"
+  },
+  "program.activities.mentoring.time": {
+    fr: "16h - 17h30",
+    en: "4 PM - 5:30 PM"
+  },
+  "program.activities.mentoring.description": {
+    fr: "Coaching personnalisé en petits groupes pour répondre aux questions et approfondir des sujets spécifiques.",
+    en: "Personalized coaching in small groups to answer questions and explore specific topics in depth."
+  },
+  "program.activities.competitions": {
+    fr: "Compétitions mathématiques",
+    en: "Mathematical competitions"
+  },
+  "program.activities.competitions.time": {
+    fr: "18h - 20h",
+    en: "6 PM - 8 PM"
+  },
+  "program.activities.competitions.description": {
+    fr: "Défis et tournois pour stimuler l'émulation et l'esprit d'équipe entre les participants.",
+    en: "Challenges and tournaments to stimulate emulation and team spirit among participants."
+  },
+  "program.specially.designed": {
+    fr: "Un camp spécialement conçu pour les passionnés de mathématiques",
+    en: "A camp specially designed for mathematics enthusiasts"
+  },
+  "program.stats.weeks": {
+    fr: "Semaines d'immersion",
+    en: "Weeks of immersion"
+  },
+  "program.stats.workshops": {
+    fr: "Ateliers interactifs",
+    en: "Interactive workshops"
+  },
+  "program.stats.experts": {
+    fr: "Experts reconnus",
+    en: "Recognized experts"
+  },
+  "program.stats.participants": {
+    fr: "Participants attendus",
+    en: "Expected participants"
   },
   
   // Gallery section
