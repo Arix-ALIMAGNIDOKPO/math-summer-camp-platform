@@ -379,8 +379,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Your contribution, regardless of the amount, transforms the life of a young talent by providing access to quality mathematical education, completely free. No registration fees are required from participants; they only cover their transportation."
   },
   "budget.custom.amount": {
-    fr: "Montant personnalisé (€)",
-    en: "Custom amount (€)"
+    fr: "Montant personnalisé ($)",
+    en: "Custom amount ($)"
   },
   "budget.enter.amount": {
     fr: "Entrez votre montant",
@@ -405,6 +405,14 @@ const translations: Record<string, Record<Language, string>> = {
   "budget.contact.us": {
     fr: "Contactez-nous pour un partenariat entreprise",
     en: "Contact us for a business partnership"
+  },
+  "boys": {
+    fr: "Garçons",
+    en: "Boys"
+  },
+  "girls": {
+    fr: "Filles",
+    en: "Girls"
   },
 
   // Contact section

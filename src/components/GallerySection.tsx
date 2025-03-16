@@ -5,9 +5,11 @@ import { Chip } from "@/components/ui-custom/Chip";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/context/LanguageContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const GallerySection = () => {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const photos = [
@@ -58,7 +60,7 @@ const GallerySection = () => {
             </div>
             
             <TabsContent value="photos" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {photos.map((photo, index) => (
                   <div 
                     key={index}
@@ -84,7 +86,7 @@ const GallerySection = () => {
             </TabsContent>
             
             <TabsContent value="testimonials" className="mt-0">
-              <div className="grid md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                 {testimonials.map((testimonial, index) => (
                   <AnimatedSection 
                     key={index} 
@@ -115,8 +117,8 @@ const GallerySection = () => {
       </div>
       
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-5xl bg-transparent border-0 shadow-none">
-          <div className="relative aspect-video w-full">
+        <DialogContent className={cn("max-w-5xl bg-transparent border-0 shadow-none", isMobile ? "p-2" : "")}>
+          <div className="relative w-full">
             {selectedImage && (
               <img 
                 src={selectedImage} 
