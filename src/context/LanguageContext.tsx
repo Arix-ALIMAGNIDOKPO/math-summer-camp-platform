@@ -252,6 +252,54 @@ const translations: Record<string, Record<Language, string>> = {
     fr: "Galerie",
     en: "Gallery"
   },
+  "gallery.title": {
+    fr: "Retours d'Expérience",
+    en: "Experience Feedback"
+  },
+  "gallery.subtitle": {
+    fr: "Découvrez les moments forts des éditions précédentes et les témoignages de nos participants, intervenants et partenaires.",
+    en: "Discover the highlights of previous editions and testimonials from our participants, speakers, and partners."
+  },
+  "gallery.photos": {
+    fr: "Photos",
+    en: "Photos"
+  },
+  "gallery.testimonials": {
+    fr: "Témoignages",
+    en: "Testimonials"
+  },
+  "gallery.image.alt": {
+    fr: "Image du camp {index}",
+    en: "Camp image {index}"
+  },
+  "gallery.preview": {
+    fr: "Aperçu de la galerie",
+    en: "Gallery preview"
+  },
+  "gallery.testimonial1.quote": {
+    fr: "Ce camp a complètement transformé ma vision des mathématiques. J'ai découvert des concepts fascinants et fait des rencontres incroyables.",
+    en: "This camp completely transformed my view of mathematics. I discovered fascinating concepts and made incredible connections."
+  },
+  "gallery.testimonial1.author": {
+    fr: "Sophie M., 16 ans, participante 2024",
+    en: "Sophie M., 16 years old, 2024 participant"
+  },
+  "gallery.testimonial2.quote": {
+    fr: "En tant qu'intervenant, j'ai été impressionné par la curiosité et le talent des jeunes participants. Une expérience enrichissante pour tous.",
+    en: "As a speaker, I was impressed by the curiosity and talent of the young participants. An enriching experience for everyone."
+  },
+  "gallery.testimonial2.author": {
+    fr: "Dr. Alexandre Laurent, Professeur de mathématiques",
+    en: "Dr. Alexandre Laurent, Mathematics Professor"
+  },
+  "gallery.testimonial3.quote": {
+    fr: "Mon fils est revenu du camp avec une nouvelle passion pour les mathématiques. Les activités variées et l'encadrement de qualité ont fait toute la différence.",
+    en: "My son returned from the camp with a new passion for mathematics. The varied activities and quality supervision made all the difference."
+  },
+  "gallery.testimonial3.author": {
+    fr: "Corinne D., parent d'un participant",
+    en: "Corinne D., parent of a participant"
+  },
 
   // Budget section
   "budget": {

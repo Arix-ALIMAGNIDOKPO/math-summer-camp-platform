@@ -4,8 +4,10 @@ import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Chip } from "@/components/ui-custom/Chip";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/context/LanguageContext";
 
 const GallerySection = () => {
+  const { t } = useLanguage();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const photos = [
@@ -19,18 +21,18 @@ const GallerySection = () => {
 
   const testimonials = [
     {
-      quote: "Ce camp a complètement transformé ma vision des mathématiques. J'ai découvert des concepts fascinants et fait des rencontres incroyables.",
-      author: "Sophie M., 16 ans, participante 2024",
+      quote: t("gallery.testimonial1.quote"),
+      author: t("gallery.testimonial1.author"),
       image: "/lovable-uploads/56d44f87-ea9a-4216-843a-ce33f1a71d56.png",
     },
     {
-      quote: "En tant qu'intervenant, j'ai été impressionné par la curiosité et le talent des jeunes participants. Une expérience enrichissante pour tous.",
-      author: "Dr. Alexandre Laurent, Professeur de mathématiques",
+      quote: t("gallery.testimonial2.quote"),
+      author: t("gallery.testimonial2.author"),
       image: "/lovable-uploads/96f366bf-9171-465d-b3ac-c4ecafee7c2c.png",
     },
     {
-      quote: "Mon fils est revenu du camp avec une nouvelle passion pour les mathématiques. Les activités variées et l'encadrement de qualité ont fait toute la différence.",
-      author: "Corinne D., parent d'un participant",
+      quote: t("gallery.testimonial3.quote"),
+      author: t("gallery.testimonial3.author"),
       image: "/lovable-uploads/7522ded7-e67e-492a-849f-061bd5289354.png",
     }
   ];
@@ -39,11 +41,10 @@ const GallerySection = () => {
     <section id="gallery" className="section-padding bg-white relative">
       <div className="section-container">
         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
-          <Chip className="mb-4">Galerie</Chip>
-          <h2 className="heading-lg mb-6">Retours d'Expérience</h2>
+          <Chip className="mb-4">{t("gallery")}</Chip>
+          <h2 className="heading-lg mb-6">{t("gallery.title")}</h2>
           <p className="subheading">
-            Découvrez les moments forts des éditions précédentes et les témoignages de nos participants, 
-            intervenants et partenaires.
+            {t("gallery.subtitle")}
           </p>
         </AnimatedSection>
         
@@ -51,8 +52,8 @@ const GallerySection = () => {
           <Tabs defaultValue="photos" className="w-full">
             <div className="flex justify-center mb-8">
               <TabsList className="grid grid-cols-2 w-full max-w-md">
-                <TabsTrigger value="photos" className="text-sm rounded-full data-[state=active]:bg-primary">Photos</TabsTrigger>
-                <TabsTrigger value="testimonials" className="text-sm rounded-full data-[state=active]:bg-primary">Témoignages</TabsTrigger>
+                <TabsTrigger value="photos" className="text-sm rounded-full data-[state=active]:bg-primary">{t("gallery.photos")}</TabsTrigger>
+                <TabsTrigger value="testimonials" className="text-sm rounded-full data-[state=active]:bg-primary">{t("gallery.testimonials")}</TabsTrigger>
               </TabsList>
             </div>
             
@@ -74,7 +75,7 @@ const GallerySection = () => {
                     </div>
                     <img 
                       src={photo} 
-                      alt={`Camp image ${index + 1}`} 
+                      alt={t("gallery.image.alt", { index: index + 1 })} 
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
@@ -119,7 +120,7 @@ const GallerySection = () => {
             {selectedImage && (
               <img 
                 src={selectedImage} 
-                alt="Gallery preview" 
+                alt={t("gallery.preview")} 
                 className="w-full h-full object-contain rounded-lg shadow-xl"
               />
             )}
