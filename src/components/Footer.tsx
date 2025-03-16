@@ -2,8 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { MscLogo } from "./ui-custom/MscLogo";
 import { Phone, Mail, MapPin } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Footer = () => {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -15,8 +17,7 @@ const Footer = () => {
               <MscLogo />
             </div>
             <p className="text-muted-foreground mb-6 max-w-md">
-              Un programme intensif pour les jeunes passionnés de mathématiques, 
-              offrant une expérience d'apprentissage immersive et stimulante.
+              {t("footer.description")}
             </p>
             <div className="flex space-x-4">
               <Button variant="outline" size="icon" className="rounded-full w-10 h-10">
@@ -47,7 +48,7 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-medium text-base mb-4">Contact</h3>
+            <h3 className="font-medium text-base mb-4">{t("contact")}</h3>
             <ul className="space-y-3">
               <li className="flex items-center text-muted-foreground gap-2">
                 <Phone size={18} />
@@ -70,7 +71,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-200 mt-12 pt-8 flex justify-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Maths Summer Camp. Tous droits réservés.
+            © {currentYear} Maths Summer Camp. {t("footer.rights")}
           </p>
         </div>
       </div>

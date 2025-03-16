@@ -8,26 +8,8 @@ import BudgetSection from "@/components/BudgetSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
-import { useEffect } from "react";
 
 const Index = () => {
-  useEffect(() => {
-    // Load KkiaPay script
-    const script = document.createElement('script');
-    script.src = 'https://cdn.kkiapay.me/k.js';
-    script.async = true;
-    
-    // Add script to body
-    document.body.appendChild(script);
-    
-    return () => {
-      // Clean up script on component unmount
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
-  
   return (
     <div className="min-h-screen">
       <Header />

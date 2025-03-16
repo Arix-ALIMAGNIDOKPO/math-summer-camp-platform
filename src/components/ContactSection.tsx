@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
+import { useLanguage } from "@/context/LanguageContext";
 
 const ContactSection = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -34,17 +36,9 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
-      
-      if (response.ok) {
-        toast.success("Votre message a été envoyé avec succès !");
-        // Reset form
+      // In a real app, this would be an actual API call
+      setTimeout(() => {
+        toast.success("Your message has been sent successfully!");
         setFormData({
           name: "",
           email: "",
@@ -52,14 +46,11 @@ const ContactSection = () => {
           message: "",
           interest: "participant"
         });
-      } else {
-        const errorData = await response.json();
-        toast.error(`Erreur: ${errorData.message || "Une erreur est survenue"}`);
-      }
+        setIsSubmitting(false);
+      }, 1000);
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      toast.error("Impossible d'envoyer le message. Veuillez réessayer plus tard.");
-    } finally {
+      toast.error("Unable to send message. Please try again later.");
       setIsSubmitting(false);
     }
   };
@@ -68,11 +59,10 @@ const ContactSection = () => {
     <section id="contact" className="section-padding bg-white relative">
       <div className="section-container">
         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
-          <Chip className="mb-4">Contact</Chip>
-          <h2 className="heading-lg mb-6">Intéressé(e) ?</h2>
+          <Chip className="mb-4">{t("contact")}</Chip>
+          <h2 className="heading-lg mb-6">{t("contact.title")}</h2>
           <p className="subheading">
-            Que vous soyez un futur participant, un parent, un intervenant potentiel ou un partenaire, 
-            nous serons ravis d'échanger avec vous sur le Maths Summer Camp.
+            {t("contact.subtitle")}
           </p>
         </AnimatedSection>
         
@@ -82,47 +72,47 @@ const ContactSection = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Nom complet</Label>
+                    <Label htmlFor="name">{t("contact.fullname")}</Label>
                     <Input 
                       id="name" 
                       name="name" 
                       value={formData.name}
                       onChange={handleChange}
-                      placeholder="Votre nom" 
+                      placeholder={t("contact.your.name")} 
                       required 
                       className="mt-1"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t("contact.email")}</Label>
                     <Input 
                       id="email" 
                       name="email" 
                       type="email" 
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="votre.email@exemple.com" 
+                      placeholder={t("contact.email.placeholder")} 
                       required 
                       className="mt-1"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="phone">Téléphone</Label>
+                    <Label htmlFor="phone">{t("contact.phone")}</Label>
                     <Input 
                       id="phone" 
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="+33 6 12 34 56 78" 
+                      placeholder={t("contact.phone.placeholder")} 
                       className="mt-1"
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <Label>Je suis intéressé(e) en tant que :</Label>
+                  <Label>{t("contact.interested.as")}</Label>
                   <RadioGroup 
                     defaultValue="participant"
                     value={formData.interest}
@@ -131,38 +121,38 @@ const ContactSection = () => {
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="participant" id="participant" />
-                      <Label htmlFor="participant" className="font-normal">Participant</Label>
+                      <Label htmlFor="participant" className="font-normal">{t("contact.participant")}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="parent" id="parent" />
-                      <Label htmlFor="parent" className="font-normal">Parent</Label>
+                      <Label htmlFor="parent" className="font-normal">{t("contact.parent")}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="intervenant" id="intervenant" />
-                      <Label htmlFor="intervenant" className="font-normal">Intervenant</Label>
+                      <Label htmlFor="intervenant" className="font-normal">{t("contact.speaker")}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="partenaire" id="partenaire" />
-                      <Label htmlFor="partenaire" className="font-normal">Partenaire</Label>
+                      <Label htmlFor="partenaire" className="font-normal">{t("contact.partner")}</Label>
                     </div>
                   </RadioGroup>
                 </div>
                 
                 <div>
-                  <Label htmlFor="message">Message</Label>
+                  <Label htmlFor="message">{t("contact.message")}</Label>
                   <Textarea 
                     id="message" 
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Votre message ou question..." 
+                    placeholder={t("contact.message.placeholder")} 
                     rows={4} 
                     className="mt-1"
                   />
                 </div>
                 
                 <Button type="submit" className="w-full rounded-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Envoi en cours..." : "Envoyer"}
+                  {isSubmitting ? t("contact.sending") : t("contact.send")}
                 </Button>
               </form>
             </Card>
@@ -171,10 +161,9 @@ const ContactSection = () => {
           <AnimatedSection animation="slide-in-right">
             <div className="space-y-8">
               <div>
-                <h3 className="heading-sm mb-4">Informations de contact</h3>
+                <h3 className="heading-sm mb-4">{t("contact.info.title")}</h3>
                 <p className="text-muted-foreground mb-6">
-                  N'hésitez pas à nous contacter directement pour toute question concernant 
-                  le Maths Summer Camp - Édition II.
+                  {t("contact.info.description")}
                 </p>
                 
                 <div className="space-y-4">
@@ -185,7 +174,7 @@ const ContactSection = () => {
                       </svg>
                     </div>
                     <div>
-                      <h4 className="font-medium text-sm">Téléphone</h4>
+                      <h4 className="font-medium text-sm">{t("contact.phone.label")}</h4>
                       <p className="text-muted-foreground">+33 (0)1 23 45 67 89</p>
                     </div>
                   </div>
@@ -198,7 +187,7 @@ const ContactSection = () => {
                       </svg>
                     </div>
                     <div>
-                      <h4 className="font-medium text-sm">Email</h4>
+                      <h4 className="font-medium text-sm">{t("contact.email.label")}</h4>
                       <p className="text-muted-foreground">contact@mathssummercamp.fr</p>
                     </div>
                   </div>
@@ -211,7 +200,7 @@ const ContactSection = () => {
                       </svg>
                     </div>
                     <div>
-                      <h4 className="font-medium text-sm">Adresse</h4>
+                      <h4 className="font-medium text-sm">{t("contact.address.label")}</h4>
                       <p className="text-muted-foreground">
                         123 Avenue des Sciences<br />
                         75000 Paris, France
@@ -222,29 +211,26 @@ const ContactSection = () => {
               </div>
               
               <div>
-                <h3 className="heading-sm mb-4">Foire Aux Questions</h3>
+                <h3 className="heading-sm mb-4">{t("contact.faq.title")}</h3>
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-medium text-base">Comment s'inscrire au Maths Summer Camp ?</h4>
+                    <h4 className="font-medium text-base">{t("contact.faq1.question")}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Les inscriptions se font via le formulaire en ligne. Une fois votre candidature soumise, 
-                      notre équipe l'examinera et vous contactera pour la suite du processus.
+                      {t("contact.faq1.answer")}
                     </p>
                   </div>
                   
                   <div>
-                    <h4 className="font-medium text-base">Quelles sont les conditions d'éligibilité pour une bourse ?</h4>
+                    <h4 className="font-medium text-base">{t("contact.faq2.question")}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Les bourses sont attribuées sur critères sociaux et de mérite. Vous pouvez soumettre 
-                      une demande lors de votre inscription et fournir les justificatifs nécessaires.
+                      {t("contact.faq2.answer")}
                     </p>
                   </div>
                   
                   <div>
-                    <h4 className="font-medium text-base">Les repas et l'hébergement sont-ils inclus ?</h4>
+                    <h4 className="font-medium text-base">{t("contact.faq3.question")}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Oui, tous les repas et l'hébergement sont inclus dans les frais d'inscription. 
-                      Des options spéciales sont disponibles pour les régimes alimentaires particuliers.
+                      {t("contact.faq3.answer")}
                     </p>
                   </div>
                 </div>

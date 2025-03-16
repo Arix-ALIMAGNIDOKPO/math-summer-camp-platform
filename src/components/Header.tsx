@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { MscLogo } from "./ui-custom/MscLogo";
+import { Globe } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { language, toggleLanguage, t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,11 +22,11 @@ const Header = () => {
   }, []);
 
   const navigationItems = [
-    { label: 'À propos', href: '#about' },
-    { label: 'Programme', href: '#program' },
-    { label: 'Galerie', href: '#gallery' },
-    { label: 'Budget', href: '#budget' },
-    { label: 'Contact', href: '#contact' },
+    { label: t('nav.about'), href: '#about' },
+    { label: t('nav.program'), href: '#program' },
+    { label: t('nav.gallery'), href: '#gallery' },
+    { label: t('nav.budget'), href: '#budget' },
+    { label: t('nav.contact'), href: '#contact' },
   ];
 
   return (
@@ -51,8 +54,20 @@ const Header = () => {
               {item.label}
             </a>
           ))}
+          
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="rounded-full mr-2" 
+            onClick={toggleLanguage}
+            title={language === 'fr' ? 'Switch to English' : 'Passer en français'}
+          >
+            <Globe className="h-4 w-4" />
+            <span className="ml-1 font-medium">{language.toUpperCase()}</span>
+          </Button>
+          
           <Button className="rounded-full" asChild>
-            <Link to="/inscription">S'inscrire</Link>
+            <Link to="/inscription">{t('nav.register')}</Link>
           </Button>
         </nav>
 
@@ -95,8 +110,20 @@ const Header = () => {
               {item.label}
             </a>
           ))}
+          
+          <Button 
+            variant="outline" 
+            className="w-full justify-center items-center flex gap-2 rounded-lg"
+            onClick={toggleLanguage}
+          >
+            <Globe className="h-4 w-4" />
+            {language === 'fr' ? 'Switch to English' : 'Passer en français'}
+          </Button>
+          
           <Button className="w-full rounded-full mt-4" asChild>
-            <Link to="/inscription" onClick={() => setMobileMenuOpen(false)}>S'inscrire</Link>
+            <Link to="/inscription" onClick={() => setMobileMenuOpen(false)}>
+              {t('nav.register')}
+            </Link>
           </Button>
         </div>
       </div>

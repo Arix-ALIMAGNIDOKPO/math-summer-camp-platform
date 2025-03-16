@@ -4,9 +4,11 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { MscLogo } from "@/components/ui-custom/MscLogo";
+import { useLanguage } from "@/context/LanguageContext";
 
 const NotFound = () => {
   const location = useLocation();
+  const { t } = useLanguage();
 
   useEffect(() => {
     console.error(
@@ -24,7 +26,7 @@ const NotFound = () => {
         
         <h1 className="text-7xl font-bold mb-4 text-primary">404</h1>
         <p className="text-xl text-foreground/80 mb-8">
-          Oups! La page que vous recherchez semble avoir disparu dans l'univers des mathématiques.
+          {t("404.title")}
         </p>
         
         <div className="relative h-32 w-32 mx-auto mb-8">
@@ -54,7 +56,7 @@ const NotFound = () => {
         </div>
         
         <Button asChild className="rounded-full">
-          <Link to="/">Retour à l'accueil</Link>
+          <Link to="/">{t("404.button")}</Link>
         </Button>
       </div>
     </div>

@@ -2,12 +2,15 @@
 import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Chip } from "@/components/ui-custom/Chip";
 import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/context/LanguageContext";
 
 const AboutSection = () => {
+  const { t } = useLanguage();
+  
   const objectives = [
     {
-      title: "Renforcer les compétences",
-      description: "Approfondir les connaissances mathématiques à travers un programme enrichi et des méthodes pédagogiques innovantes.",
+      title: t("about.obj1.title"),
+      description: t("about.obj1.description"),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
           <path d="M21 8V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
@@ -19,8 +22,8 @@ const AboutSection = () => {
       )
     },
     {
-      title: "Stimuler la curiosité",
-      description: "Encourager l'exploration de concepts mathématiques et scientifiques avancés à travers des activités interactives.",
+      title: t("about.obj2.title"),
+      description: t("about.obj2.description"),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
           <circle cx="12" cy="12" r="10"></circle>
@@ -30,8 +33,8 @@ const AboutSection = () => {
       )
     },
     {
-      title: "Promouvoir l'égalité",
-      description: "Offrir des bourses aux élèves issus de milieux défavorisés pour garantir l'accès à tous les talents.",
+      title: t("about.obj3.title"),
+      description: t("about.obj3.description"),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
           <path d="M2 12h5"></path>
@@ -43,8 +46,8 @@ const AboutSection = () => {
       )
     },
     {
-      title: "Développer l'esprit critique",
-      description: "Renforcer la capacité d'analyse et de résolution de problèmes complexes à travers des défis variés.",
+      title: t("about.obj4.title"),
+      description: t("about.obj4.description"),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
@@ -57,11 +60,10 @@ const AboutSection = () => {
     <section id="about" className="section-padding bg-white relative">
       <div className="section-container">
         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
-          <Chip className="mb-4">À propos</Chip>
-          <h2 className="heading-lg mb-6">Contexte et Justification</h2>
+          <Chip className="mb-4">{t("about")}</Chip>
+          <h2 className="heading-lg mb-6">{t("about.title")}</h2>
           <p className="subheading">
-            Notre camp d'été intensive en mathématiques est conçu pour les élèves passionnés qui souhaitent 
-            approfondir leurs connaissances dans un environnement académique stimulant.
+            {t("about.subtitle")}
           </p>
         </AnimatedSection>
         
@@ -69,27 +71,21 @@ const AboutSection = () => {
           <AnimatedSection animation="slide-in-right" className="order-2 md:order-1">
             <div className="space-y-8">
               <div>
-                <h3 className="heading-sm mb-4">Un programme d'excellence</h3>
+                <h3 className="heading-sm mb-4">{t("about.excellence.title")}</h3>
                 <p className="text-muted-foreground">
-                  Le Maths Summer Camp offre un environnement d'apprentissage exceptionnel où les élèves peuvent 
-                  explorer des concepts mathématiques avancés sous la direction de professionnels et d'experts 
-                  reconnus dans le domaine.
+                  {t("about.excellence.description")}
                 </p>
               </div>
               <div>
-                <h3 className="heading-sm mb-4">Pour qui ?</h3>
+                <h3 className="heading-sm mb-4">{t("about.who.title")}</h3>
                 <p className="text-muted-foreground">
-                  Le camp est destiné aux élèves du secondaire (14-18 ans) manifestant un intérêt particulier 
-                  pour les mathématiques et les sciences, qu'ils soient déjà performants ou simplement curieux 
-                  d'approfondir leurs connaissances.
+                  {t("about.who.description")}
                 </p>
               </div>
               <div>
-                <h3 className="heading-sm mb-4">Une vision inclusive</h3>
+                <h3 className="heading-sm mb-4">{t("about.vision.title")}</h3>
                 <p className="text-muted-foreground">
-                  Nous croyons fermement que le talent mathématique peut se trouver partout. C'est pourquoi 
-                  nous avons mis en place un système de bourses pour soutenir l'accès à notre programme aux élèves 
-                  issus de milieux défavorisés.
+                  {t("about.vision.description")}
                 </p>
               </div>
             </div>
@@ -117,9 +113,9 @@ const AboutSection = () => {
         
         <div className="mt-32">
           <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="heading-lg mb-6">Objectifs du Camp</h2>
+            <h2 className="heading-lg mb-6">{t("about.objectives.title")}</h2>
             <p className="subheading">
-              Notre mission est de créer un environnement où les élèves peuvent explorer, apprendre et grandir à travers les mathématiques.
+              {t("about.objectives.subtitle")}
             </p>
           </AnimatedSection>
           
