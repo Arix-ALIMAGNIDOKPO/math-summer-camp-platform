@@ -44,7 +44,7 @@ const Header = () => {
         </a>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-5 lg:gap-8">
           {navigationItems.map((item) => (
             <a
               key={item.href}
@@ -58,11 +58,11 @@ const Header = () => {
           <Button 
             variant="outline" 
             size="sm"
-            className="rounded-full flex items-center gap-1.5 px-3 border border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 group"
+            className="rounded-full flex items-center gap-1.5 px-4 border border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 group"
             onClick={toggleLanguage}
             title={language === 'fr' ? 'Switch to English' : 'Passer en français'}
           >
-            <Globe className="h-3.5 w-3.5 text-primary group-hover:rotate-12 transition-transform duration-300" />
+            <Globe className="h-4 w-4 text-primary group-hover:rotate-12 transition-transform duration-300" />
             <span className="font-medium text-xs uppercase">{language === 'fr' ? 'FR' : 'EN'}</span>
           </Button>
           
@@ -72,24 +72,37 @@ const Header = () => {
         </nav>
 
         {/* Mobile Menu Toggle */}
-        <button 
-          className="block md:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
-        >
-          <div className={cn(
-            "w-6 h-0.5 bg-foreground transition-all",
-            mobileMenuOpen && "translate-y-1.5 rotate-45"
-          )} />
-          <div className={cn(
-            "w-6 h-0.5 bg-foreground mt-1.5 transition-all",
-            mobileMenuOpen && "opacity-0"
-          )} />
-          <div className={cn(
-            "w-6 h-0.5 bg-foreground mt-1.5 transition-all",
-            mobileMenuOpen && "-translate-y-1.5 -rotate-45"
-          )} />
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="rounded-full flex items-center gap-1.5 px-3 border border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 group"
+            onClick={toggleLanguage}
+            title={language === 'fr' ? 'Switch to English' : 'Passer en français'}
+          >
+            <Globe className="h-3.5 w-3.5 text-primary group-hover:rotate-12 transition-transform duration-300" />
+            <span className="font-medium text-xs uppercase">{language === 'fr' ? 'FR' : 'EN'}</span>
+          </Button>
+          
+          <button 
+            className="block"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          >
+            <div className={cn(
+              "w-6 h-0.5 bg-foreground transition-all",
+              mobileMenuOpen && "translate-y-1.5 rotate-45"
+            )} />
+            <div className={cn(
+              "w-6 h-0.5 bg-foreground mt-1.5 transition-all",
+              mobileMenuOpen && "opacity-0"
+            )} />
+            <div className={cn(
+              "w-6 h-0.5 bg-foreground mt-1.5 transition-all",
+              mobileMenuOpen && "-translate-y-1.5 -rotate-45"
+            )} />
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -110,17 +123,6 @@ const Header = () => {
               {item.label}
             </a>
           ))}
-          
-          <Button 
-            variant="outline" 
-            className="w-full justify-center items-center gap-2 py-6 rounded-full border border-primary/20 bg-background/70 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 group"
-            onClick={toggleLanguage}
-          >
-            <Globe className="h-4 w-4 text-primary group-hover:rotate-12 transition-transform duration-300" />
-            <span className="font-medium">
-              {language === 'fr' ? 'Switch to English' : 'Passer en français'}
-            </span>
-          </Button>
           
           <Button className="w-full rounded-full mt-4" asChild>
             <Link to="/inscription" onClick={() => setMobileMenuOpen(false)}>

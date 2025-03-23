@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type Language = 'fr' | 'en';
@@ -326,21 +327,33 @@ const translations: Record<string, Record<Language, string>> = {
     fr: "100% des élèves participants sont boursiers et n'ont aucun frais d'inscription à payer.",
     en: "100% of participating students are scholarship recipients and have no registration fees to pay."
   },
-  "budget.teaching.materials": {
-    fr: "Matériel pédagogique",
-    en: "Teaching Materials"
+  "budget.accommodation": {
+    fr: "Hébergement",
+    en: "Accommodation"
   },
-  "budget.honorariums": {
-    fr: "Honoraires intervenants",
-    en: "Speaker Honorariums"
+  "budget.food": {
+    fr: "Restauration",
+    en: "Food"
   },
   "budget.transport": {
-    fr: "Transport et hébergement",
-    en: "Transport & Accommodation"
+    fr: "Déplacement",
+    en: "Transportation"
   },
-  "budget.administration": {
-    fr: "Administration",
-    en: "Administration"
+  "budget.materials": {
+    fr: "Outils et supports",
+    en: "Materials & Supplies"
+  },
+  "budget.media": {
+    fr: "Couverture médiatique",
+    en: "Media Coverage"
+  },
+  "budget.healthcare": {
+    fr: "Soins sanitaires",
+    en: "Healthcare"
+  },
+  "budget.wifi": {
+    fr: "Kit Wi-Fi",
+    en: "Wi-Fi Kit"
   },
   "budget.impact.title": {
     fr: "Impact Sur l'Éducation",
@@ -354,13 +367,13 @@ const translations: Record<string, Record<Language, string>> = {
     fr: "Participants",
     en: "Participants"
   },
-  "budget.speakers": {
-    fr: "Intervenants",
-    en: "Speakers"
+  "budget.males": {
+    fr: "Garçons",
+    en: "Boys"
   },
-  "budget.partners": {
-    fr: "Partenaires",
-    en: "Partners"
+  "budget.females": {
+    fr: "Filles",
+    en: "Girls"
   },
   "budget.edition1": {
     fr: "Édition I",
@@ -441,8 +454,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Phone"
   },
   "contact.phone.placeholder": {
-    fr: "+33 6 12 34 56 78",
-    en: "+33 6 12 34 56 78"
+    fr: "+1 (123) 456-7890",
+    en: "+1 (123) 456-7890"
   },
   "contact.interested.as": {
     fr: "Je suis intéressé(e) en tant que :",
@@ -480,6 +493,14 @@ const translations: Record<string, Record<Language, string>> = {
     fr: "Envoyer",
     en: "Send"
   },
+  "contact.success": {
+    fr: "Votre message a été envoyé avec succès !",
+    en: "Your message has been successfully sent!"
+  },
+  "contact.error": {
+    fr: "Impossible d'envoyer le message. Veuillez réessayer plus tard.",
+    en: "Unable to send message. Please try again later."
+  },
   "contact.info.title": {
     fr: "Informations de contact",
     en: "Contact Information"
@@ -495,10 +516,6 @@ const translations: Record<string, Record<Language, string>> = {
   "contact.email.label": {
     fr: "Email",
     en: "Email"
-  },
-  "contact.address.label": {
-    fr: "Adresse",
-    en: "Address"
   },
   "contact.faq.title": {
     fr: "Foire Aux Questions",

@@ -38,7 +38,7 @@ const ContactSection = () => {
     try {
       // In a real app, this would be an actual API call
       setTimeout(() => {
-        toast.success("Your message has been sent successfully!");
+        toast.success(t("contact.success"));
         setFormData({
           name: "",
           email: "",
@@ -50,7 +50,7 @@ const ContactSection = () => {
       }, 1000);
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      toast.error("Unable to send message. Please try again later.");
+      toast.error(t("contact.error"));
       setIsSubmitting(false);
     }
   };
@@ -175,7 +175,7 @@ const ContactSection = () => {
                     </div>
                     <div>
                       <h4 className="font-medium text-sm">{t("contact.phone.label")}</h4>
-                      <p className="text-muted-foreground">+33 (0)1 23 45 67 89</p>
+                      <p className="text-muted-foreground">+1 (208) 948-5437</p>
                     </div>
                   </div>
                   
@@ -188,23 +188,7 @@ const ContactSection = () => {
                     </div>
                     <div>
                       <h4 className="font-medium text-sm">{t("contact.email.label")}</h4>
-                      <p className="text-muted-foreground">contact@mathssummercamp.fr</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-3">
-                    <div className="rounded-full bg-primary/10 p-2 h-min">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-sm">{t("contact.address.label")}</h4>
-                      <p className="text-muted-foreground">
-                        123 Avenue des Sciences<br />
-                        75000 Paris, France
-                      </p>
+                      <p className="text-muted-foreground">b.gadjagboui@gmail.com</p>
                     </div>
                   </div>
                 </div>

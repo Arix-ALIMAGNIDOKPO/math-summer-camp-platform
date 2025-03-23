@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 
 const BudgetSection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [donationAmount, setDonationAmount] = useState<string>("25");
   
   const handleQuickAmount = (amount: number) => {
@@ -19,27 +19,61 @@ const BudgetSection = () => {
 
   const openKkiapayWidget = () => {
     if (!donationAmount || isNaN(parseInt(donationAmount))) {
-      toast.error("Veuillez entrer un montant valide");
+      toast.error(language === 'fr' ? "Veuillez entrer un montant valide" : "Please enter a valid amount");
       return;
     }
     
-    toast.success("Donation processing would happen here in a production environment");
+    toast.success(language === 'fr' ? 
+      "Le traitement des dons se ferait ici dans un environnement de production" : 
+      "Donation processing would happen here in a production environment");
   };
 
+  // Updated budget data based on the provided information
   const budgetData = [
-    { name: t("budget.teaching.materials"), value: 15000, color: "#3b82f6" },
-    { name: t("budget.honorariums"), value: 25000, color: "#10b981" },
-    { name: t("budget.transport"), value: 30000, color: "#6366f1" },
-    { name: t("budget.administration"), value: 10000, color: "#ec4899" },
+    { 
+      name: t("budget.accommodation"), 
+      value: 1750000, 
+      color: "#3b82f6" 
+    },
+    { 
+      name: t("budget.food"), 
+      value: 7875000, 
+      color: "#10b981" 
+    },
+    { 
+      name: t("budget.transport"), 
+      value: 3350000, 
+      color: "#6366f1" 
+    },
+    { 
+      name: t("budget.materials"), 
+      value: 200000, 
+      color: "#ec4899" 
+    },
+    { 
+      name: t("budget.media"), 
+      value: 500000, 
+      color: "#f59e0b" 
+    },
+    { 
+      name: t("budget.healthcare"), 
+      value: 125000, 
+      color: "#14b8a6" 
+    },
+    { 
+      name: t("budget.wifi"), 
+      value: 250000, 
+      color: "#8b5cf6" 
+    },
   ];
 
-  const totalBudget = budgetData.reduce((acc, item) => acc + item.value, 0);
+  const totalBudget = 14102500; // Total budget in FCFA
 
   const impactData = [
     {
       title: t("budget.participants"),
       previous: 35,
-      target: 50,
+      target: 120,
       progress: 70,
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
@@ -51,42 +85,56 @@ const BudgetSection = () => {
       )
     },
     {
-      title: t("budget.speakers"),
-      previous: 6,
-      target: 10,
-      progress: 60,
+      title: t("budget.males"),
+      previous: 20,
+      target: 60,
+      progress: 65,
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          <circle cx="12" cy="5" r="3"></circle>
+          <line x1="12" y1="8" x2="12" y2="21"></line>
+          <line x1="8" y1="16" x2="16" y2="16"></line>
         </svg>
       )
     },
     {
-      title: t("budget.partners"),
-      previous: 4,
-      target: 8,
-      progress: 50,
+      title: t("budget.females"),
+      previous: 15,
+      target: 60,
+      progress: 55,
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          <circle cx="12" cy="5" r="3"></circle>
+          <line x1="12" y1="8" x2="12" y2="21"></line>
+          <circle cx="12" cy="16" r="4"></circle>
         </svg>
       )
     }
   ];
 
+  // Custom tooltip component for the pie chart
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="glass-effect p-3 rounded-lg">
           <p className="font-medium">{payload[0].name}</p>
-          <p className="text-sm">{Number(payload[0].value).toLocaleString()} €</p>
+          <p className="text-sm">{Number(payload[0].value).toLocaleString()} FCFA</p>
           <p className="text-xs text-muted-foreground">{`${(payload[0].value / totalBudget * 100).toFixed(1)}%`}</p>
         </div>
       );
     }
     return null;
+  };
+
+  // Format currency based on the current language
+  const formatCurrency = (amount: number): string => {
+    if (language === 'fr') {
+      return `${amount.toLocaleString()} FCFA`;
+    } else {
+      // Convert to USD for English display
+      const usdAmount = Math.round(amount / 630); // Approximate conversion
+      return `$${usdAmount.toLocaleString()}`;
+    }
   };
 
   return (
@@ -108,7 +156,14 @@ const BudgetSection = () => {
               <div className="mb-8">
                 <div className="flex justify-between items-baseline mb-2">
                   <h3 className="font-semibold text-xl">{t("budget.total")}</h3>
-                  <span className="text-2xl font-display font-bold">{totalBudget.toLocaleString()} €</span>
+                  <div className="text-right">
+                    <div className="text-2xl font-display font-bold">{formatCurrency(totalBudget)}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {language === 'fr' ? 
+                        "≈ 22 423 USD / 32 295 CAD" : 
+                        "≈ 14,102,500 FCFA / 32,295 CAD"}
+                    </div>
+                  </div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
                   {t("budget.distribution")}
@@ -139,11 +194,11 @@ const BudgetSection = () => {
                 </ResponsiveContainer>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                 {budgetData.map((item, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-sm">{item.name}</span>
+                    <span className="text-sm whitespace-nowrap overflow-hidden text-ellipsis">{item.name}</span>
                   </div>
                 ))}
               </div>
