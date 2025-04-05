@@ -32,85 +32,47 @@ const BudgetSection = () => {
   const budgetData = [
     { 
       name: t("budget.accommodation"), 
-      value: 1750000, 
+      value: 2160865, 
       color: "#3b82f6" 
     },
     { 
       name: t("budget.food"), 
-      value: 7875000, 
+      value: 9723692, 
       color: "#10b981" 
     },
     { 
       name: t("budget.transport"), 
-      value: 3350000, 
+      value: 4141154, 
       color: "#6366f1" 
     },
     { 
       name: t("budget.materials"), 
-      value: 200000, 
+      value: 370663, 
       color: "#ec4899" 
     },
     { 
-      name: t("budget.media"), 
-      value: 500000, 
+      name: t("budget.prints"), 
+      value: 247109, 
       color: "#f59e0b" 
     },
     { 
-      name: t("budget.healthcare"), 
-      value: 125000, 
+      name: t("budget.badges"), 
+      value: 61777, 
       color: "#14b8a6" 
     },
     { 
-      name: t("budget.wifi"), 
-      value: 250000, 
+      name: t("budget.media"), 
+      value: 617773, 
       color: "#8b5cf6" 
     },
+    { 
+      name: t("budget.healthcare"), 
+      value: 1896707, 
+      color: "#06b6d4" 
+    },
   ];
 
-  const totalBudget = 14102500; // Total budget in FCFA
-
-  const impactData = [
-    {
-      title: t("budget.participants"),
-      previous: 35,
-      target: 120,
-      progress: 70,
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-          <circle cx="9" cy="7" r="4"></circle>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-        </svg>
-      )
-    },
-    {
-      title: t("budget.males"),
-      previous: 20,
-      target: 60,
-      progress: 65,
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-          <circle cx="12" cy="5" r="3"></circle>
-          <line x1="12" y1="8" x2="12" y2="21"></line>
-          <line x1="8" y1="16" x2="16" y2="16"></line>
-        </svg>
-      )
-    },
-    {
-      title: t("budget.females"),
-      previous: 15,
-      target: 60,
-      progress: 55,
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-          <circle cx="12" cy="5" r="3"></circle>
-          <line x1="12" y1="8" x2="12" y2="21"></line>
-          <circle cx="12" cy="16" r="4"></circle>
-        </svg>
-      )
-    }
-  ];
+  const totalBudget = 15512750; // Total budget in FCFA
 
   // Custom tooltip component for the pie chart
   const CustomTooltip = ({ active, payload }: any) => {
@@ -154,14 +116,14 @@ const BudgetSection = () => {
           <AnimatedSection>
             <div className="glass-effect p-8 rounded-xl">
               <div className="mb-8">
-                <div className="flex justify-between items-baseline mb-2">
+                <div className="flex flex-col sm:flex-row justify-between items-baseline mb-2 gap-4">
                   <h3 className="font-semibold text-xl">{t("budget.total")}</h3>
                   <div className="text-right">
                     <div className="text-2xl font-display font-bold">{formatCurrency(totalBudget)}</div>
                     <div className="text-sm text-muted-foreground">
                       {language === 'fr' ? 
-                        "≈ 22 423 USD / 32 295 CAD" : 
-                        "≈ 14,102,500 FCFA / 32,295 CAD"}
+                        "≈ 24 665 USD / 35 524 CAD" : 
+                        "≈ 15,512,750 FCFA / 35,524 CAD"}
                     </div>
                   </div>
                 </div>
@@ -207,36 +169,96 @@ const BudgetSection = () => {
           
           <AnimatedSection animation="slide-in-right">
             <div>
-              <h3 className="heading-sm mb-6">{t("budget.impact.title")}</h3>
+              <h3 className="heading-sm mb-6">{t("budget.breakdown.title")}</h3>
               <p className="text-muted-foreground mb-8">
-                {t("budget.impact.description")}
+                {t("budget.breakdown.description")}
               </p>
               
-              <div className="space-y-8">
-                {impactData.map((item, index) => (
-                  <AnimatedSection key={index} delay={index * 100} animation="fade-in">
-                    <Card className="p-6 border-0 shadow-md">
-                      <div className="flex justify-between items-center mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="rounded-full bg-primary/10 p-2 flex items-center justify-center">
-                            {item.icon}
-                          </div>
-                          <h4 className="font-medium">{item.title}</h4>
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {item.previous} → <span className="font-medium text-primary">{item.target}</span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Progress value={item.progress} className="h-2" />
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>{t("budget.edition1")}</span>
-                          <span>{item.progress}% {t("budget.objective")}</span>
-                        </div>
-                      </div>
-                    </Card>
-                  </AnimatedSection>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("budget.category")}</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">FCFA</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">USD</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">CAD</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                        <span className="text-primary">🏨</span> {t("budget.accommodation")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">2,160,865</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">3,433</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">4,945</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                        <span className="text-primary">🍽️</span> {t("budget.food")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">9,723,692</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">15,463</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">22,272</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                        <span className="text-primary">🚐</span> {t("budget.transport")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">4,141,154</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">6,586</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">9,523</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                        <span className="text-primary">🛠️</span> {t("budget.materials")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">370,663</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">589</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">850</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                        <span className="text-primary">🖨️</span> {t("budget.prints")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">247,109</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">394</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">569</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                        <span className="text-primary">🪪</span> {t("budget.badges")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">61,777</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">98</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">142</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                        <span className="text-primary">📺</span> {t("budget.media")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">617,773</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">982</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">1,420</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                        <span className="text-primary">🏥</span> {t("budget.healthcare")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">1,896,707</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">3,014</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">4,343</td>
+                    </tr>
+                    <tr className="bg-primary/5 font-semibold">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        ✅ {t("budget.total.row")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">15,512,750</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">24,665</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">35,524</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </AnimatedSection>

@@ -58,23 +58,26 @@ const ProgramSection = () => {
     }
   ];
 
-  const weeks = [
+  const sessions = [
     {
-      name: t("program.week1"),
+      name: t("program.session.math"),
+      description: t("program.session.math.description"),
       themes: [
-        t("program.week1.theme1"),
-        t("program.week1.theme2"),
-        t("program.week1.theme3"),
-        t("program.week1.theme4")
+        t("program.session.math.theme1"),
+        t("program.session.math.theme2"),
+        t("program.session.math.theme3"),
+        t("program.session.math.theme4")
       ]
     },
     {
-      name: t("program.week2"),
+      name: t("program.session.programming"),
+      description: t("program.session.programming.description"),
       themes: [
-        t("program.week2.theme1"),
-        t("program.week2.theme2"),
-        t("program.week2.theme3"),
-        t("program.week2.theme4")
+        t("program.session.programming.theme1"),
+        t("program.session.programming.theme2"),
+        t("program.session.programming.theme3"),
+        t("program.session.programming.theme4"),
+        t("program.session.programming.theme5")
       ]
     }
   ];
@@ -93,27 +96,27 @@ const ProgramSection = () => {
         </AnimatedSection>
         
         <AnimatedSection>
-          <Tabs defaultValue="week1" className="w-full">
+          <Tabs defaultValue="session1" className="w-full">
             <div className="flex justify-center mb-8">
               <TabsList className="grid grid-cols-2 w-full max-w-md">
-                <TabsTrigger value="week1" className="text-sm rounded-full data-[state=active]:bg-primary">{t("program.week1")}</TabsTrigger>
-                <TabsTrigger value="week2" className="text-sm rounded-full data-[state=active]:bg-primary">{t("program.week2")}</TabsTrigger>
+                <TabsTrigger value="session1" className="text-sm rounded-full data-[state=active]:bg-primary">{t("program.session.math")}</TabsTrigger>
+                <TabsTrigger value="session2" className="text-sm rounded-full data-[state=active]:bg-primary">{t("program.session.programming")}</TabsTrigger>
               </TabsList>
             </div>
             
-            {weeks.map((week, weekIndex) => (
-              <TabsContent key={weekIndex} value={`week${weekIndex + 1}`} className="mt-0">
+            {sessions.map((session, sessionIndex) => (
+              <TabsContent key={sessionIndex} value={`session${sessionIndex + 1}`} className="mt-0">
                 <div className="grid md:grid-cols-2 gap-16 items-center">
                   <div className="space-y-6">
-                    <h3 className="heading-md mb-4">{week.name}</h3>
+                    <h3 className="heading-md mb-4">{session.name}</h3>
                     <p className="text-muted-foreground mb-8">
-                      {t(`program.week${weekIndex + 1}.description`)}
+                      {session.description}
                     </p>
                     
                     <div className="space-y-3">
                       <h4 className="font-medium text-lg">{t("program.themes")}</h4>
                       <ul className="space-y-2">
-                        {week.themes.map((theme, index) => (
+                        {session.themes.map((theme, index) => (
                           <li key={index} className="flex items-start gap-2">
                             <div className="mt-1 rounded-full bg-primary/10 p-1 flex-shrink-0">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
@@ -158,8 +161,8 @@ const ProgramSection = () => {
             <h3 className="heading-sm mb-6">{t("program.specially.designed")}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
               <div className="flex flex-col items-center">
-                <div className="font-display text-4xl font-bold text-primary mb-2">2</div>
-                <div className="text-sm text-center">{t("program.stats.weeks")}</div>
+                <div className="font-display text-4xl font-bold text-primary mb-2">10</div>
+                <div className="text-sm text-center">{t("program.stats.days")}</div>
               </div>
               <div className="flex flex-col items-center">
                 <div className="font-display text-4xl font-bold text-primary mb-2">30+</div>
@@ -170,7 +173,7 @@ const ProgramSection = () => {
                 <div className="text-sm text-center">{t("program.stats.experts")}</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="font-display text-4xl font-bold text-primary mb-2">50+</div>
+                <div className="font-display text-4xl font-bold text-primary mb-2">120</div>
                 <div className="text-sm text-center">{t("program.stats.participants")}</div>
               </div>
             </div>

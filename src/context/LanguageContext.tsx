@@ -6,26 +6,26 @@ type Language = 'fr' | 'en';
 interface LanguageContextType {
   language: Language;
   toggleLanguage: () => void;
-  t: (key: string) => string;
+  t: (key: string, data?: Record<string, any>) => string;
 }
 
 const translations: Record<string, Record<Language, string>> = {
   // Hero section
   "dates": {
-    fr: "15 - 27 Juillet 2025",
-    en: "July 15 - 27, 2025"
+    fr: "17 - 26 Juillet 2025",
+    en: "July 17 - 26, 2025"
   },
   "hero.title": {
-    fr: "Maths Summer Camp",
-    en: "Maths Summer Camp"
+    fr: "Summer Maths Camp",
+    en: "Summer Maths Camp"
   },
   "hero.subtitle": {
     fr: "Édition II",
     en: "Edition II"
   },
   "hero.description": {
-    fr: "Un camp d'été intensif en mathématiques pour les élèves du secondaire qui combine ateliers, compétitions et sessions de mentorat avec des experts reconnus.",
-    en: "An intensive mathematics summer camp for high school students combining workshops, competitions, and mentoring sessions with recognized experts."
+    fr: "Le Benin Maths Camp 2025, d'une durée de dix jours, propose des activités réparties en deux ateliers distincts : un atelier consacré au camp traditionnel, et un second axé sur la programmation et la robotique.",
+    en: "The Benin Maths Camp 2025, lasting ten days, offers activities divided into two distinct workshops: one dedicated to the traditional camp, and a second focused on programming and robotics."
   },
   "register.now": {
     fr: "S'inscrire maintenant",
@@ -54,8 +54,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "A Program of Excellence"
   },
   "about.excellence.description": {
-    fr: "Le Maths Summer Camp offre un environnement d'apprentissage exceptionnel où les élèves peuvent explorer des concepts mathématiques avancés sous la direction de professionnels et d'experts reconnus dans le domaine.",
-    en: "The Maths Summer Camp offers an exceptional learning environment where students can explore advanced mathematical concepts under the guidance of professionals and recognized experts in the field."
+    fr: "Le Summer Maths Camp offre un environnement d'apprentissage exceptionnel où les élèves peuvent explorer des concepts mathématiques avancés sous la direction de professionnels et d'experts reconnus dans le domaine.",
+    en: "The Summer Maths Camp offers an exceptional learning environment where students can explore advanced mathematical concepts under the guidance of professionals and recognized experts in the field."
   },
   "about.who.title": {
     fr: "Pour qui ?",
@@ -127,57 +127,61 @@ const translations: Record<string, Record<Language, string>> = {
     fr: "Un programme soigneusement conçu pour offrir un équilibre parfait entre théorie, pratique et interaction sociale, dans un environnement favorisant l'apprentissage.",
     en: "A carefully designed program offering a perfect balance between theory, practice, and social interaction in an environment conducive to learning."
   },
-  "program.week1": {
-    fr: "Semaine 1",
-    en: "Week 1"
+  "program.session.math": {
+    fr: "Session Mathématiques",
+    en: "Mathematics Session"
   },
-  "program.week2": {
-    fr: "Semaine 2",
-    en: "Week 2"
+  "program.session.programming": {
+    fr: "Session Programmation",
+    en: "Programming Session"
   },
-  "program.week1.description": {
-    fr: "Pendant cette semaine, les participants exploreront une variété de thèmes mathématiques à travers des activités engageantes et stimulantes.",
-    en: "During this week, participants will explore a variety of mathematical topics through engaging and stimulating activities."
+  "program.session.math.description": {
+    fr: "Pendant cette session, les participants exploreront une variété de thèmes mathématiques à travers des activités engageantes et stimulantes.",
+    en: "During this session, participants will explore a variety of mathematical topics through engaging and stimulating activities."
   },
-  "program.week2.description": {
-    fr: "Pendant cette semaine, les participants exploreront une variété de thèmes mathématiques à travers des activités engageantes et stimulantes.",
-    en: "During this week, participants will explore a variety of mathematical topics through engaging and stimulating activities."
+  "program.session.programming.description": {
+    fr: "Pendant cette session, les participants découvriront les bases de l'algorithmique et de la programmation à travers des activités ludiques, des jeux, des ateliers de codage et des projets concrets. L'approche pédagogique est progressive, favorisant l'apprentissage actif et la créativité.",
+    en: "During this session, participants will discover the basics of algorithms and programming through fun activities, games, coding workshops, and concrete projects. The pedagogical approach is progressive, promoting active learning and creativity."
   },
   "program.themes": {
     fr: "Thèmes abordés :",
     en: "Topics covered:"
   },
-  "program.week1.theme1": {
+  "program.session.math.theme1": {
     fr: "Algèbre et structures algébriques",
     en: "Algebra and algebraic structures"
   },
-  "program.week1.theme2": {
+  "program.session.math.theme2": {
     fr: "Analyse mathématique",
     en: "Mathematical analysis"
   },
-  "program.week1.theme3": {
+  "program.session.math.theme3": {
     fr: "Géométrie avancée",
     en: "Advanced geometry"
   },
-  "program.week1.theme4": {
+  "program.session.math.theme4": {
     fr: "Théorie des nombres",
     en: "Number theory"
   },
-  "program.week2.theme1": {
-    fr: "Statistiques et probabilités",
-    en: "Statistics and probability"
+  "program.session.programming.theme1": {
+    fr: "Algorithmique de base : raisonnement logique, étapes de résolution, pseudocode",
+    en: "Basic algorithms: logical reasoning, resolution steps, pseudocode"
   },
-  "program.week2.theme2": {
-    fr: "Mathématiques discrètes",
-    en: "Discrete mathematics"
+  "program.session.programming.theme2": {
+    fr: "Initiation à Python : premières instructions, variables, types, opérateurs",
+    en: "Introduction to Python: first instructions, variables, types, operators"
   },
-  "program.week2.theme3": {
-    fr: "Applications pratiques",
-    en: "Practical applications"
+  "program.session.programming.theme3": {
+    fr: "Structures de contrôle : conditions, boucles, logique de décision",
+    en: "Control structures: conditions, loops, decision logic"
   },
-  "program.week2.theme4": {
-    fr: "Préparation aux olympiades",
-    en: "Olympiad preparation"
+  "program.session.programming.theme4": {
+    fr: "Fonctions et données : définition de fonctions, listes, dictionnaires",
+    en: "Functions and data: function definition, lists, dictionaries"
+  },
+  "program.session.programming.theme5": {
+    fr: "Création de projets : réalisation en équipe d'un projet simple, présentation orale",
+    en: "Project creation: team implementation of a simple project, oral presentation"
   },
   "program.activities.workshops": {
     fr: "Ateliers pratiques",
@@ -231,9 +235,9 @@ const translations: Record<string, Record<Language, string>> = {
     fr: "Un camp spécialement conçu pour les passionnés de mathématiques",
     en: "A camp specially designed for mathematics enthusiasts"
   },
-  "program.stats.weeks": {
-    fr: "Semaines d'immersion",
-    en: "Weeks of immersion"
+  "program.stats.days": {
+    fr: "Jours d'immersion",
+    en: "Days of immersion"
   },
   "program.stats.workshops": {
     fr: "Ateliers interactifs",
@@ -278,28 +282,28 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Gallery preview"
   },
   "gallery.testimonial1.quote": {
-    fr: "Ce camp a complètement transformé ma vision des mathématiques. J'ai découvert des concepts fascinants et fait des rencontres incroyables.",
-    en: "This camp completely transformed my view of mathematics. I discovered fascinating concepts and made incredible connections."
+    fr: "Le camp de mathématiques a été pour moi une expérience nouvelle et géniale. D'abord accueillis par nos facilitateurs dans une ambiance chaleureuse, nous avons été bien entretenus et bien nourris tout au long de notre séjour à comé à l'occasion du camp. Ce camp m'a personnellement fait gagner beaucoup en connaissances et m'a surtout fait aimer encore plus cette matière qui constitue la bête noire pour nous les apprenants : la mathématique.",
+    en: "The mathematics camp was a new and great experience for me. First welcomed by our facilitators in a warm atmosphere, we were well maintained and well fed throughout our stay in Comé for the camp. This camp personally helped me gain a lot of knowledge and made me love even more this subject which is the black beast for us learners: mathematics."
   },
   "gallery.testimonial1.author": {
-    fr: "Sophie M., 16 ans, participante 2024",
-    en: "Sophie M., 16 years old, 2024 participant"
+    fr: "Merveille ADEYANDJOU, Collines, CEG1 Savè",
+    en: "Merveille ADEYANDJOU, Collines, CEG1 Savè"
   },
   "gallery.testimonial2.quote": {
-    fr: "En tant qu'intervenant, j'ai été impressionné par la curiosité et le talent des jeunes participants. Une expérience enrichissante pour tous.",
-    en: "As a speaker, I was impressed by the curiosity and talent of the young participants. An enriching experience for everyone."
+    fr: "Je crois que l'objectif de susciter l'amour des Mathématiques chez les enfants à travers les jeux a été un franc succès et c'est vérifiable à travers l'enthousiasme et le degré de participation et les interventions des élèves. Personnellement, n'ayant pas l'habitude des camps, j'ai été agréablement surpris par les activités et la manière dont nous les avons déroulées.",
+    en: "I believe that the objective of arousing love for Mathematics in children through games has been a great success and it is verifiable through the enthusiasm and degree of participation and interventions of the students. Personally, not being used to camps, I was pleasantly surprised by the activities and the way we conducted them."
   },
   "gallery.testimonial2.author": {
-    fr: "Dr. Alexandre Laurent, Professeur de mathématiques",
-    en: "Dr. Alexandre Laurent, Mathematics Professor"
+    fr: "Koffi Benjamin AGBENAGLO, Togo",
+    en: "Koffi Benjamin AGBENAGLO, Togo"
   },
   "gallery.testimonial3.quote": {
-    fr: "Mon fils est revenu du camp avec une nouvelle passion pour les mathématiques. Les activités variées et l'encadrement de qualité ont fait toute la différence.",
-    en: "My son returned from the camp with a new passion for mathematics. The varied activities and quality supervision made all the difference."
+    fr: "Je voudrais une fois encore remercier tous les organisateurs et les facilitateurs du camp de maths Comé 2024. Que Dieu vous bénisse et vous aide à rendre l'initiative durable.",
+    en: "I would like to once again thank all the organizers and facilitators of the Comé 2024 math camp. May God bless you and help you make the initiative sustainable."
   },
   "gallery.testimonial3.author": {
-    fr: "Corinne D., parent d'un participant",
-    en: "Corinne D., parent of a participant"
+    fr: "Magloire EDEY, Parent",
+    en: "Magloire EDEY, Parent"
   },
 
   // Budget section
@@ -320,8 +324,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Total Budget"
   },
   "budget.distribution": {
-    fr: "Répartition des fonds nécessaires pour l'organisation du Maths Summer Camp - Édition II.",
-    en: "Distribution of funds needed for organizing the Maths Summer Camp - Edition II."
+    fr: "Répartition des fonds nécessaires pour l'organisation du Summer Maths Camp - Édition II.",
+    en: "Distribution of funds needed for organizing the Summer Maths Camp - Edition II."
   },
   "budget.free": {
     fr: "100% des élèves participants sont boursiers et n'ont aucun frais d'inscription à payer.",
@@ -340,48 +344,40 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Transportation"
   },
   "budget.materials": {
-    fr: "Outils et supports",
-    en: "Materials & Supplies"
+    fr: "Outils & Matériel",
+    en: "Tools & Materials"
+  },
+  "budget.prints": {
+    fr: "Supports & Attestations",
+    en: "Supplies & Certificates"
+  },
+  "budget.badges": {
+    fr: "Badges",
+    en: "Badges"
   },
   "budget.media": {
-    fr: "Couverture médiatique",
+    fr: "Médiatisation",
     en: "Media Coverage"
   },
   "budget.healthcare": {
-    fr: "Soins sanitaires",
-    en: "Healthcare"
+    fr: "Soins & Internet",
+    en: "Healthcare & Internet"
   },
-  "budget.wifi": {
-    fr: "Kit Wi-Fi",
-    en: "Wi-Fi Kit"
+  "budget.breakdown.title": {
+    fr: "Détail du Budget",
+    en: "Budget Breakdown"
   },
-  "budget.impact.title": {
-    fr: "Impact Sur l'Éducation",
-    en: "Impact On Education"
+  "budget.breakdown.description": {
+    fr: "Découvrez la répartition complète du budget pour le Summer Maths Camp 2025, destiné à offrir une expérience éducative de qualité à 120 participants.",
+    en: "Discover the complete budget breakdown for the 2025 Summer Maths Camp, designed to provide a quality educational experience to 120 participants."
   },
-  "budget.impact.description": {
-    fr: "Notre camp d'été offre un accès entièrement gratuit à une éducation mathématique avancée pour les jeunes talents. Les élèves sélectionnés n'ont à couvrir que leurs frais de transport. Ce programme non lucratif vise à permettre aux étudiants des milieux défavorisés d'accéder à des concepts mathématiques qu'ils n'auraient pas l'opportunité d'explorer dans leur cursus habituel.",
-    en: "Our summer camp offers completely free access to advanced mathematical education for young talents. Selected students only need to cover their transportation costs. This non-profit program aims to allow students from disadvantaged backgrounds to access mathematical concepts they would not have the opportunity to explore in their regular curriculum."
+  "budget.category": {
+    fr: "Catégorie",
+    en: "Category"
   },
-  "budget.participants": {
-    fr: "Participants",
-    en: "Participants"
-  },
-  "budget.males": {
-    fr: "Garçons",
-    en: "Boys"
-  },
-  "budget.females": {
-    fr: "Filles",
-    en: "Girls"
-  },
-  "budget.edition1": {
-    fr: "Édition I",
-    en: "Edition I"
-  },
-  "budget.objective": {
-    fr: "de l'objectif",
-    en: "of target"
+  "budget.total.row": {
+    fr: "Total général",
+    en: "Grand Total"
   },
   "budget.support.title": {
     fr: "Soutenez les Talents Mathématiques",
@@ -430,8 +426,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Interested?"
   },
   "contact.subtitle": {
-    fr: "Que vous soyez un futur participant, un parent, un intervenant potentiel ou un partenaire, nous serons ravis d'échanger avec vous sur le Maths Summer Camp.",
-    en: "Whether you are a future participant, a parent, a potential speaker, or a partner, we would be delighted to discuss the Maths Summer Camp with you."
+    fr: "Que vous soyez un futur participant, un parent, un intervenant potentiel ou un partenaire, nous serons ravis d'échanger avec vous sur le Summer Maths Camp.",
+    en: "Whether you are a future participant, a parent, a potential speaker, or a partner, we would be delighted to discuss the Summer Maths Camp with you."
   },
   "contact.fullname": {
     fr: "Nom complet",
@@ -454,8 +450,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Phone"
   },
   "contact.phone.placeholder": {
-    fr: "+1 (123) 456-7890",
-    en: "+1 (123) 456-7890"
+    fr: "0140642494",
+    en: "0140642494"
   },
   "contact.interested.as": {
     fr: "Je suis intéressé(e) en tant que :",
@@ -506,8 +502,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Contact Information"
   },
   "contact.info.description": {
-    fr: "N'hésitez pas à nous contacter directement pour toute question concernant le Maths Summer Camp - Édition II.",
-    en: "Feel free to contact us directly with any questions about the Maths Summer Camp - Edition II."
+    fr: "N'hésitez pas à nous contacter directement pour toute question concernant le Summer Maths Camp - Édition II.",
+    en: "Feel free to contact us directly with any questions about the Summer Maths Camp - Edition II."
   },
   "contact.phone.label": {
     fr: "Téléphone",
@@ -522,8 +518,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Frequently Asked Questions"
   },
   "contact.faq1.question": {
-    fr: "Comment s'inscrire au Maths Summer Camp ?",
-    en: "How to register for the Maths Summer Camp?"
+    fr: "Comment s'inscrire au Summer Maths Camp ?",
+    en: "How to register for the Summer Maths Camp?"
   },
   "contact.faq1.answer": {
     fr: "Les inscriptions se font via le formulaire en ligne. Une fois votre candidature soumise, notre équipe l'examinera et vous contactera pour la suite du processus.",
@@ -608,12 +604,22 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     setLanguage((prev) => (prev === 'fr' ? 'en' : 'fr'));
   };
 
-  const t = (key: string): string => {
+  const t = (key: string, data?: Record<string, any>): string => {
     if (!translations[key]) {
       console.warn(`Translation missing for key: ${key}`);
       return key;
     }
-    return translations[key][language];
+    
+    let text = translations[key][language];
+    
+    // Replace placeholders with actual data if provided
+    if (data) {
+      Object.entries(data).forEach(([placeholder, value]) => {
+        text = text.replace(`{${placeholder}}`, String(value));
+      });
+    }
+    
+    return text;
   };
 
   return (

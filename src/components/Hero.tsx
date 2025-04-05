@@ -40,11 +40,25 @@ const Hero = () => {
             <div className="relative">
               <div className="aspect-video w-full max-w-5xl mx-auto overflow-hidden rounded-2xl shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
-                <img 
-                  src="/lovable-uploads/86a866cd-2f9b-4f2b-8673-02416547a832.png" 
-                  alt="Maths Summer Camp" 
-                  className="w-full h-full object-cover"
-                />
+                <a 
+                  href="https://youtu.be/1-IJrwTKVzE?si=SoLg5U558vH3Fh-7" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block relative w-full h-full group"
+                >
+                  <img 
+                    src="https://img.youtube.com/vi/1-IJrwTKVzE/maxresdefault.jpg" 
+                    alt="Summer Maths Camp Video" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-white/90 rounded-full p-5 shadow-lg transform transition-transform group-hover:scale-110">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" className="text-primary">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                    </div>
+                  </div>
+                </a>
               </div>
             </div>
           </AnimatedSection>

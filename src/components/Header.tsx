@@ -56,9 +56,9 @@ const Header = () => {
           ))}
           
           <Button 
-            variant="outline" 
+            variant="secondary" 
             size="sm"
-            className="rounded-full flex items-center gap-1.5 px-4 border border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 group"
+            className="rounded-full flex items-center gap-1.5 px-4 bg-primary/10 backdrop-blur-sm hover:bg-primary/20 transition-all duration-300 group shadow-md"
             onClick={toggleLanguage}
             title={language === 'fr' ? 'Switch to English' : 'Passer en français'}
           >
@@ -74,9 +74,9 @@ const Header = () => {
         {/* Mobile Menu Toggle */}
         <div className="flex items-center gap-2 md:hidden">
           <Button 
-            variant="outline" 
+            variant="secondary" 
             size="sm"
-            className="rounded-full flex items-center gap-1.5 px-3 border border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 group"
+            className="rounded-full flex items-center gap-1.5 px-3 bg-primary/10 hover:bg-primary/20 transition-all duration-300 group shadow-md"
             onClick={toggleLanguage}
             title={language === 'fr' ? 'Switch to English' : 'Passer en français'}
           >

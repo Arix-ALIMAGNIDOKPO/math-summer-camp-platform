@@ -13,29 +13,30 @@ const GallerySection = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const galleryImages = [
-    "/lovable-uploads/56d44f87-ea9a-4216-843a-ce33f1a71d56.png",
-    "/lovable-uploads/5f042cb2-0d95-4f15-9668-a724a29e8982.png",
-    "/lovable-uploads/7522ded7-e67e-492a-849f-061bd5289354.png",
-    "/lovable-uploads/86a866cd-2f9b-4f2b-8673-02416547a832.png",
-    "/lovable-uploads/96f366bf-9171-465d-b3ac-c4ecafee7c2c.png",
-    "/lovable-uploads/f77bd2f7-64b2-432b-a419-9e108afe5cb0.png",
+    "/lovable-uploads/10ab2c29-0f72-48ed-871e-70a11a3be8eb.png",
+    "/lovable-uploads/13bde48a-7d5b-42ef-91b9-6637a3f1c3d0.png",
+    "/lovable-uploads/c018bef3-11b7-4093-8655-bd69a0c42e7a.png",
+    "/lovable-uploads/cff6e0db-4df1-4dd2-a8b0-7760fdf64453.png",
+    "/lovable-uploads/3fda7fed-05f4-4b51-970c-efa21b12bad5.png",
+    "/lovable-uploads/576b90e4-cbe6-42b5-8580-8f5101bad43d.png",
+    "/lovable-uploads/abeeae78-d165-44ce-8b1f-81e305d6dbcb.png",
   ];
 
   const testimonials = [
     {
       quote: t("gallery.testimonial1.quote"),
       author: t("gallery.testimonial1.author"),
-      image: "/lovable-uploads/56d44f87-ea9a-4216-843a-ce33f1a71d56.png",
+      image: "/lovable-uploads/10ab2c29-0f72-48ed-871e-70a11a3be8eb.png",
     },
     {
       quote: t("gallery.testimonial2.quote"),
       author: t("gallery.testimonial2.author"),
-      image: "/lovable-uploads/7522ded7-e67e-492a-849f-061bd5289354.png",
+      image: "/lovable-uploads/c018bef3-11b7-4093-8655-bd69a0c42e7a.png",
     },
     {
       quote: t("gallery.testimonial3.quote"),
       author: t("gallery.testimonial3.author"),
-      image: "/lovable-uploads/5f042cb2-0d95-4f15-9668-a724a29e8982.png",
+      image: "/lovable-uploads/3fda7fed-05f4-4b51-970c-efa21b12bad5.png",
     },
   ];
 
@@ -100,7 +101,7 @@ const GallerySection = () => {
                 >
                   <img 
                     src={src} 
-                    alt={t("gallery.image.alt", { index: index + 1 })}
+                    alt={t("gallery.image.alt", { index: index + 1 })} 
                     className="w-full h-full object-cover"
                   />
                 </div>
