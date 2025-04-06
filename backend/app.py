@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 from flask_cors import CORS
 from functools import wraps
@@ -14,8 +13,8 @@ CORS(app)  # Enable CORS for all routes
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 STUDENTS_FILE = os.path.join(DATA_DIR, 'students.json')
 ADMIN_CREDENTIALS = {
-    'username': os.environ.get('ADMIN_USERNAME', 'admin'),
-    'password': os.environ.get('ADMIN_PASSWORD', 'password')
+    'username': os.environ.get('ADMIN_USERNAME', 'Admin25'),
+    'password': os.environ.get('ADMIN_PASSWORD', 'SMCII')
 }
 
 # Create data directory if it doesn't exist

@@ -95,14 +95,14 @@ const AboutSection = () => {
             <div className="relative">
               <div className="aspect-square rounded-2xl overflow-hidden shadow-xl">
                 <img 
-                  src="/lovable-uploads/7522ded7-e67e-492a-849f-061bd5289354.png" 
+                  src="/lovable-uploads/2d79b957-cbf5-4cb7-85d6-23daea9e1950.png" 
                   alt="Students collaborating" 
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="absolute -bottom-8 -left-8 w-2/3 aspect-square rounded-2xl overflow-hidden shadow-xl">
                 <img 
-                  src="/lovable-uploads/56d44f87-ea9a-4216-843a-ce33f1a71d56.png" 
+                  src="/lovable-uploads/e415b9ca-7127-4c2d-8b77-ee94195c17f0.png" 
                   alt="Mathematics equations" 
                   className="w-full h-full object-cover"
                 />

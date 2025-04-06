@@ -7,8 +7,8 @@ This document describes how to use the administration interface for the Summer M
 
 1. Navigate to `/admin/login` on your server (e.g., `http://localhost:5000/admin/login` in development)
 2. Enter the admin credentials:
-   - Default username: `admin` 
-   - Default password: `password`
+   - Username: `Admin25` 
+   - Password: `SMCII`
 
 For production deployment, modify these credentials by setting environment variables:
 - `ADMIN_USERNAME`
