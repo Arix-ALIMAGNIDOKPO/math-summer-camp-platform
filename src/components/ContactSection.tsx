@@ -10,9 +10,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ContactSection = () => {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -36,7 +39,17 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
-      // In a real app, this would be an actual API call
+      // For partnership inquiries, send directly to email
+      if (formData.interest === "partenaire") {
+        window.location.href = `mailto:info.imacbenin@gmail.com?subject=Partnership%20Inquiry%20for%20Summer%20Maths%20Camp&body=Name:%20${formData.name}%0APhone:%20${formData.phone}%0AEmail:%20${formData.email}%0A%0AMessage:%20${formData.message}`;
+        
+        setTimeout(() => {
+          setIsSubmitting(false);
+        }, 1000);
+        return;
+      }
+      
+      // For other inquiries
       setTimeout(() => {
         toast.success(t("contact.success"));
         setFormData({
@@ -56,9 +69,9 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="section-padding bg-white relative">
-      <div className="section-container">
-        <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
+    <section id="contact" className="section-padding bg-white relative overflow-x-hidden">
+      <div className="section-container px-4">
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-8 md:mb-16">
           <Chip className="mb-4">{t("contact")}</Chip>
           <h2 className="heading-lg mb-6">{t("contact.title")}</h2>
           <p className="subheading">
@@ -66,10 +79,10 @@ const ContactSection = () => {
           </p>
         </AnimatedSection>
         
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
           <AnimatedSection>
-            <Card className="p-8 shadow-xl border-0">
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <Card className="p-6 md:p-8 shadow-xl border-0">
+              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="name">{t("contact.fullname")}</Label>
@@ -121,19 +134,19 @@ const ContactSection = () => {
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="participant" id="participant" />
-                      <Label htmlFor="participant" className="font-normal">{t("contact.participant")}</Label>
+                      <Label htmlFor="participant" className="font-normal text-sm">{t("contact.participant")}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="parent" id="parent" />
-                      <Label htmlFor="parent" className="font-normal">{t("contact.parent")}</Label>
+                      <Label htmlFor="parent" className="font-normal text-sm">{t("contact.parent")}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="intervenant" id="intervenant" />
-                      <Label htmlFor="intervenant" className="font-normal">{t("contact.speaker")}</Label>
+                      <Label htmlFor="intervenant" className="font-normal text-sm">{t("contact.speaker")}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="partenaire" id="partenaire" />
-                      <Label htmlFor="partenaire" className="font-normal">{t("contact.partner")}</Label>
+                      <Label htmlFor="partenaire" className="font-normal text-sm">{t("contact.partner")}</Label>
                     </div>
                   </RadioGroup>
                 </div>
@@ -159,7 +172,7 @@ const ContactSection = () => {
           </AnimatedSection>
           
           <AnimatedSection animation="slide-in-right">
-            <div className="space-y-8">
+            <div className="space-y-6 md:space-y-8">
               <div>
                 <h3 className="heading-sm mb-4">{t("contact.info.title")}</h3>
                 <p className="text-muted-foreground mb-6">

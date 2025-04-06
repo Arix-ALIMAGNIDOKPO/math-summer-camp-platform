@@ -1,4 +1,3 @@
-
 import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Chip } from "@/components/ui-custom/Chip";
 import { Card } from "@/components/ui/card";
@@ -100,7 +99,7 @@ const BudgetSection = () => {
   };
 
   return (
-    <section id="budget" className="section-padding bg-gray-50 relative">
+    <section id="budget" className="section-padding bg-gray-50 relative overflow-x-hidden">
       <div className="gradient-blur right-1/4 bottom-1/4" />
       
       <div className="section-container">
@@ -112,10 +111,10 @@ const BudgetSection = () => {
           </p>
         </AnimatedSection>
         
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <AnimatedSection>
-            <div className="glass-effect p-8 rounded-xl">
-              <div className="mb-8">
+            <div className="glass-effect p-6 md:p-8 rounded-xl">
+              <div className="mb-6 md:mb-8">
                 <div className="flex flex-col sm:flex-row justify-between items-baseline mb-2 gap-4">
                   <h3 className="font-semibold text-xl">{t("budget.total")}</h3>
                   <div className="text-right">
@@ -133,7 +132,7 @@ const BudgetSection = () => {
                 </p>
               </div>
               
-              <div className="h-80">
+              <div className="h-64 md:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -141,8 +140,8 @@ const BudgetSection = () => {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      outerRadius={130}
-                      innerRadius={65}
+                      outerRadius={100}
+                      innerRadius={50}
                       fill="#8884d8"
                       dataKey="value"
                       paddingAngle={2}
@@ -156,11 +155,11 @@ const BudgetSection = () => {
                 </ResponsiveContainer>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mt-4 text-xs md:text-sm">
                 {budgetData.map((item, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-sm whitespace-nowrap overflow-hidden text-ellipsis">{item.name}</span>
+                  <div key={index} className="flex items-center gap-1 md:gap-2">
+                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="whitespace-nowrap overflow-hidden text-ellipsis">{item.name}</span>
                   </div>
                 ))}
               </div>
@@ -168,20 +167,20 @@ const BudgetSection = () => {
           </AnimatedSection>
           
           <AnimatedSection animation="slide-in-right">
-            <div>
+            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
               <h3 className="heading-sm mb-6">{t("budget.breakdown.title")}</h3>
-              <p className="text-muted-foreground mb-8">
+              <p className="text-muted-foreground mb-6">
                 {t("budget.breakdown.description")}
               </p>
               
-              <div className="overflow-x-auto">
+              <div className="min-w-full overflow-x-auto">
                 <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
                   <thead className="bg-gray-50 border-b">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("budget.category")}</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">FCFA</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">USD</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">CAD</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("budget.category")}</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">FCFA</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">USD</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">CAD</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -264,16 +263,16 @@ const BudgetSection = () => {
           </AnimatedSection>
         </div>
         
-        <AnimatedSection className="mt-20 max-w-3xl mx-auto">
-          <Card className="p-6 sm:p-10 border-0 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10">
-            <h3 className="heading-sm text-center mb-8">{t("budget.support.title")}</h3>
+        <AnimatedSection className="mt-12 md:mt-20 max-w-3xl mx-auto">
+          <Card className="p-6 sm:p-8 border-0 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10">
+            <h3 className="heading-sm text-center mb-6 md:mb-8">{t("budget.support.title")}</h3>
 
-            <div className="mb-10">
+            <div className="mb-8 md:mb-10">
               <p className="mb-6 text-center">
                 {t("budget.contribution")}
               </p>
               
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 md:mb-8">
                 <Button 
                   variant="outline" 
                   onClick={() => handleQuickAmount(10)}
@@ -304,7 +303,7 @@ const BudgetSection = () => {
                 </Button>
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 <div>
                   <label htmlFor="donation-amount" className="block text-sm font-medium mb-2">
                     {t("budget.custom.amount")}
@@ -327,7 +326,7 @@ const BudgetSection = () => {
                 
                 <Button 
                   onClick={openKkiapayWidget}
-                  className="w-full py-6 text-lg rounded-xl shadow-lg bg-[#00B2FF] hover:bg-[#00A0E0]" 
+                  className="w-full py-4 md:py-6 text-lg rounded-xl shadow-lg bg-[#00B2FF] hover:bg-[#00A0E0]" 
                   disabled={!donationAmount}
                 >
                   {t("budget.donate")}
@@ -345,7 +344,7 @@ const BudgetSection = () => {
                 {t("budget.business.description")}
               </p>
               <Button variant="outline" className="w-full border-primary/20" asChild>
-                <a href="#contact">{t("budget.contact.us")}</a>
+                <a href="mailto:info.imacbenin@gmail.com">{t("budget.contact.us")}</a>
               </Button>
             </div>
           </Card>

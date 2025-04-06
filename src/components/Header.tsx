@@ -1,134 +1,137 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
 import { MscLogo } from "./ui-custom/MscLogo";
-import { Globe } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+const navLinks = [
+  { href: "#about", label: "about", isHash: true },
+  { href: "#program", label: "program", isHash: true },
+  { href: "#gallery", label: "gallery", isHash: true },
+  { href: "#budget", label: "budget", isHash: true },
+  { href: "#contact", label: "contact", isHash: true },
+  { href: "/inscription", label: "register", isHash: false },
+];
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { language, toggleLanguage, t } = useLanguage();
+  const [scrolled, setScrolled] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
+  const location = useLocation();
+  const isMobile = useIsMobile();
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navigationItems = [
-    { label: t('nav.about'), href: '#about' },
-    { label: t('nav.program'), href: '#program' },
-    { label: t('nav.gallery'), href: '#gallery' },
-    { label: t('nav.budget'), href: '#budget' },
-    { label: t('nav.contact'), href: '#contact' },
-  ];
+  const handleLanguageChange = () => {
+    setLanguage(language === "en" ? "fr" : "en");
+  };
+
+  const isActive = (href: string, isHash: boolean) => {
+    if (isHash) {
+      return location.hash === href;
+    }
+    return location.pathname === href;
+  };
 
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out",
-        isScrolled 
-          ? "py-3 glass-effect shadow-sm" 
-          : "py-5 bg-transparent"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-3",
+        scrolled
+          ? "bg-white/90 backdrop-blur shadow-sm"
+          : "bg-transparent"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2">
-          <MscLogo variant={isScrolled ? "compact" : "full"} />
-        </a>
+      <div className="container mx-auto px-4 flex items-center justify-between">
+        <Link to="/" className="flex items-center">
+          <MscLogo variant={isMobile ? "compact" : "full"} />
+        </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-5 lg:gap-8">
-          {navigationItems.map((item) => (
+        <nav className="hidden md:flex items-center space-x-1">
+          {navLinks.map((link) => (
             <a
-              key={item.href}
-              href={item.href}
-              className="text-sm text-foreground/80 hover:text-primary transition-colors duration-200"
+              key={link.href}
+              href={link.isHash ? link.href : undefined}
+              className={cn(
+                "py-2 px-3 text-sm rounded-md transition-colors",
+                isActive(link.href, link.isHash)
+                  ? "bg-primary/10 text-primary font-medium"
+                  : "text-foreground hover:bg-secondary hover:text-foreground"
+              )}
+              {...(link.isHash
+                ? {}
+                : { to: link.href, as: Link })}
             >
-              {item.label}
+              {t(link.label)}
             </a>
           ))}
-          
-          <Button 
-            variant="secondary" 
-            size="sm"
-            className="rounded-full flex items-center gap-1.5 px-4 bg-primary/10 backdrop-blur-sm hover:bg-primary/20 transition-all duration-300 group shadow-md"
-            onClick={toggleLanguage}
-            title={language === 'fr' ? 'Switch to English' : 'Passer en français'}
-          >
-            <Globe className="h-4 w-4 text-primary group-hover:rotate-12 transition-transform duration-300" />
-            <span className="font-medium text-xs uppercase">{language === 'fr' ? 'FR' : 'EN'}</span>
-          </Button>
-          
-          <Button className="rounded-full" asChild>
-            <Link to="/inscription">{t('nav.register')}</Link>
-          </Button>
         </nav>
 
-        {/* Mobile Menu Toggle */}
-        <div className="flex items-center gap-2 md:hidden">
-          <Button 
-            variant="secondary" 
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
             size="sm"
-            className="rounded-full flex items-center gap-1.5 px-3 bg-primary/10 hover:bg-primary/20 transition-all duration-300 group shadow-md"
-            onClick={toggleLanguage}
-            title={language === 'fr' ? 'Switch to English' : 'Passer en français'}
+            onClick={handleLanguageChange}
+            className="rounded-full text-xs font-medium border-primary/20 hover:bg-primary/10 hover:text-primary min-w-[40px]"
           >
-            <Globe className="h-3.5 w-3.5 text-primary group-hover:rotate-12 transition-transform duration-300" />
-            <span className="font-medium text-xs uppercase">{language === 'fr' ? 'FR' : 'EN'}</span>
+            {language === "en" ? "FR" : "EN"}
           </Button>
-          
-          <button 
-            className="block"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
-          >
-            <div className={cn(
-              "w-6 h-0.5 bg-foreground transition-all",
-              mobileMenuOpen && "translate-y-1.5 rotate-45"
-            )} />
-            <div className={cn(
-              "w-6 h-0.5 bg-foreground mt-1.5 transition-all",
-              mobileMenuOpen && "opacity-0"
-            )} />
-            <div className={cn(
-              "w-6 h-0.5 bg-foreground mt-1.5 transition-all",
-              mobileMenuOpen && "-translate-y-1.5 -rotate-45"
-            )} />
-          </button>
-        </div>
-      </div>
 
-      {/* Mobile Navigation */}
-      <div 
-        className={cn(
-          "absolute top-full left-0 w-full bg-background/90 backdrop-blur border-b border-border shadow-md md:hidden transition-all duration-300 ease-in-out",
-          mobileMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 pointer-events-none"
-        )}
-      >
-        <div className="py-4 px-4 space-y-4">
-          {navigationItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="block py-2 text-foreground/80 hover:text-primary transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {item.label}
-            </a>
-          ))}
-          
-          <Button className="w-full rounded-full mt-4" asChild>
-            <Link to="/inscription" onClick={() => setMobileMenuOpen(false)}>
-              {t('nav.register')}
-            </Link>
-          </Button>
+          {/* Mobile Navigation */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="p-0 w-[300px] sm:w-[400px]">
+              <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <MscLogo />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <nav className="flex flex-col p-4 space-y-2">
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.isHash ? link.href : undefined}
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        "p-3 rounded-md transition-colors",
+                        isActive(link.href, link.isHash)
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "hover:bg-secondary"
+                      )}
+                      {...(link.isHash
+                        ? {}
+                        : { to: link.href, as: Link })}
+                    >
+                      {t(link.label)}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
