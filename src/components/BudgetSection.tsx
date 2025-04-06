@@ -195,7 +195,7 @@ const BudgetSection = () => {
                     </tr>
                     <tr>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                        <span className="text-primary">🍽️</span> {t("budget.food")}
+                        <span className="text-primary">🍽️</span> {t("budget.food")} (120 participants sur 10 jours)
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-right">9,723,692</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-right">15,463</td>

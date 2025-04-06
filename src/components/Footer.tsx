@@ -52,18 +52,11 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center text-muted-foreground gap-2">
                 <Phone size={18} />
-                <span>+33 (0)1 23 45 67 89</span>
+                <span>+2290140642494</span>
               </li>
               <li className="flex items-center text-muted-foreground gap-2">
                 <Mail size={18} />
-                <span>contact@mathssummercamp.fr</span>
-              </li>
-              <li className="flex items-start text-muted-foreground gap-2">
-                <MapPin size={18} className="mt-0.5 flex-shrink-0" />
-                <span>
-                  123 Avenue des Sciences<br />
-                  75000 Paris, France
-                </span>
+                <span>info.imacbenin@gmail.com</span>
               </li>
             </ul>
           </div>
@@ -71,7 +64,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-200 mt-12 pt-8 flex justify-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Maths Summer Camp. {t("footer.rights")}
+            © {currentYear} Summer Maths Camp. {t("footer.rights")}
           </p>
         </div>
       </div>

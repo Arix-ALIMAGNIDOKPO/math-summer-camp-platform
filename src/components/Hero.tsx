@@ -47,7 +47,7 @@ const Hero = () => {
                   className="block relative w-full h-full group"
                 >
                   <img 
-                    src="https://img.youtube.com/vi/1-IJrwTKVzE/maxresdefault.jpg" 
+                    src="/lovable-uploads/ce8ae2f8-3c72-4e19-9448-c74c85b4311b.png" 
                     alt="Summer Maths Camp Video" 
                     className="w-full h-full object-cover"
                   />
