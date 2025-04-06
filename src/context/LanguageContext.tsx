@@ -6,6 +6,7 @@ type Language = 'fr' | 'en';
 interface LanguageContextType {
   language: Language;
   toggleLanguage: () => void;
+  setLanguage: (lang: Language) => void; // Add this line
   t: (key: string, data?: Record<string, any>) => string;
 }
 
@@ -592,6 +593,7 @@ const translations: Record<string, Record<Language, string>> = {
 const LanguageContext = createContext<LanguageContextType>({
   language: 'fr',
   toggleLanguage: () => {},
+  setLanguage: () => {}, // Add this line
   t: (key: string) => key,
 });
 
@@ -623,7 +625,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, toggleLanguage, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

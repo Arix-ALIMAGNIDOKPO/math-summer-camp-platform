@@ -28,7 +28,7 @@ const Index = () => {
     <div className="min-h-screen overflow-x-hidden">
       <Header />
       <Hero />
-      <AboutSection mainImage="/lovable-uploads/aec83f29-ad35-46a6-a81a-5788a50a4293.png" />
+      <AboutSection />
       <ProgramSection />
       <GallerySection />
       <BudgetSection />
