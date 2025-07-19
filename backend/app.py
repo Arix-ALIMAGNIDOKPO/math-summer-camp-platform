@@ -17,10 +17,6 @@ DATA_DIR = 'data'
 STUDENTS_FILE = os.path.join(DATA_DIR, 'students.json')
 MESSAGES_FILE = os.path.join(DATA_DIR, 'messages.json')
 
-# Admin credentials
-ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'mathcamp2025')
-
 # Ensure data directory exists
 os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -148,180 +144,91 @@ def contact_message():
         print(f"Error saving message: {e}")
         return jsonify({"error": "Erreur lors de l'envoi du message"}), 500
 
-# Admin Routes
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
-    """Admin login page"""
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            session['admin_logged_in'] = True
-            return redirect(url_for('admin_dashboard'))
-        else:
-            return render_template('admin/login.html', error="Identifiants incorrects")
-    
-    return render_template('admin/login.html')
+# API Routes for Admin
+@app.route('/api/students', methods=['GET'])
+def get_students():
+    """Get all students"""
+    try:
+        students = load_data(STUDENTS_FILE)
+        # Sort by registration date (newest first)
+        students.sort(key=lambda x: x.get('registeredAt', ''), reverse=True)
+        return jsonify(students)
+    except Exception as e:
+        print(f"Error getting students: {e}")
+        return jsonify({"error": "Erreur lors de la récupération des étudiants"}), 500
 
-@app.route('/admin/logout')
-def admin_logout():
-    """Admin logout"""
-    session.pop('admin_logged_in', None)
-    return redirect(url_for('admin_login'))
+@app.route('/api/messages', methods=['GET'])
+def get_messages():
+    """Get all messages"""
+    try:
+        messages = load_data(MESSAGES_FILE)
+        # Sort by creation date (newest first)
+        messages.sort(key=lambda x: x.get('createdAt', ''), reverse=True)
+        return jsonify(messages)
+    except Exception as e:
+        print(f"Error getting messages: {e}")
+        return jsonify({"error": "Erreur lors de la récupération des messages"}), 500
 
-def require_admin_login(f):
-    """Decorator to require admin login"""
-    def decorated_function(*args, **kwargs):
-        if not session.get('admin_logged_in'):
-            return redirect(url_for('admin_login'))
-        return f(*args, **kwargs)
-    decorated_function.__name__ = f.__name__
-    return decorated_function
-
-@app.route('/admin')
-@app.route('/admin/dashboard')
-@require_admin_login
-def admin_dashboard():
-    """Admin dashboard"""
-    students = load_data(STUDENTS_FILE)
-    messages = load_data(MESSAGES_FILE)
-    
-    # Calculate statistics
-    total_students = len(students)
-    pending_students = len([s for s in students if s.get('status') == 'pending'])
-    confirmed_students = len([s for s in students if s.get('status') == 'confirmed'])
-    rejected_students = len([s for s in students if s.get('status') == 'rejected'])
-    
-    total_messages = len(messages)
-    new_messages = len([m for m in messages if m.get('status') == 'new'])
-    
-    stats = {
-        'total_students': total_students,
-        'pending_students': pending_students,
-        'confirmed_students': confirmed_students,
-        'rejected_students': rejected_students,
-        'total_messages': total_messages,
-        'new_messages': new_messages
-    }
-    
-    return render_template('admin/dashboard.html', stats=stats)
-
-@app.route('/admin/students')
-@require_admin_login
-def admin_students():
-    """Admin students list"""
-    students = load_data(STUDENTS_FILE)
-    status_filter = request.args.get('status', 'all')
-    
-    if status_filter != 'all':
-        students = [s for s in students if s.get('status') == status_filter]
-    
-    # Sort by registration date (newest first)
-    students.sort(key=lambda x: x.get('registeredAt', ''), reverse=True)
-    
-    return render_template('admin/students.html', students=students, status_filter=status_filter)
-
-@app.route('/admin/students/<student_id>')
-@require_admin_login
-def admin_student_detail(student_id):
-    """Admin student detail"""
-    students = load_data(STUDENTS_FILE)
-    student = next((s for s in students if s.get('id') == student_id), None)
-    
-    if not student:
-        return "Étudiant non trouvé", 404
-    
-    return render_template('admin/student_detail.html', student=student)
-
-@app.route('/admin/students/<student_id>/status', methods=['POST'])
-@require_admin_login
+@app.route('/api/students/<student_id>/status', methods=['PUT'])
 def update_student_status(student_id):
     """Update student status"""
     try:
-        new_status = request.form.get('status')
+        data = request.get_json()
+        new_status = data.get('status')
         if new_status not in ['pending', 'confirmed', 'rejected']:
-            return "Statut invalide", 400
+            return jsonify({"error": "Statut invalide"}), 400
         
         students = load_data(STUDENTS_FILE)
         student = next((s for s in students if s.get('id') == student_id), None)
         
         if not student:
-            return "Étudiant non trouvé", 404
+            return jsonify({"error": "Étudiant non trouvé"}), 404
         
         student['status'] = new_status
         student['statusUpdatedAt'] = datetime.now().isoformat()
         
         save_data(STUDENTS_FILE, students)
         
-        return redirect(url_for('admin_student_detail', student_id=student_id))
+        return jsonify({"message": "Statut mis à jour avec succès"})
         
     except Exception as e:
         print(f"Error updating student status: {e}")
-        return "Erreur lors de la mise à jour", 500
+        return jsonify({"error": "Erreur lors de la mise à jour"}), 500
 
-@app.route('/admin/messages')
-@require_admin_login
-def admin_messages():
-    """Admin messages list"""
-    messages = load_data(MESSAGES_FILE)
-    status_filter = request.args.get('status', 'all')
-    
-    if status_filter != 'all':
-        messages = [m for m in messages if m.get('status') == status_filter]
-    
-    # Sort by creation date (newest first)
-    messages.sort(key=lambda x: x.get('createdAt', ''), reverse=True)
-    
-    return render_template('admin/messages.html', messages=messages, status_filter=status_filter)
-
-@app.route('/admin/messages/<message_id>')
-@require_admin_login
-def admin_message_detail(message_id):
-    """Admin message detail"""
-    messages = load_data(MESSAGES_FILE)
-    message = next((m for m in messages if m.get('id') == message_id), None)
-    
-    if not message:
-        return "Message non trouvé", 404
-    
-    return render_template('admin/message_detail.html', message=message)
-
-@app.route('/admin/messages/<message_id>/status', methods=['POST'])
-@require_admin_login
+@app.route('/api/messages/<message_id>/status', methods=['PUT'])
 def update_message_status(message_id):
     """Update message status"""
     try:
-        new_status = request.form.get('status')
+        data = request.get_json()
+        new_status = data.get('status')
         if new_status not in ['new', 'read', 'replied']:
-            return "Statut invalide", 400
+            return jsonify({"error": "Statut invalide"}), 400
         
         messages = load_data(MESSAGES_FILE)
         message = next((m for m in messages if m.get('id') == message_id), None)
         
         if not message:
-            return "Message non trouvé", 404
+            return jsonify({"error": "Message non trouvé"}), 404
         
         message['status'] = new_status
         message['statusUpdatedAt'] = datetime.now().isoformat()
         
         save_data(MESSAGES_FILE, messages)
         
-        return redirect(url_for('admin_message_detail', message_id=message_id))
+        return jsonify({"message": "Statut mis à jour avec succès"})
         
     except Exception as e:
         print(f"Error updating message status: {e}")
-        return "Erreur lors de la mise à jour", 500
+        return jsonify({"error": "Erreur lors de la mise à jour"}), 500
 
-@app.route('/admin/export/students')
-@require_admin_login
+@app.route('/api/export/students')
 def export_students():
     """Export students to Excel"""
     try:
         students = load_data(STUDENTS_FILE)
         
         if not students:
-            return "Aucun étudiant à exporter", 404
+            return jsonify({"error": "Aucun étudiant à exporter"}), 404
         
         # Prepare data for Excel
         df_data = []
@@ -364,17 +271,16 @@ def export_students():
         
     except Exception as e:
         print(f"Error exporting students: {e}")
-        return "Erreur lors de l'export", 500
+        return jsonify({"error": "Erreur lors de l'export"}), 500
 
-@app.route('/admin/export/messages')
-@require_admin_login
+@app.route('/api/export/messages')
 def export_messages():
     """Export messages to Excel"""
     try:
         messages = load_data(MESSAGES_FILE)
         
         if not messages:
-            return "Aucun message à exporter", 404
+            return jsonify({"error": "Aucun message à exporter"}), 404
         
         # Prepare data for Excel
         df_data = []
@@ -411,7 +317,7 @@ def export_messages():
         
     except Exception as e:
         print(f"Error exporting messages: {e}")
-        return "Erreur lors de l'export", 500
+        return jsonify({"error": "Erreur lors de l'export"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
