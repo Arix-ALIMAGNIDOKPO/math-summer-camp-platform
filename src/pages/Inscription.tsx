@@ -9,7 +9,7 @@ import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, CheckCircle, Phone, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -52,6 +52,8 @@ type InscriptionFormValues = z.infer<typeof inscriptionSchema>;
 const Inscription = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [studentId, setStudentId] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [availableCommunes, setAvailableCommunes] = useState<string[]>([]);
   const { t, language } = useLanguage();
@@ -115,14 +117,9 @@ const Inscription = () => {
       setSelectedDepartment("");
       setAvailableCommunes([]);
       
-      // Afficher un message de succès
-      toast({
-        title: language === 'fr' ? "Inscription envoyée avec succès!" : "Registration successfully sent!",
-        description: language === 'fr' 
-          ? "Merci pour votre candidature ! Nous vous contacterons par email ou téléphone pour confirmation dans les prochains jours."
-          : "Thank you for your application! We will contact you by email or phone for confirmation in the coming days.",
-        variant: "default",
-      });
+      // Afficher la page de succès
+      setStudentId(result.studentId);
+      setIsSuccess(true);
     } catch (error) {
       console.error("Erreur lors de l'envoi du formulaire:", error);
       toast({
@@ -136,6 +133,69 @@ const Inscription = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Page de succès
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        
+        <div className="flex-1 py-20 bg-gray-50">
+          <div className="max-w-2xl mx-auto px-4 md:px-8">
+            <AnimatedSection delay={100} className="text-center">
+              <div className="bg-white rounded-2xl p-8 md:p-12 shadow-lg">
+                <div className="mb-6">
+                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                    {language === 'fr' 
+                      ? "Inscription envoyée avec succès !" 
+                      : "Registration successfully sent!"}
+                  </h1>
+                  <p className="text-lg text-gray-600 mb-6">
+                    {language === 'fr'
+                      ? "Merci pour votre candidature au Summer Maths Camp 2025 !"
+                      : "Thank you for your application to the Summer Maths Camp 2025!"}
+                  </p>
+                </div>
+                
+                <div className="bg-blue-50 rounded-lg p-6 mb-8">
+                  <h2 className="font-semibold text-lg mb-3 text-blue-900">
+                    {language === 'fr' ? "Prochaines étapes" : "Next steps"}
+                  </h2>
+                  <div className="space-y-3 text-left">
+                    <div className="flex items-start gap-3">
+                      <Mail className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-blue-800">
+                        {language === 'fr'
+                          ? "Vous recevrez un email de confirmation dans les prochaines heures"
+                          : "You will receive a confirmation email in the next few hours"}
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Phone className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-blue-800">
+                        {language === 'fr'
+                          ? "Notre équipe vous contactera par téléphone ou email dans les 3-5 jours ouvrables pour confirmer votre participation"
+                          : "Our team will contact you by phone or email within 3-5 business days to confirm your participation"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <Button asChild className="w-full md:w-auto">
+                  <Link to="/">
+                    {language === 'fr' ? "Retour à l'accueil" : "Back to home"}
+                  </Link>
+                </Button>
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+        
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
