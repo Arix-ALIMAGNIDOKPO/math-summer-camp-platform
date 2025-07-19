@@ -49,21 +49,35 @@ const ContactSection = () => {
         return;
       }
       
-      // For other inquiries
-      setTimeout(() => {
+      // For other inquiries, send to backend
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'envoi');
+      }
+      
+      const result = await response.json();
+      
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+        interest: "participant"
+      });
+      
         toast.success(t("contact.success"));
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          message: "",
-          interest: "participant"
-        });
-        setIsSubmitting(false);
-      }, 1000);
     } catch (error) {
       console.error("Error submitting contact form:", error);
       toast.error(t("contact.error"));
+    } finally {
       setIsSubmitting(false);
     }
   };

@@ -1,0 +1,148 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Détail message - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-envelope me-2"></i>
+        Message de {{ message.name }}
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('admin_messages') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>
+            Retour à la liste
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Message Content -->
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-comment me-2"></i>
+                    Contenu du message
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>De :</strong> {{ message.name }} &lt;{{ message.email }}&gt;
+                    {% if message.phone %}
+                        <br><strong>Téléphone :</strong> {{ message.phone }}
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Intérêt :</strong>
+                    {% if message.interest == 'participant' %}
+                        <span class="badge bg-primary">Participant</span>
+                    {% elif message.interest == 'parent' %}
+                        <span class="badge bg-info">Parent</span>
+                    {% elif message.interest == 'intervenant' %}
+                        <span class="badge bg-success">Intervenant</span>
+                    {% elif message.interest == 'partenaire' %}
+                        <span class="badge bg-warning">Partenaire</span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <strong>Date :</strong> {{ message.createdAt }}
+                </div>
+
+                <hr>
+
+                <div class="message-content">
+                    <strong>Message :</strong>
+                    <div class="mt-2 p-3 bg-light rounded">
+                        {{ message.message }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status and Actions -->
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-cog me-2"></i>
+                    Statut et actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Statut actuel :</strong><br>
+                    {% if message.status == 'new' %}
+                        <span class="badge badge-new fs-6">Nouveau</span>
+                    {% elif message.status == 'read' %}
+                        <span class="badge badge-read fs-6">Lu</span>
+                    {% elif message.status == 'replied' %}
+                        <span class="badge badge-replied fs-6">Répondu</span>
+                    {% endif %}
+                </div>
+
+                {% if message.statusUpdatedAt %}
+                <div class="mb-3">
+                    <strong>Dernière mise à jour :</strong><br>
+                    <small class="text-muted">{{ message.statusUpdatedAt }}</small>
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <form method="POST" action="{{ url_for('update_message_status', message_id=message.id) }}">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">
+                            <strong>Changer le statut :</strong>
+                        </label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="new" {% if message.status == 'new' %}selected{% endif %}>
+                                Nouveau
+                            </option>
+                            <option value="read" {% if message.status == 'read' %}selected{% endif %}>
+                                Lu
+                            </option>
+                            <option value="replied" {% if message.status == 'replied' %}selected{% endif %}>
+                                Répondu
+                            </option>
+                        </select>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            Mettre à jour
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-bolt me-2"></i>
+                    Actions rapides
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="mailto:{{ message.email }}?subject=Re: Votre message concernant le Summer Maths Camp" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-reply me-2"></i>
+                        Répondre par email
+                    </a>
+                    {% if message.phone %}
+                    <a href="tel:{{ message.phone }}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-phone me-2"></i>
+                        Appeler
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

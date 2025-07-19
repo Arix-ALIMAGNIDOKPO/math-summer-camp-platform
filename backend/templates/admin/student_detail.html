@@ -1,0 +1,153 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Détail étudiant - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-user me-2"></i>
+        {{ student.prenom }} {{ student.nom }}
+        <small class="text-muted">({{ student.id }})</small>
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('admin_students') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>
+            Retour à la liste
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Student Information -->
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Informations personnelles
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Prénom :</strong> {{ student.prenom }}</p>
+                        <p><strong>Nom :</strong> {{ student.nom }}</p>
+                        <p><strong>Email :</strong> 
+                            <a href="mailto:{{ student.email }}">{{ student.email }}</a>
+                        </p>
+                        <p><strong>Téléphone :</strong> 
+                            <a href="tel:{{ student.telephone }}">{{ student.telephone }}</a>
+                        </p>
+                        <p><strong>Âge :</strong> {{ student.age }} ans</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Niveau scolaire :</strong> {{ student.niveau }}</p>
+                        <p><strong>École :</strong> {{ student.ecole }}</p>
+                        <p><strong>Ville :</strong> {{ student.ville }}</p>
+                        <p><strong>Département :</strong> {{ student.departement }}</p>
+                        <p><strong>Commune :</strong> {{ student.commune }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivation -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-heart me-2"></i>
+                    Lettre de motivation
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="text-justify">{{ student.motivation }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status and Actions -->
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-cog me-2"></i>
+                    Statut et actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Statut actuel :</strong><br>
+                    {% if student.status == 'pending' %}
+                        <span class="badge badge-pending fs-6">En attente</span>
+                    {% elif student.status == 'confirmed' %}
+                        <span class="badge badge-confirmed fs-6">Confirmée</span>
+                    {% elif student.status == 'rejected' %}
+                        <span class="badge badge-rejected fs-6">Rejetée</span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <strong>Date d'inscription :</strong><br>
+                    <small class="text-muted">{{ student.registeredAt }}</small>
+                </div>
+
+                {% if student.statusUpdatedAt %}
+                <div class="mb-3">
+                    <strong>Dernière mise à jour :</strong><br>
+                    <small class="text-muted">{{ student.statusUpdatedAt }}</small>
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <form method="POST" action="{{ url_for('update_student_status', student_id=student.id) }}">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">
+                            <strong>Changer le statut :</strong>
+                        </label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="pending" {% if student.status == 'pending' %}selected{% endif %}>
+                                En attente
+                            </option>
+                            <option value="confirmed" {% if student.status == 'confirmed' %}selected{% endif %}>
+                                Confirmée
+                            </option>
+                            <option value="rejected" {% if student.status == 'rejected' %}selected{% endif %}>
+                                Rejetée
+                            </option>
+                        </select>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            Mettre à jour
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-bolt me-2"></i>
+                    Actions rapides
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="mailto:{{ student.email }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-envelope me-2"></i>
+                        Envoyer un email
+                    </a>
+                    <a href="tel:{{ student.telephone }}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-phone me-2"></i>
+                        Appeler
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

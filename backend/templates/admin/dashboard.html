@@ -1,0 +1,165 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Tableau de bord - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        Tableau de bord
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ url_for('export_students') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-download me-1"></i>
+                Exporter inscriptions
+            </a>
+            <a href="{{ url_for('export_messages') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-download me-1"></i>
+                Exporter messages
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Inscriptions
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_students }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            En attente
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.pending_students }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Confirmées
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.confirmed_students }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Messages
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_messages }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-envelope fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-users me-2"></i>
+                    Gestion des inscriptions
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Gérez les inscriptions des étudiants au Summer Maths Camp.</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin_students') }}" class="btn btn-primary">
+                        <i class="fas fa-eye me-2"></i>
+                        Voir toutes les inscriptions
+                    </a>
+                    <a href="{{ url_for('admin_students', status='pending') }}" class="btn btn-warning">
+                        <i class="fas fa-clock me-2"></i>
+                        Inscriptions en attente ({{ stats.pending_students }})
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-envelope me-2"></i>
+                    Gestion des messages
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Consultez et répondez aux messages de contact.</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin_messages') }}" class="btn btn-primary">
+                        <i class="fas fa-eye me-2"></i>
+                        Voir tous les messages
+                    </a>
+                    <a href="{{ url_for('admin_messages', status='new') }}" class="btn btn-info">
+                        <i class="fas fa-envelope me-2"></i>
+                        Nouveaux messages ({{ stats.new_messages }})
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+</style>
+{% endblock %}
