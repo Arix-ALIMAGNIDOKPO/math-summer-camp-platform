@@ -24,7 +24,7 @@ const Admin = () => {
         
         <div className="space-y-4">
           <Button className="w-full" asChild>
-            <a href="/admin/login" target="_blank" rel="noopener noreferrer">Access Admin Portal</a>
+            <a href="http://localhost:5000/admin/login" target="_blank" rel="noopener noreferrer">Access Admin Portal</a>
           </Button>
           
           <Button variant="outline" className="w-full" asChild>
