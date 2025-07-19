@@ -63,21 +63,6 @@ const Admin = () => {
 
   useEffect(() => {
     document.title = "Admin - Summer Maths Camp";
-    // Check if already authenticated
-    const authStatus = sessionStorage.getItem('admin_authenticated');
-    const authTime = sessionStorage.getItem('auth_time');
-    
-    if (authStatus === 'true' && authTime) {
-      const currentTime = Date.now();
-      const sessionTime = parseInt(authTime);
-      // Session expires after 2 hours
-      if (currentTime - sessionTime < 2 * 60 * 60 * 1000) {
-        setIsAuthenticated(true);
-        loadData();
-      } else {
-        handleLogout();
-      }
-    }
 
     // Check if blocked
     const blockTime = localStorage.getItem('admin_block_time');
@@ -110,8 +95,6 @@ const Admin = () => {
     // Simple authentication - in production, this should be more secure
     if (loginForm.username === 'Admin25' && loginForm.password === 'SMCII') {
       setIsAuthenticated(true);
-      sessionStorage.setItem('admin_authenticated', 'true');
-      sessionStorage.setItem('auth_time', Date.now().toString());
       localStorage.removeItem('login_attempts');
       localStorage.removeItem('admin_block_time');
       setLoginAttempts(0);
@@ -134,8 +117,6 @@ const Admin = () => {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    sessionStorage.removeItem('admin_authenticated');
-    sessionStorage.removeItem('auth_time');
     setStudents([]);
     setMessages([]);
   };

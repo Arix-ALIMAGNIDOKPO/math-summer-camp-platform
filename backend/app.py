@@ -14,7 +14,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
 
 # Configure CORS with specific origins for production
 if os.environ.get('FLASK_ENV') == 'production':
