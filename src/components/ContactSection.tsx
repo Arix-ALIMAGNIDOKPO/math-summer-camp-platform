@@ -95,7 +95,7 @@ const ContactSection = () => {
         
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
           <AnimatedSection>
-            <Card className="p-6 md:p-8 shadow-xl border-0">
+            <Card className="p-4 sm:p-6 md:p-8 shadow-xl border-0">
               <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                 <div className="space-y-4">
                   <div>
@@ -144,7 +144,7 @@ const ContactSection = () => {
                     defaultValue="participant"
                     value={formData.interest}
                     onValueChange={handleRadioChange}
-                    className="grid grid-cols-2 gap-4 mt-2"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2"
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="participant" id="participant" />

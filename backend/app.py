@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session, send_file
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 import json
 import os
 from datetime import datetime
@@ -7,10 +9,31 @@ import uuid
 import pandas as pd
 from io import BytesIO
 import tempfile
+import re
+import logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
-CORS(app)
+
+# Configure CORS with specific origins for production
+if os.environ.get('FLASK_ENV') == 'production':
+    CORS(app, origins=['https://yourdomain.com'])
+else:
+    CORS(app)
+
+# Configure logging
+if not app.debug:
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
+    file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('Application startup')
 
 # Configuration
 DATA_DIR = 'data'
@@ -20,6 +43,32 @@ MESSAGES_FILE = os.path.join(DATA_DIR, 'messages.json')
 # Ensure data directory exists
 os.makedirs(DATA_DIR, exist_ok=True)
 
+# Security functions
+def validate_email(email):
+    """Validate email format"""
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+def validate_phone(phone):
+    """Validate phone number format"""
+    # Remove spaces and special characters
+    clean_phone = re.sub(r'[^\d+]', '', phone)
+    # Check if it's a valid format (8-15 digits, optionally starting with +)
+    pattern = r'^\+?[0-9]{8,15}$'
+    return re.match(pattern, clean_phone) is not None
+
+def sanitize_input(text):
+    """Basic input sanitization"""
+    if not isinstance(text, str):
+        return text
+    # Remove potentially dangerous characters
+    return re.sub(r'[<>"\']', '', text).strip()
+
+def rate_limit_check(request):
+    """Basic rate limiting check"""
+    # In production, implement proper rate limiting with Redis or similar
+    return True
+
 def load_data(filename):
     """Load data from JSON file"""
     if os.path.exists(filename):
@@ -27,13 +76,18 @@ def load_data(filename):
             with open(filename, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, FileNotFoundError):
+            app.logger.error(f"Error loading data from {filename}")
             return []
     return []
 
 def save_data(filename, data):
     """Save data to JSON file"""
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        app.logger.error(f"Error saving data to {filename}: {e}")
+        raise
 
 def generate_student_id():
     """Generate a unique student ID"""
@@ -57,13 +111,41 @@ def health_check():
 def register_student():
     """Register a new student"""
     try:
+        # Rate limiting check
+        if not rate_limit_check(request):
+            return jsonify({"error": "Trop de requêtes"}), 429
+            
         data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "Données manquantes"}), 400
         
         # Validate required fields
         required_fields = ['prenom', 'nom', 'email', 'telephone', 'age', 'niveau', 'ecole', 'ville', 'departement', 'commune', 'motivation']
         for field in required_fields:
             if not data.get(field):
                 return jsonify({"error": f"Le champ {field} est requis"}), 400
+        
+        # Validate email format
+        if not validate_email(data['email']):
+            return jsonify({"error": "Format d'email invalide"}), 400
+            
+        # Validate phone format
+        if not validate_phone(data['telephone']):
+            return jsonify({"error": "Format de téléphone invalide"}), 400
+            
+        # Validate age
+        try:
+            age = int(data['age'])
+            if age < 14 or age > 18:
+                return jsonify({"error": "L'âge doit être entre 14 et 18 ans"}), 400
+        except ValueError:
+            return jsonify({"error": "Âge invalide"}), 400
+        
+        # Sanitize inputs
+        for field in data:
+            if isinstance(data[field], str):
+                data[field] = sanitize_input(data[field])
         
         # Load existing students
         students = load_data(STUDENTS_FILE)
@@ -78,7 +160,7 @@ def register_student():
             "id": generate_student_id(),
             "prenom": data['prenom'],
             "nom": data['nom'],
-            "email": data['email'],
+            "email": data['email'].lower(),
             "telephone": data['telephone'],
             "age": int(data['age']),
             "niveau": data['niveau'],
@@ -95,26 +177,48 @@ def register_student():
         students.append(student)
         save_data(STUDENTS_FILE, students)
         
+        app.logger.info(f"New student registered: {student['id']}")
+        
         return jsonify({
             "message": "Inscription enregistrée avec succès",
             "studentId": student['id']
         }), 201
         
     except Exception as e:
-        print(f"Error registering student: {e}")
+        app.logger.error(f"Error registering student: {e}")
         return jsonify({"error": "Erreur lors de l'enregistrement"}), 500
 
 @app.route('/api/contact', methods=['POST'])
 def contact_message():
     """Save contact message"""
     try:
+        # Rate limiting check
+        if not rate_limit_check(request):
+            return jsonify({"error": "Trop de requêtes"}), 429
+            
         data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "Données manquantes"}), 400
         
         # Validate required fields
         required_fields = ['name', 'email', 'message', 'interest']
         for field in required_fields:
             if not data.get(field):
                 return jsonify({"error": f"Le champ {field} est requis"}), 400
+        
+        # Validate email format
+        if not validate_email(data['email']):
+            return jsonify({"error": "Format d'email invalide"}), 400
+            
+        # Validate phone if provided
+        if data.get('phone') and not validate_phone(data['phone']):
+            return jsonify({"error": "Format de téléphone invalide"}), 400
+        
+        # Sanitize inputs
+        for field in data:
+            if isinstance(data[field], str):
+                data[field] = sanitize_input(data[field])
         
         # Load existing messages
         messages = load_data(MESSAGES_FILE)
@@ -123,7 +227,7 @@ def contact_message():
         message = {
             "id": str(uuid.uuid4()),
             "name": data['name'],
-            "email": data['email'],
+            "email": data['email'].lower(),
             "phone": data.get('phone', ''),
             "interest": data['interest'],
             "message": data['message'],
@@ -135,13 +239,15 @@ def contact_message():
         messages.append(message)
         save_data(MESSAGES_FILE, messages)
         
+        app.logger.info(f"New contact message: {message['id']}")
+        
         return jsonify({
             "message": "Message envoyé avec succès",
             "messageId": message['id']
         }), 201
         
     except Exception as e:
-        print(f"Error saving message: {e}")
+        app.logger.error(f"Error saving message: {e}")
         return jsonify({"error": "Erreur lors de l'envoi du message"}), 500
 
 # API Routes for Admin
@@ -154,26 +260,18 @@ def get_students():
         students.sort(key=lambda x: x.get('registeredAt', ''), reverse=True)
         return jsonify(students)
     except Exception as e:
-        print(f"Error getting students: {e}")
+        app.logger.error(f"Error getting students: {e}")
         return jsonify({"error": "Erreur lors de la récupération des étudiants"}), 500
-
-@app.route('/api/messages', methods=['GET'])
-def get_messages():
-    """Get all messages"""
-    try:
-        messages = load_data(MESSAGES_FILE)
-        # Sort by creation date (newest first)
-        messages.sort(key=lambda x: x.get('createdAt', ''), reverse=True)
-        return jsonify(messages)
-    except Exception as e:
-        print(f"Error getting messages: {e}")
-        return jsonify({"error": "Erreur lors de la récupération des messages"}), 500
 
 @app.route('/api/students/<student_id>/status', methods=['PUT'])
 def update_student_status(student_id):
     """Update student status"""
     try:
         data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "Données manquantes"}), 400
+            
         new_status = data.get('status')
         if new_status not in ['pending', 'confirmed', 'rejected']:
             return jsonify({"error": "Statut invalide"}), 400
@@ -189,36 +287,12 @@ def update_student_status(student_id):
         
         save_data(STUDENTS_FILE, students)
         
-        return jsonify({"message": "Statut mis à jour avec succès"})
-        
-    except Exception as e:
-        print(f"Error updating student status: {e}")
-        return jsonify({"error": "Erreur lors de la mise à jour"}), 500
-
-@app.route('/api/messages/<message_id>/status', methods=['PUT'])
-def update_message_status(message_id):
-    """Update message status"""
-    try:
-        data = request.get_json()
-        new_status = data.get('status')
-        if new_status not in ['new', 'read', 'replied']:
-            return jsonify({"error": "Statut invalide"}), 400
-        
-        messages = load_data(MESSAGES_FILE)
-        message = next((m for m in messages if m.get('id') == message_id), None)
-        
-        if not message:
-            return jsonify({"error": "Message non trouvé"}), 404
-        
-        message['status'] = new_status
-        message['statusUpdatedAt'] = datetime.now().isoformat()
-        
-        save_data(MESSAGES_FILE, messages)
+        app.logger.info(f"Student status updated: {student_id} -> {new_status}")
         
         return jsonify({"message": "Statut mis à jour avec succès"})
         
     except Exception as e:
-        print(f"Error updating message status: {e}")
+        app.logger.error(f"Error updating student status: {e}")
         return jsonify({"error": "Erreur lors de la mise à jour"}), 500
 
 @app.route('/api/export/students')
@@ -262,6 +336,8 @@ def export_students():
         # Generate filename with current date
         filename = f"inscriptions_summer_maths_camp_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
         
+        app.logger.info(f"Students export generated: {len(students)} records")
+        
         return send_file(
             output,
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -270,54 +346,23 @@ def export_students():
         )
         
     except Exception as e:
-        print(f"Error exporting students: {e}")
+        app.logger.error(f"Error exporting students: {e}")
         return jsonify({"error": "Erreur lors de l'export"}), 500
 
-@app.route('/api/export/messages')
-def export_messages():
-    """Export messages to Excel"""
-    try:
-        messages = load_data(MESSAGES_FILE)
-        
-        if not messages:
-            return jsonify({"error": "Aucun message à exporter"}), 404
-        
-        # Prepare data for Excel
-        df_data = []
-        for message in messages:
-            df_data.append({
-                'ID': message.get('id', ''),
-                'Nom': message.get('name', ''),
-                'Email': message.get('email', ''),
-                'Téléphone': message.get('phone', ''),
-                'Intérêt': message.get('interest', ''),
-                'Message': message.get('message', ''),
-                'Date de création': message.get('createdAt', ''),
-                'Statut': message.get('status', '')
-            })
-        
-        df = pd.DataFrame(df_data)
-        
-        # Create Excel file in memory
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, sheet_name='Messages', index=False)
-        
-        output.seek(0)
-        
-        # Generate filename with current date
-        filename = f"messages_summer_maths_camp_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
-        
-        return send_file(
-            output,
-            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            as_attachment=True,
-            download_name=filename
-        )
-        
-    except Exception as e:
-        print(f"Error exporting messages: {e}")
-        return jsonify({"error": "Erreur lors de l'export"}), 500
+# Error handlers
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": "Endpoint non trouvé"}), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    app.logger.error(f"Internal error: {error}")
+    return jsonify({"error": "Erreur interne du serveur"}), 500
+
+@app.errorhandler(429)
+def rate_limit_exceeded(error):
+    return jsonify({"error": "Trop de requêtes"}), 429
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    debug_mode = os.environ.get('FLASK_ENV') != 'production'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)

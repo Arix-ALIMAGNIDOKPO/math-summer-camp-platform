@@ -13,8 +13,8 @@ interface LanguageContextType {
 const translations: Record<string, Record<Language, string>> = {
   // Hero section
   "dates": {
-    fr: "17 - 26 Juillet 2025",
-    en: "July 17 - 26, 2025"
+    fr: "18 - 22 Août 2025",
+    en: "August 18 - 22, 2025"
   },
   "hero.title": {
     fr: "Summer Maths Camp",

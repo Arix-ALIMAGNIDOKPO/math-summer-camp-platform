@@ -59,7 +59,7 @@ const Header = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
+        <nav className="hidden lg:flex items-center space-x-1">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -97,8 +97,8 @@ const Header = () => {
 
           {/* Mobile Navigation */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="md:hidden">
+            <SheetTrigger asChild className="lg:hidden">
+              <Button variant="ghost" size="icon" className="lg:hidden">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>

@@ -179,6 +179,7 @@ const Inscription = () => {
                     {...register("prenom")}
                     placeholder={language === 'fr' ? "Votre prénom" : "Your first name"}
                     className={errors.prenom ? "border-destructive" : ""}
+                    autoComplete="given-name"
                   />
                   {errors.prenom && (
                     <p className="text-xs text-destructive">{errors.prenom.message}</p>
@@ -194,6 +195,7 @@ const Inscription = () => {
                     {...register("nom")}
                     placeholder={language === 'fr' ? "Votre nom" : "Your last name"}
                     className={errors.nom ? "border-destructive" : ""}
+                    autoComplete="family-name"
                   />
                   {errors.nom && (
                     <p className="text-xs text-destructive">{errors.nom.message}</p>
@@ -210,6 +212,7 @@ const Inscription = () => {
                     {...register("email")}
                     placeholder={language === 'fr' ? "votre.email@exemple.com" : "your.email@example.com"}
                     className={errors.email ? "border-destructive" : ""}
+                    autoComplete="email"
                   />
                   {errors.email && (
                     <p className="text-xs text-destructive">{errors.email.message}</p>
@@ -225,6 +228,7 @@ const Inscription = () => {
                     {...register("telephone")}
                     placeholder="+229 XXXXXXXX"
                     className={errors.telephone ? "border-destructive" : ""}
+                    autoComplete="tel"
                   />
                   {errors.telephone && (
                     <p className="text-xs text-destructive">{errors.telephone.message}</p>

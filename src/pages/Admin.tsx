@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MscLogo } from "@/components/ui-custom/MscLogo";
-import { Users, MessageSquare, Download, Eye, Filter, Calendar, Mail, Phone, MapPin, GraduationCap } from "lucide-react";
+import { Users, Download, Eye, Calendar, Mail, Phone, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 
 interface Student {
@@ -30,18 +29,6 @@ interface Student {
   statusUpdatedAt?: string;
 }
 
-interface Message {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  interest: string;
-  message: string;
-  createdAt: string;
-  status: 'new' | 'read' | 'replied';
-  statusUpdatedAt?: string;
-}
-
 interface LoginForm {
   username: string;
   password: string;
@@ -51,41 +38,88 @@ const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginForm, setLoginForm] = useState<LoginForm>({ username: '', password: '' });
   const [students, setStudents] = useState<Student[]>([]);
-  const [messages, setMessages] = useState<Message[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [studentFilter, setStudentFilter] = useState('all');
-  const [messageFilter, setMessageFilter] = useState('all');
   const [loading, setLoading] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   useEffect(() => {
     document.title = "Admin - Summer Maths Camp";
     // Check if already authenticated
-    const authStatus = localStorage.getItem('admin_authenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-      loadData();
+    const authStatus = sessionStorage.getItem('admin_authenticated');
+    const authTime = sessionStorage.getItem('auth_time');
+    
+    if (authStatus === 'true' && authTime) {
+      const currentTime = Date.now();
+      const sessionTime = parseInt(authTime);
+      // Session expires after 2 hours
+      if (currentTime - sessionTime < 2 * 60 * 60 * 1000) {
+        setIsAuthenticated(true);
+        loadData();
+      } else {
+        handleLogout();
+      }
+    }
+
+    // Check if blocked
+    const blockTime = localStorage.getItem('admin_block_time');
+    if (blockTime) {
+      const currentTime = Date.now();
+      const blockTimestamp = parseInt(blockTime);
+      // Block for 15 minutes after 5 failed attempts
+      if (currentTime - blockTimestamp < 15 * 60 * 1000) {
+        setIsBlocked(true);
+      } else {
+        localStorage.removeItem('admin_block_time');
+        localStorage.removeItem('login_attempts');
+      }
+    }
+
+    const attempts = localStorage.getItem('login_attempts');
+    if (attempts) {
+      setLoginAttempts(parseInt(attempts));
     }
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isBlocked) {
+      toast.error("Accès bloqué. Veuillez réessayer plus tard.");
+      return;
+    }
+
     // Simple authentication - in production, this should be more secure
     if (loginForm.username === 'Admin25' && loginForm.password === 'SMCII') {
       setIsAuthenticated(true);
-      localStorage.setItem('admin_authenticated', 'true');
+      sessionStorage.setItem('admin_authenticated', 'true');
+      sessionStorage.setItem('auth_time', Date.now().toString());
+      localStorage.removeItem('login_attempts');
+      localStorage.removeItem('admin_block_time');
+      setLoginAttempts(0);
       loadData();
       toast.success("Connexion réussie !");
     } else {
-      toast.error("Identifiants incorrects");
+      const newAttempts = loginAttempts + 1;
+      setLoginAttempts(newAttempts);
+      localStorage.setItem('login_attempts', newAttempts.toString());
+      
+      if (newAttempts >= 5) {
+        setIsBlocked(true);
+        localStorage.setItem('admin_block_time', Date.now().toString());
+        toast.error("Trop de tentatives échouées. Accès bloqué pour 15 minutes.");
+      } else {
+        toast.error(`Identifiants incorrects. ${5 - newAttempts} tentatives restantes.`);
+      }
     }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem('admin_authenticated');
+    sessionStorage.removeItem('admin_authenticated');
+    sessionStorage.removeItem('auth_time');
     setStudents([]);
-    setMessages([]);
   };
 
   const loadData = async () => {
@@ -96,13 +130,6 @@ const Admin = () => {
       if (studentsResponse.ok) {
         const studentsData = await studentsResponse.json();
         setStudents(studentsData);
-      }
-
-      // Load messages
-      const messagesResponse = await fetch('http://localhost:5000/api/messages');
-      if (messagesResponse.ok) {
-        const messagesData = await messagesResponse.json();
-        setMessages(messagesData);
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -135,38 +162,15 @@ const Admin = () => {
     }
   };
 
-  const updateMessageStatus = async (messageId: string, newStatus: string) => {
+  const exportToExcel = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/messages/${messageId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (response.ok) {
-        await loadData();
-        toast.success("Statut mis à jour avec succès");
-        setSelectedMessage(null);
-      } else {
-        toast.error("Erreur lors de la mise à jour");
-      }
-    } catch (error) {
-      console.error('Error updating message status:', error);
-      toast.error("Erreur lors de la mise à jour");
-    }
-  };
-
-  const exportToExcel = async (type: 'students' | 'messages') => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/export/${type}`);
+      const response = await fetch('http://localhost:5000/api/export/students');
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${type}_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+        a.download = `students_export_${new Date().toISOString().split('T')[0]}.xlsx`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
@@ -181,14 +185,11 @@ const Admin = () => {
     }
   };
 
-  const getStatusBadge = (status: string, type: 'student' | 'message') => {
+  const getStatusBadge = (status: string) => {
     const variants: Record<string, any> = {
       pending: { variant: "secondary", label: "En attente" },
       confirmed: { variant: "default", label: "Confirmée" },
-      rejected: { variant: "destructive", label: "Rejetée" },
-      new: { variant: "default", label: "Nouveau" },
-      read: { variant: "secondary", label: "Lu" },
-      replied: { variant: "outline", label: "Répondu" }
+      rejected: { variant: "destructive", label: "Rejetée" }
     };
 
     const config = variants[status] || { variant: "secondary", label: status };
@@ -199,17 +200,11 @@ const Admin = () => {
     studentFilter === 'all' || student.status === studentFilter
   );
 
-  const filteredMessages = messages.filter(message => 
-    messageFilter === 'all' || message.status === messageFilter
-  );
-
   const stats = {
     totalStudents: students.length,
     pendingStudents: students.filter(s => s.status === 'pending').length,
     confirmedStudents: students.filter(s => s.status === 'confirmed').length,
     rejectedStudents: students.filter(s => s.status === 'rejected').length,
-    totalMessages: messages.length,
-    newMessages: messages.filter(m => m.status === 'new').length,
   };
 
   if (!isAuthenticated) {
@@ -224,31 +219,47 @@ const Admin = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <Label htmlFor="username">Nom d'utilisateur</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={loginForm.username}
-                  onChange={(e) => setLoginForm(prev => ({ ...prev, username: e.target.value }))}
-                  required
-                />
+            {isBlocked ? (
+              <div className="text-center p-4">
+                <p className="text-red-600 mb-4">Accès temporairement bloqué</p>
+                <p className="text-sm text-muted-foreground">
+                  Veuillez réessayer dans 15 minutes
+                </p>
               </div>
-              <div>
-                <Label htmlFor="password">Mot de passe</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Se connecter
-              </Button>
-            </form>
+            ) : (
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <Label htmlFor="username">Nom d'utilisateur</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    value={loginForm.username}
+                    onChange={(e) => setLoginForm(prev => ({ ...prev, username: e.target.value }))}
+                    required
+                    disabled={isBlocked}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={loginForm.password}
+                    onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
+                    required
+                    disabled={isBlocked}
+                  />
+                </div>
+                {loginAttempts > 0 && (
+                  <p className="text-sm text-red-600">
+                    {5 - loginAttempts} tentatives restantes
+                  </p>
+                )}
+                <Button type="submit" className="w-full" disabled={isBlocked}>
+                  Se connecter
+                </Button>
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -316,337 +327,171 @@ const Admin = () => {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center">
-                <MessageSquare className="h-8 w-8 text-purple-600" />
+                <Users className="h-8 w-8 text-red-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Messages</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalMessages}</p>
+                  <p className="text-sm font-medium text-gray-600">Rejetées</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.rejectedStudents}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main Content */}
-        <Tabs defaultValue="students" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="students">Inscriptions ({stats.totalStudents})</TabsTrigger>
-            <TabsTrigger value="messages">Messages ({stats.totalMessages})</TabsTrigger>
-          </TabsList>
-
-          {/* Students Tab */}
-          <TabsContent value="students" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle>Inscriptions des étudiants</CardTitle>
-                  <div className="flex space-x-2">
-                    <Select value={studentFilter} onValueChange={setStudentFilter}>
-                      <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Filtrer" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Toutes</SelectItem>
-                        <SelectItem value="pending">En attente</SelectItem>
-                        <SelectItem value="confirmed">Confirmées</SelectItem>
-                        <SelectItem value="rejected">Rejetées</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button onClick={() => exportToExcel('students')} variant="outline">
-                      <Download className="h-4 w-4 mr-2" />
-                      Exporter
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {loading ? (
-                  <div className="text-center py-8">Chargement...</div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Nom complet</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Âge</TableHead>
-                        <TableHead>Niveau</TableHead>
-                        <TableHead>Ville</TableHead>
-                        <TableHead>Statut</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredStudents.map((student) => (
-                        <TableRow key={student.id}>
-                          <TableCell className="font-mono text-sm">{student.id}</TableCell>
-                          <TableCell className="font-medium">
-                            {student.prenom} {student.nom}
-                          </TableCell>
-                          <TableCell>{student.email}</TableCell>
-                          <TableCell>{student.age} ans</TableCell>
-                          <TableCell>{student.niveau}</TableCell>
-                          <TableCell>{student.ville}</TableCell>
-                          <TableCell>{getStatusBadge(student.status, 'student')}</TableCell>
-                          <TableCell>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => setSelectedStudent(student)}
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                                <DialogHeader>
-                                  <DialogTitle>
-                                    {selectedStudent?.prenom} {selectedStudent?.nom}
-                                  </DialogTitle>
-                                </DialogHeader>
-                                {selectedStudent && (
-                                  <div className="space-y-6">
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div>
-                                        <Label className="text-sm font-medium">Informations personnelles</Label>
-                                        <div className="mt-2 space-y-2 text-sm">
-                                          <p><strong>Email:</strong> {selectedStudent.email}</p>
-                                          <p><strong>Téléphone:</strong> {selectedStudent.telephone}</p>
-                                          <p><strong>Âge:</strong> {selectedStudent.age} ans</p>
-                                          <p><strong>Niveau:</strong> {selectedStudent.niveau}</p>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <Label className="text-sm font-medium">Localisation</Label>
-                                        <div className="mt-2 space-y-2 text-sm">
-                                          <p><strong>École:</strong> {selectedStudent.ecole}</p>
-                                          <p><strong>Ville:</strong> {selectedStudent.ville}</p>
-                                          <p><strong>Département:</strong> {selectedStudent.departement}</p>
-                                          <p><strong>Commune:</strong> {selectedStudent.commune}</p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    
+        {/* Students Section */}
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <CardTitle>Inscriptions des étudiants</CardTitle>
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+                <Select value={studentFilter} onValueChange={setStudentFilter}>
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue placeholder="Filtrer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes</SelectItem>
+                    <SelectItem value="pending">En attente</SelectItem>
+                    <SelectItem value="confirmed">Confirmées</SelectItem>
+                    <SelectItem value="rejected">Rejetées</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button onClick={exportToExcel} variant="outline" className="w-full sm:w-auto">
+                  <Download className="h-4 w-4 mr-2" />
+                  Exporter
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-center py-8">Chargement...</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[100px]">ID</TableHead>
+                      <TableHead className="min-w-[150px]">Nom complet</TableHead>
+                      <TableHead className="min-w-[200px]">Email</TableHead>
+                      <TableHead className="min-w-[80px]">Âge</TableHead>
+                      <TableHead className="min-w-[100px]">Niveau</TableHead>
+                      <TableHead className="min-w-[120px]">Ville</TableHead>
+                      <TableHead className="min-w-[100px]">Statut</TableHead>
+                      <TableHead className="min-w-[100px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.map((student) => (
+                      <TableRow key={student.id}>
+                        <TableCell className="font-mono text-sm">{student.id}</TableCell>
+                        <TableCell className="font-medium">
+                          {student.prenom} {student.nom}
+                        </TableCell>
+                        <TableCell className="break-all">{student.email}</TableCell>
+                        <TableCell>{student.age} ans</TableCell>
+                        <TableCell>{student.niveau}</TableCell>
+                        <TableCell>{student.ville}</TableCell>
+                        <TableCell>{getStatusBadge(student.status)}</TableCell>
+                        <TableCell>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setSelectedStudent(student)}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle>
+                                  {selectedStudent?.prenom} {selectedStudent?.nom}
+                                </DialogTitle>
+                              </DialogHeader>
+                              {selectedStudent && (
+                                <div className="space-y-6">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                      <Label className="text-sm font-medium">Motivation</Label>
-                                      <p className="mt-2 text-sm bg-gray-50 p-3 rounded">
-                                        {selectedStudent.motivation}
-                                      </p>
-                                    </div>
-
-                                    <div>
-                                      <Label className="text-sm font-medium">Changer le statut</Label>
-                                      <div className="mt-2 flex space-x-2">
-                                        <Button 
-                                          size="sm" 
-                                          variant={selectedStudent.status === 'pending' ? 'default' : 'outline'}
-                                          onClick={() => updateStudentStatus(selectedStudent.id, 'pending')}
-                                        >
-                                          En attente
-                                        </Button>
-                                        <Button 
-                                          size="sm" 
-                                          variant={selectedStudent.status === 'confirmed' ? 'default' : 'outline'}
-                                          onClick={() => updateStudentStatus(selectedStudent.id, 'confirmed')}
-                                        >
-                                          Confirmer
-                                        </Button>
-                                        <Button 
-                                          size="sm" 
-                                          variant={selectedStudent.status === 'rejected' ? 'destructive' : 'outline'}
-                                          onClick={() => updateStudentStatus(selectedStudent.id, 'rejected')}
-                                        >
-                                          Rejeter
-                                        </Button>
+                                      <Label className="text-sm font-medium">Informations personnelles</Label>
+                                      <div className="mt-2 space-y-2 text-sm">
+                                        <p><strong>Email:</strong> <span className="break-all">{selectedStudent.email}</span></p>
+                                        <p><strong>Téléphone:</strong> {selectedStudent.telephone}</p>
+                                        <p><strong>Âge:</strong> {selectedStudent.age} ans</p>
+                                        <p><strong>Niveau:</strong> {selectedStudent.niveau}</p>
                                       </div>
                                     </div>
+                                    <div>
+                                      <Label className="text-sm font-medium">Localisation</Label>
+                                      <div className="mt-2 space-y-2 text-sm">
+                                        <p><strong>École:</strong> {selectedStudent.ecole}</p>
+                                        <p><strong>Ville:</strong> {selectedStudent.ville}</p>
+                                        <p><strong>Département:</strong> {selectedStudent.departement}</p>
+                                        <p><strong>Commune:</strong> {selectedStudent.commune}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div>
+                                    <Label className="text-sm font-medium">Motivation</Label>
+                                    <p className="mt-2 text-sm bg-gray-50 p-3 rounded">
+                                      {selectedStudent.motivation}
+                                    </p>
+                                  </div>
 
-                                    <div className="flex space-x-2">
-                                      <Button variant="outline" size="sm" asChild>
-                                        <a href={`mailto:${selectedStudent.email}`}>
-                                          <Mail className="h-4 w-4 mr-2" />
-                                          Email
-                                        </a>
+                                  <div>
+                                    <Label className="text-sm font-medium">Changer le statut</Label>
+                                    <div className="mt-2 flex flex-wrap gap-2">
+                                      <Button 
+                                        size="sm" 
+                                        variant={selectedStudent.status === 'pending' ? 'default' : 'outline'}
+                                        onClick={() => updateStudentStatus(selectedStudent.id, 'pending')}
+                                      >
+                                        En attente
                                       </Button>
-                                      <Button variant="outline" size="sm" asChild>
-                                        <a href={`tel:${selectedStudent.telephone}`}>
-                                          <Phone className="h-4 w-4 mr-2" />
-                                          Appeler
-                                        </a>
+                                      <Button 
+                                        size="sm" 
+                                        variant={selectedStudent.status === 'confirmed' ? 'default' : 'outline'}
+                                        onClick={() => updateStudentStatus(selectedStudent.id, 'confirmed')}
+                                      >
+                                        Confirmer
+                                      </Button>
+                                      <Button 
+                                        size="sm" 
+                                        variant={selectedStudent.status === 'rejected' ? 'destructive' : 'outline'}
+                                        onClick={() => updateStudentStatus(selectedStudent.id, 'rejected')}
+                                      >
+                                        Rejeter
                                       </Button>
                                     </div>
                                   </div>
-                                )}
-                              </DialogContent>
-                            </Dialog>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
 
-          {/* Messages Tab */}
-          <TabsContent value="messages" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle>Messages de contact</CardTitle>
-                  <div className="flex space-x-2">
-                    <Select value={messageFilter} onValueChange={setMessageFilter}>
-                      <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Filtrer" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tous</SelectItem>
-                        <SelectItem value="new">Nouveaux</SelectItem>
-                        <SelectItem value="read">Lus</SelectItem>
-                        <SelectItem value="replied">Répondus</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button onClick={() => exportToExcel('messages')} variant="outline">
-                      <Download className="h-4 w-4 mr-2" />
-                      Exporter
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {loading ? (
-                  <div className="text-center py-8">Chargement...</div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Nom</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Intérêt</TableHead>
-                        <TableHead>Message</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Statut</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredMessages.map((message) => (
-                        <TableRow key={message.id}>
-                          <TableCell className="font-medium">{message.name}</TableCell>
-                          <TableCell>{message.email}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{message.interest}</Badge>
-                          </TableCell>
-                          <TableCell className="max-w-xs truncate">
-                            {message.message}
-                          </TableCell>
-                          <TableCell>
-                            {new Date(message.createdAt).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>{getStatusBadge(message.status, 'message')}</TableCell>
-                          <TableCell>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => setSelectedMessage(message)}
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
-                                <DialogHeader>
-                                  <DialogTitle>Message de {selectedMessage?.name}</DialogTitle>
-                                </DialogHeader>
-                                {selectedMessage && (
-                                  <div className="space-y-6">
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div>
-                                        <Label className="text-sm font-medium">Contact</Label>
-                                        <div className="mt-2 space-y-2 text-sm">
-                                          <p><strong>Nom:</strong> {selectedMessage.name}</p>
-                                          <p><strong>Email:</strong> {selectedMessage.email}</p>
-                                          {selectedMessage.phone && (
-                                            <p><strong>Téléphone:</strong> {selectedMessage.phone}</p>
-                                          )}
-                                          <p><strong>Intérêt:</strong> {selectedMessage.interest}</p>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <Label className="text-sm font-medium">Informations</Label>
-                                        <div className="mt-2 space-y-2 text-sm">
-                                          <p><strong>Date:</strong> {new Date(selectedMessage.createdAt).toLocaleString()}</p>
-                                          <p><strong>Statut:</strong> {getStatusBadge(selectedMessage.status, 'message')}</p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    
-                                    <div>
-                                      <Label className="text-sm font-medium">Message</Label>
-                                      <p className="mt-2 text-sm bg-gray-50 p-3 rounded">
-                                        {selectedMessage.message}
-                                      </p>
-                                    </div>
-
-                                    <div>
-                                      <Label className="text-sm font-medium">Changer le statut</Label>
-                                      <div className="mt-2 flex space-x-2">
-                                        <Button 
-                                          size="sm" 
-                                          variant={selectedMessage.status === 'new' ? 'default' : 'outline'}
-                                          onClick={() => updateMessageStatus(selectedMessage.id, 'new')}
-                                        >
-                                          Nouveau
-                                        </Button>
-                                        <Button 
-                                          size="sm" 
-                                          variant={selectedMessage.status === 'read' ? 'default' : 'outline'}
-                                          onClick={() => updateMessageStatus(selectedMessage.id, 'read')}
-                                        >
-                                          Lu
-                                        </Button>
-                                        <Button 
-                                          size="sm" 
-                                          variant={selectedMessage.status === 'replied' ? 'default' : 'outline'}
-                                          onClick={() => updateMessageStatus(selectedMessage.id, 'replied')}
-                                        >
-                                          Répondu
-                                        </Button>
-                                      </div>
-                                    </div>
-
-                                    <div className="flex space-x-2">
-                                      <Button variant="outline" size="sm" asChild>
-                                        <a href={`mailto:${selectedMessage.email}?subject=Re: Votre message concernant le Summer Maths Camp`}>
-                                          <Mail className="h-4 w-4 mr-2" />
-                                          Répondre
-                                        </a>
-                                      </Button>
-                                      {selectedMessage.phone && (
-                                        <Button variant="outline" size="sm" asChild>
-                                          <a href={`tel:${selectedMessage.phone}`}>
-                                            <Phone className="h-4 w-4 mr-2" />
-                                            Appeler
-                                          </a>
-                                        </Button>
-                                      )}
-                                    </div>
+                                  <div className="flex flex-wrap gap-2">
+                                    <Button variant="outline" size="sm" asChild>
+                                      <a href={`mailto:${selectedStudent.email}`}>
+                                        <Mail className="h-4 w-4 mr-2" />
+                                        Email
+                                      </a>
+                                    </Button>
+                                    <Button variant="outline" size="sm" asChild>
+                                      <a href={`tel:${selectedStudent.telephone}`}>
+                                        <Phone className="h-4 w-4 mr-2" />
+                                        Appeler
+                                      </a>
+                                    </Button>
                                   </div>
-                                )}
-                              </DialogContent>
-                            </Dialog>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

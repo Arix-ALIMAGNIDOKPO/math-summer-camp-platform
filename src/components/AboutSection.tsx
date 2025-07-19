@@ -98,6 +98,7 @@ const AboutSection = () => {
                   src="/lovable-uploads/2d79b957-cbf5-4cb7-85d6-23daea9e1950.png" 
                   alt="Students collaborating" 
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
               <div className="absolute -bottom-8 -left-8 w-2/3 aspect-square rounded-2xl overflow-hidden shadow-xl">
@@ -105,6 +106,7 @@ const AboutSection = () => {
                   src="/lovable-uploads/e415b9ca-7127-4c2d-8b77-ee94195c17f0.png" 
                   alt="Mathematics equations" 
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
             </div>

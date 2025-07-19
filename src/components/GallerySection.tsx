@@ -107,10 +107,10 @@ const GallerySection = () => {
                 </div>
               ))}
             </div>
-          </AnimatedSection>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         ) : (
           <AnimatedSection>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {testimonials.map((testimonial, index) => (
                 <Card key={index} className="border-0 shadow-md overflow-hidden flex flex-col">
                   <div className="h-32 overflow-hidden">
@@ -118,6 +118,8 @@ const GallerySection = () => {
                       src={testimonial.image} 
                       alt={testimonial.author}
                       className="w-full h-full object-cover object-center"
+                      loading="lazy"
+                      loading="lazy"
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-grow">

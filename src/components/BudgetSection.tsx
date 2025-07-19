@@ -39,7 +39,7 @@ const BudgetSection = () => {
         </AnimatedSection>
         
         <AnimatedSection className="max-w-3xl mx-auto">
-          <Card className="p-6 sm:p-8 border-0 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10">
+          <Card className="p-4 sm:p-6 md:p-8 border-0 shadow-xl bg-gradient-to-br from-primary/5 to-primary/10">
             <h3 className="heading-sm text-center mb-6 md:mb-8">{t("budget.support.title")}</h3>
 
             <div className="mb-8 md:mb-10">
@@ -47,7 +47,7 @@ const BudgetSection = () => {
                 {t("budget.contribution")}
               </p>
               
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 md:mb-8">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6 md:mb-8">
                 <Button 
                   variant="outline" 
                   onClick={() => handleQuickAmount(10)}
@@ -119,7 +119,7 @@ const BudgetSection = () => {
                 {t("budget.business.description")}
               </p>
               <Button variant="outline" className="w-full border-primary/20" asChild>
-                <a href="mailto:info.imacbenin@gmail.com">{t("budget.contact.us")}</a>
+                <a href="mailto:info.imacbenin@gmail.com">Contactez-nous</a>
               </Button>
             </div>
           </Card>
