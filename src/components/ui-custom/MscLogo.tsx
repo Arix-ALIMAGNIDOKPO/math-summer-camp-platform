@@ -43,7 +43,7 @@ export const MscLogo = ({ className, variant = "full" }: MscLogoProps) => {
       </div>
       {variant === "full" && (
         <div className="font-bold text-xl">
-          <span className="text-primary">Summer</span>
+          <span className="text-primary">Benin</span>
           <span className="ml-1">Maths Camp</span>
         </div>
       )}
