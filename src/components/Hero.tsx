@@ -42,12 +42,12 @@ const Hero = () => {
             <div className="relative">
               <div className="aspect-video w-full max-w-5xl mx-auto overflow-hidden rounded-lg md:rounded-2xl shadow-xl md:shadow-2xl relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
-                <iframe 
+                <iframe
                   src="https://www.youtube.com/embed/1-IJrwTKVzE?si=SoLg5U558vH3Fh-7&autoplay=1&mute=0" 
                   title="Summer Maths Camp Video"
                   className="w-full h-full border-0"
                   frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                   allowFullScreen
                   loading="lazy"
                 />

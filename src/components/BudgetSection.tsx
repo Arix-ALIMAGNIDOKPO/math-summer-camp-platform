@@ -20,9 +20,20 @@ const BudgetSection = () => {
       return;
     }
     
-    toast.success(language === 'fr' ? 
-      "Le traitement des dons se ferait ici dans un environnement de production" : 
-      "Donation processing would happen here in a production environment");
+    // Créer le message de don prédéfini
+    const subject = encodeURIComponent("Don pour le Summer Maths Camp 2025");
+    const body = encodeURIComponent(`Bonjour,
+
+Je souhaite faire un don de ${donationAmount}€ pour soutenir le Summer Maths Camp 2025.
+
+Ce don permettra d'offrir une formation mathématique gratuite à des jeunes talents qui n'auraient pas accès à ces concepts dans leur cursus habituel.
+
+Merci de me faire parvenir les informations nécessaires pour effectuer ce don.
+
+Cordialement`);
+    
+    // Rediriger vers l'email avec le message prédéfini
+    window.location.href = `mailto:info.imacbenin@gmail.com?subject=${subject}&body=${body}`;
   };
 
   return (

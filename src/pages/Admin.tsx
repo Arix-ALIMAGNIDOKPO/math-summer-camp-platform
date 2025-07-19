@@ -7,8 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { MscLogo } from "@/components/ui-custom/MscLogo";
-import { Users, Download, Eye, Calendar, Mail, Phone, GraduationCap } from "lucide-react";
+import { Users, Download, Eye, Calendar, Mail, Phone, GraduationCap, MessageSquare, User, MapPin, School } from "lucide-react";
 import { toast } from "sonner";
 
 interface Student {
@@ -29,6 +31,17 @@ interface Student {
   statusUpdatedAt?: string;
 }
 
+interface Message {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  interest: string;
+  message: string;
+  createdAt: string;
+  status: 'new' | 'read' | 'replied';
+}
+
 interface LoginForm {
   username: string;
   password: string;
@@ -38,11 +51,15 @@ const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginForm, setLoginForm] = useState<LoginForm>({ username: '', password: '' });
   const [students, setStudents] = useState<Student[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [studentFilter, setStudentFilter] = useState('all');
+  const [messageFilter, setMessageFilter] = useState('all');
   const [loading, setLoading] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [activeTab, setActiveTab] = useState('students');
 
   useEffect(() => {
     document.title = "Admin - Summer Maths Camp";
@@ -120,6 +137,7 @@ const Admin = () => {
     sessionStorage.removeItem('admin_authenticated');
     sessionStorage.removeItem('auth_time');
     setStudents([]);
+    setMessages([]);
   };
 
   const loadData = async () => {
@@ -131,6 +149,22 @@ const Admin = () => {
         const studentsData = await studentsResponse.json();
         setStudents(studentsData);
       }
+
+      // Load messages (simulate for now since endpoint doesn't exist yet)
+      // In a real implementation, you would fetch from an API endpoint
+      const mockMessages: Message[] = [
+        {
+          id: "MSG001",
+          name: "Jean Dupont",
+          email: "jean.dupont@email.com",
+          phone: "+22901234567",
+          interest: "parent",
+          message: "Bonjour, je souhaiterais avoir plus d'informations sur le camp de mathématiques pour mon fils qui est en seconde.",
+          createdAt: new Date().toISOString(),
+          status: "new"
+        }
+      ];
+      setMessages(mockMessages);
     } catch (error) {
       console.error('Error loading data:', error);
       toast.error("Erreur lors du chargement des données");
@@ -196,8 +230,33 @@ const Admin = () => {
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
+  const getMessageStatusBadge = (status: string) => {
+    const variants: Record<string, any> = {
+      new: { variant: "destructive", label: "Nouveau" },
+      read: { variant: "secondary", label: "Lu" },
+      replied: { variant: "default", label: "Répondu" }
+    };
+
+    const config = variants[status] || { variant: "secondary", label: status };
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const getInterestLabel = (interest: string) => {
+    const labels: Record<string, string> = {
+      participant: "Participant",
+      parent: "Parent",
+      intervenant: "Intervenant",
+      partenaire: "Partenaire"
+    };
+    return labels[interest] || interest;
+  };
+
   const filteredStudents = students.filter(student => 
     studentFilter === 'all' || student.status === studentFilter
+  );
+
+  const filteredMessages = messages.filter(message => 
+    messageFilter === 'all' || message.status === messageFilter
   );
 
   const stats = {
@@ -205,6 +264,8 @@ const Admin = () => {
     pendingStudents: students.filter(s => s.status === 'pending').length,
     confirmedStudents: students.filter(s => s.status === 'confirmed').length,
     rejectedStudents: students.filter(s => s.status === 'rejected').length,
+    totalMessages: messages.length,
+    newMessages: messages.filter(m => m.status === 'new').length,
   };
 
   if (!isAuthenticated) {
@@ -327,171 +388,369 @@ const Admin = () => {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center">
-                <Users className="h-8 w-8 text-red-600" />
+                <MessageSquare className="h-8 w-8 text-purple-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Rejetées</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.rejectedStudents}</p>
+                  <p className="text-sm font-medium text-gray-600">Messages</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.totalMessages}</p>
+                  {stats.newMessages > 0 && (
+                    <p className="text-xs text-red-600">{stats.newMessages} nouveaux</p>
+                  )}
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Students Section */}
-        <Card>
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <CardTitle>Inscriptions des étudiants</CardTitle>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-                <Select value={studentFilter} onValueChange={setStudentFilter}>
-                  <SelectTrigger className="w-full sm:w-40">
-                    <SelectValue placeholder="Filtrer" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Toutes</SelectItem>
-                    <SelectItem value="pending">En attente</SelectItem>
-                    <SelectItem value="confirmed">Confirmées</SelectItem>
-                    <SelectItem value="rejected">Rejetées</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button onClick={exportToExcel} variant="outline" className="w-full sm:w-auto">
-                  <Download className="h-4 w-4 mr-2" />
-                  Exporter
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">Chargement...</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="min-w-[100px]">ID</TableHead>
-                      <TableHead className="min-w-[150px]">Nom complet</TableHead>
-                      <TableHead className="min-w-[200px]">Email</TableHead>
-                      <TableHead className="min-w-[80px]">Âge</TableHead>
-                      <TableHead className="min-w-[100px]">Niveau</TableHead>
-                      <TableHead className="min-w-[120px]">Ville</TableHead>
-                      <TableHead className="min-w-[100px]">Statut</TableHead>
-                      <TableHead className="min-w-[100px]">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredStudents.map((student) => (
-                      <TableRow key={student.id}>
-                        <TableCell className="font-mono text-sm">{student.id}</TableCell>
-                        <TableCell className="font-medium">
-                          {student.prenom} {student.nom}
-                        </TableCell>
-                        <TableCell className="break-all">{student.email}</TableCell>
-                        <TableCell>{student.age} ans</TableCell>
-                        <TableCell>{student.niveau}</TableCell>
-                        <TableCell>{student.ville}</TableCell>
-                        <TableCell>{getStatusBadge(student.status)}</TableCell>
-                        <TableCell>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => setSelectedStudent(student)}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                              <DialogHeader>
-                                <DialogTitle>
-                                  {selectedStudent?.prenom} {selectedStudent?.nom}
-                                </DialogTitle>
-                              </DialogHeader>
-                              {selectedStudent && (
-                                <div className="space-y-6">
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                      <Label className="text-sm font-medium">Informations personnelles</Label>
-                                      <div className="mt-2 space-y-2 text-sm">
-                                        <p><strong>Email:</strong> <span className="break-all">{selectedStudent.email}</span></p>
-                                        <p><strong>Téléphone:</strong> {selectedStudent.telephone}</p>
-                                        <p><strong>Âge:</strong> {selectedStudent.age} ans</p>
-                                        <p><strong>Niveau:</strong> {selectedStudent.niveau}</p>
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <Label className="text-sm font-medium">Localisation</Label>
-                                      <div className="mt-2 space-y-2 text-sm">
-                                        <p><strong>École:</strong> {selectedStudent.ecole}</p>
-                                        <p><strong>Ville:</strong> {selectedStudent.ville}</p>
-                                        <p><strong>Département:</strong> {selectedStudent.departement}</p>
-                                        <p><strong>Commune:</strong> {selectedStudent.commune}</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div>
-                                    <Label className="text-sm font-medium">Motivation</Label>
-                                    <p className="mt-2 text-sm bg-gray-50 p-3 rounded">
-                                      {selectedStudent.motivation}
-                                    </p>
-                                  </div>
+        {/* Main Content with Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="students" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Inscriptions ({stats.totalStudents})
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Messages ({stats.totalMessages})
+              {stats.newMessages > 0 && (
+                <Badge variant="destructive" className="ml-1 text-xs">
+                  {stats.newMessages}
+                </Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
 
-                                  <div>
-                                    <Label className="text-sm font-medium">Changer le statut</Label>
-                                    <div className="mt-2 flex flex-wrap gap-2">
-                                      <Button 
-                                        size="sm" 
-                                        variant={selectedStudent.status === 'pending' ? 'default' : 'outline'}
-                                        onClick={() => updateStudentStatus(selectedStudent.id, 'pending')}
-                                      >
-                                        En attente
-                                      </Button>
-                                      <Button 
-                                        size="sm" 
-                                        variant={selectedStudent.status === 'confirmed' ? 'default' : 'outline'}
-                                        onClick={() => updateStudentStatus(selectedStudent.id, 'confirmed')}
-                                      >
-                                        Confirmer
-                                      </Button>
-                                      <Button 
-                                        size="sm" 
-                                        variant={selectedStudent.status === 'rejected' ? 'destructive' : 'outline'}
-                                        onClick={() => updateStudentStatus(selectedStudent.id, 'rejected')}
-                                      >
-                                        Rejeter
-                                      </Button>
-                                    </div>
-                                  </div>
+          {/* Students Tab */}
+          <TabsContent value="students">
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <CardTitle>Inscriptions des étudiants</CardTitle>
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+                    <Select value={studentFilter} onValueChange={setStudentFilter}>
+                      <SelectTrigger className="w-full sm:w-40">
+                        <SelectValue placeholder="Filtrer" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Toutes</SelectItem>
+                        <SelectItem value="pending">En attente</SelectItem>
+                        <SelectItem value="confirmed">Confirmées</SelectItem>
+                        <SelectItem value="rejected">Rejetées</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={exportToExcel} variant="outline" className="w-full sm:w-auto">
+                      <Download className="h-4 w-4 mr-2" />
+                      Exporter
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="text-center py-8">Chargement...</div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="min-w-[100px]">ID</TableHead>
+                          <TableHead className="min-w-[150px]">Nom complet</TableHead>
+                          <TableHead className="min-w-[200px]">Email</TableHead>
+                          <TableHead className="min-w-[80px]">Âge</TableHead>
+                          <TableHead className="min-w-[100px]">Niveau</TableHead>
+                          <TableHead className="min-w-[120px]">Ville</TableHead>
+                          <TableHead className="min-w-[100px]">Statut</TableHead>
+                          <TableHead className="min-w-[100px]">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredStudents.map((student) => (
+                          <TableRow key={student.id}>
+                            <TableCell className="font-mono text-sm">{student.id}</TableCell>
+                            <TableCell className="font-medium">
+                              {student.prenom} {student.nom}
+                            </TableCell>
+                            <TableCell className="break-all">{student.email}</TableCell>
+                            <TableCell>{student.age} ans</TableCell>
+                            <TableCell>{student.niveau}</TableCell>
+                            <TableCell>{student.ville}</TableCell>
+                            <TableCell>{getStatusBadge(student.status)}</TableCell>
+                            <TableCell>
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => setSelectedStudent(student)}
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-4xl max-h-[90vh]">
+                                  <DialogHeader>
+                                    <DialogTitle className="flex items-center gap-2">
+                                      <User className="h-5 w-5" />
+                                      {selectedStudent?.prenom} {selectedStudent?.nom}
+                                    </DialogTitle>
+                                  </DialogHeader>
+                                  {selectedStudent && (
+                                    <ScrollArea className="max-h-[70vh] pr-4">
+                                      <div className="space-y-6">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                          <Card className="p-4">
+                                            <div className="flex items-center gap-2 mb-3">
+                                              <User className="h-4 w-4 text-blue-600" />
+                                              <Label className="text-sm font-semibold">Informations personnelles</Label>
+                                            </div>
+                                            <div className="space-y-3 text-sm">
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <span className="font-medium">Email:</span>
+                                                <span className="break-all">{selectedStudent.email}</span>
+                                              </div>
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <span className="font-medium">Téléphone:</span>
+                                                <span>{selectedStudent.telephone}</span>
+                                              </div>
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <span className="font-medium">Âge:</span>
+                                                <span>{selectedStudent.age} ans</span>
+                                              </div>
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <span className="font-medium">Niveau:</span>
+                                                <span className="capitalize">{selectedStudent.niveau}</span>
+                                              </div>
+                                            </div>
+                                          </Card>
 
-                                  <div className="flex flex-wrap gap-2">
-                                    <Button variant="outline" size="sm" asChild>
-                                      <a href={`mailto:${selectedStudent.email}`}>
-                                        <Mail className="h-4 w-4 mr-2" />
-                                        Email
-                                      </a>
-                                    </Button>
-                                    <Button variant="outline" size="sm" asChild>
-                                      <a href={`tel:${selectedStudent.telephone}`}>
-                                        <Phone className="h-4 w-4 mr-2" />
-                                        Appeler
-                                      </a>
-                                    </Button>
-                                  </div>
-                                </div>
-                              )}
-                            </DialogContent>
-                          </Dialog>
-                        </TableCell>
+                                          <Card className="p-4">
+                                            <div className="flex items-center gap-2 mb-3">
+                                              <MapPin className="h-4 w-4 text-green-600" />
+                                              <Label className="text-sm font-semibold">Localisation</Label>
+                                            </div>
+                                            <div className="space-y-3 text-sm">
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <span className="font-medium">Ville:</span>
+                                                <span>{selectedStudent.ville}</span>
+                                              </div>
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <span className="font-medium">Département:</span>
+                                                <span>{selectedStudent.departement}</span>
+                                              </div>
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <span className="font-medium">Commune:</span>
+                                                <span>{selectedStudent.commune}</span>
+                                              </div>
+                                            </div>
+                                          </Card>
+
+                                          <Card className="p-4">
+                                            <div className="flex items-center gap-2 mb-3">
+                                              <School className="h-4 w-4 text-purple-600" />
+                                              <Label className="text-sm font-semibold">Établissement</Label>
+                                            </div>
+                                            <div className="space-y-3 text-sm">
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <span className="font-medium">École:</span>
+                                                <span>{selectedStudent.ecole}</span>
+                                              </div>
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <span className="font-medium">Inscription:</span>
+                                                <span>{new Date(selectedStudent.registeredAt).toLocaleDateString('fr-FR')}</span>
+                                              </div>
+                                            </div>
+                                          </Card>
+
+                                          <Card className="p-4">
+                                            <div className="flex items-center gap-2 mb-3">
+                                              <Calendar className="h-4 w-4 text-orange-600" />
+                                              <Label className="text-sm font-semibold">Statut</Label>
+                                            </div>
+                                            <div className="space-y-3">
+                                              <div>{getStatusBadge(selectedStudent.status)}</div>
+                                              <div className="flex flex-wrap gap-2">
+                                                <Button 
+                                                  size="sm" 
+                                                  variant={selectedStudent.status === 'pending' ? 'default' : 'outline'}
+                                                  onClick={() => updateStudentStatus(selectedStudent.id, 'pending')}
+                                                >
+                                                  En attente
+                                                </Button>
+                                                <Button 
+                                                  size="sm" 
+                                                  variant={selectedStudent.status === 'confirmed' ? 'default' : 'outline'}
+                                                  onClick={() => updateStudentStatus(selectedStudent.id, 'confirmed')}
+                                                >
+                                                  Confirmer
+                                                </Button>
+                                                <Button 
+                                                  size="sm" 
+                                                  variant={selectedStudent.status === 'rejected' ? 'destructive' : 'outline'}
+                                                  onClick={() => updateStudentStatus(selectedStudent.id, 'rejected')}
+                                                >
+                                                  Rejeter
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </Card>
+                                        </div>
+                                        
+                                        <Card className="p-4">
+                                          <Label className="text-sm font-semibold mb-3 block">Lettre de motivation</Label>
+                                          <ScrollArea className="h-32 w-full rounded border p-3 bg-gray-50">
+                                            <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                              {selectedStudent.motivation}
+                                            </p>
+                                          </ScrollArea>
+                                        </Card>
+
+                                        <div className="flex flex-wrap gap-2 pt-4 border-t">
+                                          <Button variant="outline" size="sm" asChild>
+                                            <a href={`mailto:${selectedStudent.email}`}>
+                                              <Mail className="h-4 w-4 mr-2" />
+                                              Email
+                                            </a>
+                                          </Button>
+                                          <Button variant="outline" size="sm" asChild>
+                                            <a href={`tel:${selectedStudent.telephone}`}>
+                                              <Phone className="h-4 w-4 mr-2" />
+                                              Appeler
+                                            </a>
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </ScrollArea>
+                                  )}
+                                </DialogContent>
+                              </Dialog>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Messages Tab */}
+          <TabsContent value="messages">
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <CardTitle>Messages de contact</CardTitle>
+                  <Select value={messageFilter} onValueChange={setMessageFilter}>
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue placeholder="Filtrer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous</SelectItem>
+                      <SelectItem value="new">Nouveaux</SelectItem>
+                      <SelectItem value="read">Lus</SelectItem>
+                      <SelectItem value="replied">Répondus</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nom</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Intérêt</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Statut</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredMessages.map((message) => (
+                        <TableRow key={message.id}>
+                          <TableCell className="font-medium">{message.name}</TableCell>
+                          <TableCell>{message.email}</TableCell>
+                          <TableCell>{getInterestLabel(message.interest)}</TableCell>
+                          <TableCell>{new Date(message.createdAt).toLocaleDateString('fr-FR')}</TableCell>
+                          <TableCell>{getMessageStatusBadge(message.status)}</TableCell>
+                          <TableCell>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => setSelectedMessage(message)}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl">
+                                <DialogHeader>
+                                  <DialogTitle className="flex items-center gap-2">
+                                    <MessageSquare className="h-5 w-5" />
+                                    Message de {selectedMessage?.name}
+                                  </DialogTitle>
+                                </DialogHeader>
+                                {selectedMessage && (
+                                  <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label className="text-sm font-medium">Informations de contact</Label>
+                                        <div className="mt-2 space-y-1 text-sm">
+                                          <p><strong>Email:</strong> {selectedMessage.email}</p>
+                                          {selectedMessage.phone && (
+                                            <p><strong>Téléphone:</strong> {selectedMessage.phone}</p>
+                                          )}
+                                          <p><strong>Intérêt:</strong> {getInterestLabel(selectedMessage.interest)}</p>
+                                          <p><strong>Date:</strong> {new Date(selectedMessage.createdAt).toLocaleString('fr-FR')}</p>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium">Statut</Label>
+                                        <div className="mt-2">
+                                          {getMessageStatusBadge(selectedMessage.status)}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div>
+                                      <Label className="text-sm font-medium">Message</Label>
+                                      <ScrollArea className="h-32 w-full rounded border p-3 bg-gray-50 mt-2">
+                                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                          {selectedMessage.message}
+                                        </p>
+                                      </ScrollArea>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-2 pt-4 border-t">
+                                      <Button variant="outline" size="sm" asChild>
+                                        <a href={`mailto:${selectedMessage.email}?subject=Re: Votre message concernant le Summer Maths Camp`}>
+                                          <Mail className="h-4 w-4 mr-2" />
+                                          Répondre
+                                        </a>
+                                      </Button>
+                                      {selectedMessage.phone && (
+                                        <Button variant="outline" size="sm" asChild>
+                                          <a href={`tel:${selectedMessage.phone}`}>
+                                            <Phone className="h-4 w-4 mr-2" />
+                                            Appeler
+                                          </a>
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
