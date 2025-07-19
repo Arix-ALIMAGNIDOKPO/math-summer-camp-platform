@@ -42,25 +42,14 @@ const Hero = () => {
             <div className="relative">
               <div className="aspect-video w-full max-w-5xl mx-auto overflow-hidden rounded-lg md:rounded-2xl shadow-xl md:shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
-                <a 
-                  href="https://youtu.be/1-IJrwTKVzE?si=SoLg5U558vH3Fh-7" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block relative w-full h-full group"
-                >
-                  <img 
-                    src="/lovable-uploads/ce8ae2f8-3c72-4e19-9448-c74c85b4311b.png" 
-                    alt="Summer Maths Camp Video" 
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-white/90 rounded-full p-3 md:p-5 shadow-lg transform transition-transform group-hover:scale-110">
-                      <svg xmlns="http://www.w3.org/2000/svg" width={isMobile ? "30" : "40"} height={isMobile ? "30" : "40"} viewBox="0 0 24 24" fill="currentColor" className="text-primary">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                      </svg>
-                    </div>
-                  </div>
-                </a>
+                <iframe 
+                  src="https://www.youtube.com/embed/1-IJrwTKVzE?si=SoLg5U558vH3Fh-7&autoplay=1&mute=1" 
+                  title="Summer Maths Camp Video"
+                  className="w-full h-full"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
               </div>
             </div>
           </AnimatedSection>

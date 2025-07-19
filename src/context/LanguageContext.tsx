@@ -574,7 +574,7 @@ const translations: Record<string, Record<Language, string>> = {
     fr: "Contact",
     en: "Contact"
   },
-  "nav.register": {
+  "register": {
     fr: "S'inscrire",
     en: "Register"
   },

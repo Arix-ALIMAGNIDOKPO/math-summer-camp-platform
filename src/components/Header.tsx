@@ -15,7 +15,6 @@ const navLinks = [
   { href: "#gallery", label: "gallery", isHash: true },
   { href: "#budget", label: "budget", isHash: true },
   { href: "#contact", label: "contact", isHash: true },
-  { href: "/inscription", label: "register", isHash: false },
 ];
 
 const Header = () => {
@@ -78,6 +77,12 @@ const Header = () => {
               {t(link.label)}
             </a>
           ))}
+          <Link
+            to="/inscription"
+            className="ml-2 bg-primary text-primary-foreground hover:bg-primary/90 py-2 px-4 text-sm rounded-full transition-colors font-medium"
+          >
+            {t("register")}
+          </Link>
         </nav>
 
         <div className="flex items-center space-x-2">
@@ -128,6 +133,13 @@ const Header = () => {
                       {t(link.label)}
                     </a>
                   ))}
+                  <Link
+                    to="/inscription"
+                    onClick={() => setIsOpen(false)}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 p-3 rounded-md transition-colors font-medium text-center"
+                  >
+                    {t("register")}
+                  </Link>
                 </nav>
               </div>
             </SheetContent>

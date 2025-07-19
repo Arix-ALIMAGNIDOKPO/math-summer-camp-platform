@@ -15,6 +15,22 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 
+// Données des départements et communes du Bénin
+const beninData = {
+  "Alibori": ["Banikoara", "Gogounou", "Kandi", "Karimama", "Malanville", "Segbana"],
+  "Atacora": ["Boukoumbé", "Cobly", "Kérou", "Kouandé", "Matéri", "Natitingou", "Péhunco", "Tanguiéta", "Toucountouna"],
+  "Atlantique": ["Abomey-Calavi", "Allada", "Kpomassè", "Ouidah", "Sô-Ava", "Toffo", "Tori-Bossito", "Zè"],
+  "Borgou": ["Bembèrèkè", "Kalalé", "N'Dali", "Nikki", "Parakou", "Pèrèrè", "Sinendé", "Tchaourou"],
+  "Collines": ["Bantè", "Dassa-Zoumè", "Glazoué", "Ouèssè", "Savalou", "Savè"],
+  "Couffo": ["Aplahoué", "Djakotomey", "Dogbo-Tota", "Klouékanmè", "Lalo", "Toviklin"],
+  "Donga": ["Bassila", "Copargo", "Djougou", "Ouaké"],
+  "Littoral": ["Cotonou"],
+  "Mono": ["Athiémè", "Bopa", "Comè", "Grand-Popo", "Houéyogbé", "Lokossa"],
+  "Ouémé": ["Adjarra", "Adjohoun", "Aguégués", "Akpro-Missérété", "Avrankou", "Bonou", "Dangbo", "Porto-Novo", "Sèmè-Podji"],
+  "Plateau": ["Adja-Ouèrè", "Ifangni", "Kétou", "Pobè", "Sakété"],
+  "Zou": ["Abomey", "Agbangnizoun", "Bohicon", "Covè", "Djidja", "Ouinhi", "Zagnanado", "Za-Kpota", "Zogbodomey"]
+};
+
 const inscriptionSchema = z.object({
   prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
   nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
@@ -26,8 +42,8 @@ const inscriptionSchema = z.object({
   niveau: z.string().min(1, "Veuillez sélectionner votre niveau scolaire"),
   ecole: z.string().min(3, "Veuillez indiquer votre école actuelle"),
   ville: z.string().min(2, "Veuillez indiquer votre ville"),
-  commune: z.string().min(2, "Veuillez indiquer votre commune"),
   departement: z.string().min(2, "Veuillez indiquer votre département"),
+  commune: z.string().min(2, "Veuillez indiquer votre commune"),
   motivation: z.string().min(50, "Veuillez écrire au moins 50 caractères"),
 });
 
@@ -36,12 +52,16 @@ type InscriptionFormValues = z.infer<typeof inscriptionSchema>;
 const Inscription = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [availableCommunes, setAvailableCommunes] = useState<string[]>([]);
   const { t, language } = useLanguage();
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<InscriptionFormValues>({
     resolver: zodResolver(inscriptionSchema),
@@ -54,30 +74,53 @@ const Inscription = () => {
       niveau: "",
       ecole: "",
       ville: "",
-      commune: "",
       departement: "",
+      commune: "",
       motivation: "",
     },
   });
+
+  const watchedDepartment = watch("departement");
+
+  // Mettre à jour les communes quand le département change
+  React.useEffect(() => {
+    if (watchedDepartment && beninData[watchedDepartment as keyof typeof beninData]) {
+      setAvailableCommunes(beninData[watchedDepartment as keyof typeof beninData]);
+      setValue("commune", ""); // Reset commune selection
+    } else {
+      setAvailableCommunes([]);
+    }
+  }, [watchedDepartment, setValue]);
 
   const onSubmit = async (data: InscriptionFormValues) => {
     setIsSubmitting(true);
     
     try {
-      // Simuler un appel API (remplacer par une vraie API en backend)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
       
-      console.log("Données du formulaire:", data);
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'envoi');
+      }
+      
+      const result = await response.json();
       
       // Réinitialiser le formulaire
       reset();
+      setSelectedDepartment("");
+      setAvailableCommunes([]);
       
       // Afficher un message de succès
       toast({
         title: language === 'fr' ? "Inscription envoyée avec succès!" : "Registration successfully sent!",
         description: language === 'fr' 
-          ? "Votre candidature a été reçue. Nous vous contacterons bientôt."
-          : "Your application has been received. We will contact you soon.",
+          ? "Merci pour votre candidature ! Nous vous contacterons par email ou téléphone pour confirmation dans les prochains jours."
+          : "Thank you for your application! We will contact you by email or phone for confirmation in the coming days.",
         variant: "default",
       });
     } catch (error) {
@@ -272,32 +315,53 @@ const Inscription = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <label htmlFor="commune" className="text-sm font-medium">
-                    {language === 'fr' ? "Commune" : "Commune"}
+                  <label htmlFor="departement" className="text-sm font-medium">
+                    {language === 'fr' ? "Département" : "Department"}
                   </label>
-                  <Input
-                    id="commune"
-                    {...register("commune")}
-                    placeholder={language === 'fr' ? "Votre commune" : "Your commune"}
-                    className={errors.commune ? "border-destructive" : ""}
-                  />
-                  {errors.commune && (
-                    <p className="text-xs text-destructive">{errors.commune.message}</p>
+                  <select
+                    id="departement"
+                    {...register("departement")}
+                    className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm ${
+                      errors.departement ? "border-destructive" : ""
+                    }`}
+                  >
+                    <option value="">
+                      {language === 'fr' ? "Sélectionnez votre département" : "Select your department"}
+                    </option>
+                    {Object.keys(beninData).map((dept) => (
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.departement && (
+                    <p className="text-xs text-destructive">{errors.departement.message}</p>
                   )}
                 </div>
                 
                 <div className="space-y-2">
-                  <label htmlFor="departement" className="text-sm font-medium">
-                    {language === 'fr' ? "Département" : "Department"}
+                  <label htmlFor="commune" className="text-sm font-medium">
+                    {language === 'fr' ? "Commune" : "Commune"}
                   </label>
-                  <Input
-                    id="departement"
-                    {...register("departement")}
-                    placeholder={language === 'fr' ? "Votre département" : "Your department"}
-                    className={errors.departement ? "border-destructive" : ""}
-                  />
-                  {errors.departement && (
-                    <p className="text-xs text-destructive">{errors.departement.message}</p>
+                  <select
+                    id="commune"
+                    {...register("commune")}
+                    disabled={!watchedDepartment || availableCommunes.length === 0}
+                    className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm ${
+                      errors.commune ? "border-destructive" : ""
+                    }`}
+                  >
+                    <option value="">
+                      {language === 'fr' ? "Sélectionnez votre commune" : "Select your commune"}
+                    </option>
+                    {availableCommunes.map((commune) => (
+                      <option key={commune} value={commune}>
+                        {commune}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.commune && (
+                    <p className="text-xs text-destructive">{errors.commune.message}</p>
                   )}
                 </div>
               </div>

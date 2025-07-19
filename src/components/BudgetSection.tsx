@@ -114,24 +114,6 @@ const BudgetSection = () => {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <AnimatedSection>
             <div className="glass-effect p-6 md:p-8 rounded-xl">
-              <div className="mb-6 md:mb-8">
-                <div className="flex flex-col sm:flex-row justify-between items-baseline mb-2 gap-4">
-                  <h3 className="font-semibold text-xl">{t("budget.total")}</h3>
-                  <div className="text-right">
-                    <div className="text-2xl font-display font-bold">{formatCurrency(totalBudget)}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {language === 'fr' ? 
-                        "≈ 24 665 USD / 35 524 CAD" : 
-                        "≈ 15,512,750 FCFA / 35,524 CAD"}
-                    </div>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t("budget.distribution")}
-                  <span className="block mt-2 font-medium text-primary">{t("budget.free")}</span>
-                </p>
-              </div>
-              
               <div className="h-64 md:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -167,98 +149,11 @@ const BudgetSection = () => {
           </AnimatedSection>
           
           <AnimatedSection animation="slide-in-right">
-            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-              <h3 className="heading-sm mb-6">{t("budget.breakdown.title")}</h3>
-              <p className="text-muted-foreground mb-6">
-                {t("budget.breakdown.description")}
+            <div className="space-y-6">
+              <h3 className="heading-sm mb-4">{t("budget.support.title")}</h3>
+              <p className="text-muted-foreground">
+                {t("budget.contribution")}
               </p>
-              
-              <div className="min-w-full overflow-x-auto">
-                <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
-                  <thead className="bg-gray-50 border-b">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("budget.category")}</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">FCFA</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">USD</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">CAD</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                        <span className="text-primary">🏨</span> {t("budget.accommodation")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">2,160,865</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">3,433</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">4,945</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                        <span className="text-primary">🍽️</span> {t("budget.food")} (120 participants sur 10 jours)
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">9,723,692</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">15,463</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">22,272</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                        <span className="text-primary">🚐</span> {t("budget.transport")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">4,141,154</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">6,586</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">9,523</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                        <span className="text-primary">🛠️</span> {t("budget.materials")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">370,663</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">589</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">850</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                        <span className="text-primary">🖨️</span> {t("budget.prints")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">247,109</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">394</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">569</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                        <span className="text-primary">🪪</span> {t("budget.badges")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">61,777</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">98</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">142</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                        <span className="text-primary">📺</span> {t("budget.media")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">617,773</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">982</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">1,420</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                        <span className="text-primary">🏥</span> {t("budget.healthcare")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">1,896,707</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">3,014</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">4,343</td>
-                    </tr>
-                    <tr className="bg-primary/5 font-semibold">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        ✅ {t("budget.total.row")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">15,512,750</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">24,665</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">35,524</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
             </div>
           </AnimatedSection>
         </div>
