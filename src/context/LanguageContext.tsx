@@ -614,6 +614,12 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     
     let text = translations[key][language];
     
+    // Ensure text is always a string to prevent undefined.indexOf errors
+    if (typeof text !== 'string') {
+      console.warn(`Translation for key "${key}" in language "${language}" is not a string:`, text);
+      text = key; // Fallback to the key itself
+    }
+    
     // Replace placeholders with actual data if provided
     if (data) {
       Object.entries(data).forEach(([placeholder, value]) => {
