@@ -107,7 +107,7 @@ const GallerySection = () => {
                 </div>
               ))}
             </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          </AnimatedSection>
         ) : (
           <AnimatedSection>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -118,7 +118,6 @@ const GallerySection = () => {
                       src={testimonial.image} 
                       alt={testimonial.author}
                       className="w-full h-full object-cover object-center"
-                      loading="lazy"
                       loading="lazy"
                     />
                   </div>
