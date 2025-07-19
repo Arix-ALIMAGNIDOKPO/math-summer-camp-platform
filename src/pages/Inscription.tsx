@@ -119,8 +119,8 @@ const Inscription = () => {
       toast({
         title: language === 'fr' ? "Inscription envoyée avec succès!" : "Registration successfully sent!",
         description: language === 'fr' 
-          ? "Merci pour votre candidature ! Notre équipe examinera votre dossier et vous contactera par email ou téléphone dans les prochains jours pour vous informer de la suite du processus de sélection."
-          : "Thank you for your application! Our team will review your file and contact you by email or phone in the coming days to inform you about the next steps in the selection process.",
+          ? "Merci pour votre candidature ! Nous vous contacterons par email ou téléphone pour confirmation dans les prochains jours."
+          : "Thank you for your application! We will contact you by email or phone for confirmation in the coming days.",
         variant: "default",
       });
     } catch (error) {
