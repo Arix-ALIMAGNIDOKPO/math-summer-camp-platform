@@ -18,14 +18,19 @@ class InputValidator:
     def validate_phone(phone: str) -> bool:
         """Validate phone number format"""
         if not phone:
-            return False
+            return True  # Phone is optional
         
         # Remove spaces and special characters
         clean_phone = re.sub(r'[^\d+]', '', phone)
         
-        # Check if it's a valid format (8-15 digits, optionally starting with +)
-        pattern = r'^\+?[0-9]{8,15}$'
-        return bool(re.match(pattern, clean_phone))
+        # Benin format: +229 followed by 8 digits or just 8 digits
+        patterns = [
+            r'^\+229[0-9]{8}$',  # +229 + 8 digits
+            r'^[0-9]{8}$',       # 8 digits
+            r'^\+?[0-9]{8,15}$'  # International format
+        ]
+        
+        return any(re.match(pattern, clean_phone) for pattern in patterns)
     
     @staticmethod
     def sanitize_string(text: str, max_length: int = 1000) -> str:

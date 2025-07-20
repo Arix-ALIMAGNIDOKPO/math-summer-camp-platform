@@ -155,9 +155,10 @@ def handle_preflight():
     """Handle CORS preflight requests"""
     if request.method == "OPTIONS":
         response = jsonify({'status': 'ok'})
-        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Origin", request.headers.get('Origin', '*'))
         response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization,Accept")
         response.headers.add('Access-Control-Allow-Methods', "GET,PUT,POST,DELETE,OPTIONS")
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
 
 @app.route('/api/health', methods=['GET'])
@@ -321,9 +322,15 @@ def contact_message():
         try:
             name = sanitize_string(data['name'], 100)
             email = data['email'].strip().lower()
-            phone = data.get('phone', '').strip()
+            phone = sanitize_string(data.get('phone', ''), 20) if data.get('phone') else ''
             interest = data['interest'].strip()
             message = sanitize_string(data['message'], 2000)
+            
+            # Check minimum lengths after sanitization
+            if len(name) < 2:
+                return jsonify({"error": "Le nom doit contenir au moins 2 caractères"}), 400
+            if len(message) < 10:
+                return jsonify({"error": "Le message doit contenir au moins 10 caractères"}), 400
             
             # Validate email
             if not validate_email(email):
@@ -337,12 +344,6 @@ def contact_message():
             valid_interests = ['participant', 'parent', 'intervenant', 'partenaire']
             if interest not in valid_interests:
                 return jsonify({"error": "Type d'intérêt invalide"}), 400
-            
-            # Check minimum lengths
-            if len(name) < 2:
-                return jsonify({"error": "Le nom doit contenir au moins 2 caractères"}), 400
-            if len(message) < 10:
-                return jsonify({"error": "Le message doit contenir au moins 10 caractères"}), 400
             
         except Exception as e:
             logger.error(f"Contact data validation error: {e}")
@@ -595,6 +596,19 @@ def bad_request(error):
 def method_not_allowed(error):
     logger.warning(f"Method not allowed: {request.method} {request.url}")
     return jsonify({"error": "Méthode non autorisée"}), 405
+
+@app.after_request
+def after_request(response):
+    """Add CORS headers to all responses"""
+    origin = request.headers.get('Origin')
+    if origin in ["https://beninmathscamp.vercel.app", "http://localhost:8080", "http://localhost:3000"]:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+    else:
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 if __name__ == '__main__':
     debug_mode = os.environ.get('FLASK_ENV') != 'production'
