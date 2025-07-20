@@ -154,39 +154,3 @@ const ProgramSection = () => {
 };
 
 export default ProgramSection;
-
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </AnimatedSection>
-        
-        <AnimatedSection className="mt-20 text-center">
-          <div className="glass-effect rounded-xl p-8 md:p-12 max-w-4xl mx-auto">
-            <h3 className="heading-sm mb-6">{t("program.specially.designed")}</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
-              <div className="flex flex-col items-center">
-                <div className="font-display text-4xl font-bold text-primary mb-2">10</div>
-                <div className="text-sm text-center">{t("program.stats.days")}</div>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="font-display text-4xl font-bold text-primary mb-2">30+</div>
-                <div className="text-sm text-center">{t("program.stats.workshops")}</div>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="font-display text-4xl font-bold text-primary mb-2">10+</div>
-                <div className="text-sm text-center">{t("program.stats.experts")}</div>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="font-display text-4xl font-bold text-primary mb-2">120</div>
-                <div className="text-sm text-center">{t("program.stats.participants")}</div>
-              </div>
-            </div>
-          </div>
-        </AnimatedSection>
-      </div>
-    </section>
-  );
-};
-
-export default ProgramSection;
