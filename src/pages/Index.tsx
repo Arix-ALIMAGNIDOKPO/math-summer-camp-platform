@@ -2,7 +2,7 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import AboutSection from "@/components/AboutSection";
-import { ProgramSection } from "@/components/ProgramSection";
+import ProgramSection from "@/components/ProgramSection";
 import GallerySection from "@/components/GallerySection";
 import BudgetSection from "@/components/BudgetSection";
 import ContactSection from "@/components/ContactSection";
