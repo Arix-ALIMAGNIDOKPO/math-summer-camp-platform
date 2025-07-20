@@ -125,7 +125,7 @@ const Admin = () => {
     setLoading(true);
     try {
       // Load students
-      const studentsResponse = await fetch('http://localhost:5000/api/students');
+      const studentsResponse = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/students');
       if (studentsResponse.ok) {
         const studentsData = await studentsResponse.json();
         setStudents(studentsData);
@@ -156,7 +156,7 @@ const Admin = () => {
 
   const updateStudentStatus = async (studentId: string, newStatus: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/students/${studentId}/status`, {
+      const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/students/${studentId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -179,7 +179,7 @@ const Admin = () => {
 
   const exportToExcel = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/export/students');
+      const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/export/students');
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
