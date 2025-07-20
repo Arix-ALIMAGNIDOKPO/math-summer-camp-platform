@@ -96,60 +96,79 @@ const ProgramSection = () => {
         </AnimatedSection>
         
         <AnimatedSection>
-          <Tabs defaultValue="session1" className="w-full">
-            <div className="flex justify-center mb-8">
-              <TabsList className="grid grid-cols-2 w-full max-w-md">
-                <TabsTrigger value="session1" className="text-sm rounded-full data-[state=active]:bg-primary">{t("program.session.math")}</TabsTrigger>
-                <TabsTrigger value="session2" className="text-sm rounded-full data-[state=active]:bg-primary">{t("program.session.programming")}</TabsTrigger>
-              </TabsList>
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="space-y-6">
+              <h3 className="heading-md mb-4">{sessions[0].name}</h3>
+              <p className="text-muted-foreground mb-8">
+                {sessions[0].description}
+              </p>
+              
+              <div className="space-y-3">
+                <h4 className="font-medium text-lg">{t("program.themes")}</h4>
+                <ul className="space-y-2">
+                  {sessions[0].themes.map((theme, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <div className="mt-1 rounded-full bg-primary/10 p-1 flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                      <span>{theme}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
             
-            {sessions.map((session, sessionIndex) => (
-              <TabsContent key={sessionIndex} value={`session${sessionIndex + 1}`} className="mt-0">
-                <div className="grid md:grid-cols-2 gap-16 items-center">
-                  <div className="space-y-6">
-                    <h3 className="heading-md mb-4">{session.name}</h3>
-                    <p className="text-muted-foreground mb-8">
-                      {session.description}
-                    </p>
-                    
-                    <div className="space-y-3">
-                      <h4 className="font-medium text-lg">{t("program.themes")}</h4>
-                      <ul className="space-y-2">
-                        {session.themes.map((theme, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <div className="mt-1 rounded-full bg-primary/10 p-1 flex-shrink-0">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                              </svg>
-                            </div>
-                            <span>{theme}</span>
-                          </li>
-                        ))}
-                      </ul>
+            <div className="grid grid-cols-1 gap-4">
+              {activities.map((activity, index) => (
+                <Card key={index} className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-all">
+                  <CardContent className="p-0">
+                    <div className="flex flex-col sm:flex-row">
+                      <div className="bg-primary/5 p-6 flex items-center justify-center sm:w-24">
+                        {activity.icon}
+                      </div>
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold">{activity.title}</h4>
+                          <Chip variant="outline" className="text-xs">{activity.time}</Chip>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{activity.description}</p>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 gap-4">
-                    {activities.map((activity, index) => (
-                      <Card key={index} className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-all">
-                        <CardContent className="p-0">
-                          <div className="flex flex-col sm:flex-row">
-                            <div className="bg-primary/5 p-6 flex items-center justify-center sm:w-24">
-                              {activity.icon}
-                            </div>
-                            <div className="p-6">
-                              <div className="flex items-center justify-between mb-2">
-                                <h4 className="font-semibold">{activity.title}</h4>
-                                <Chip variant="outline" className="text-xs">{activity.time}</Chip>
-                              </div>
-                              <p className="text-sm text-muted-foreground">{activity.description}</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </AnimatedSection>
+        
+        <AnimatedSection className="mt-20 text-center">
+          <div className="glass-effect rounded-xl p-8 md:p-12 max-w-4xl mx-auto">
+            <h3 className="heading-sm mb-6">{t("program.specially.designed")}</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10">
+              <div className="flex flex-col items-center">
+                <div className="font-display text-4xl font-bold text-primary mb-2">30+</div>
+                <div className="text-sm text-center">{t("program.stats.workshops")}</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="font-display text-4xl font-bold text-primary mb-2">10+</div>
+                <div className="text-sm text-center">{t("program.stats.experts")}</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="font-display text-4xl font-bold text-primary mb-2">70</div>
+                <div className="text-sm text-center">{t("program.stats.participants")}</div>
+              </div>
+            </div>
+          </div>
+        </AnimatedSection>
+      </div>
+    </section>
+  );
+};
+
+export default ProgramSection;
+
                 </div>
               </TabsContent>
             ))}

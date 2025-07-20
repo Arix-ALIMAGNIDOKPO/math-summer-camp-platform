@@ -44,7 +44,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center text-muted-foreground gap-2">
                 <Phone size={18} />
-                <span>+2290140642494</span>
+                <span>+2290197240900</span>
               </li>
               <li className="flex items-center text-muted-foreground gap-2">
                 <Mail size={18} />

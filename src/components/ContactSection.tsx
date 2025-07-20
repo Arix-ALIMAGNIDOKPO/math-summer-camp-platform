@@ -246,7 +246,7 @@ const ContactSection = () => {
                     </div>
                     <div>
                       <h4 className="font-medium text-sm">{t("contact.phone.label")}</h4>
-                      <p className="text-muted-foreground">+2290140642494</p>
+                      <p className="text-muted-foreground">+2290197240900</p>
                     </div>
                   </div>
                   

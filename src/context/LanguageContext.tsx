@@ -25,8 +25,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Edition II"
   },
   "hero.description": {
-    fr: "Le Benin Maths Camp 2025, d'une durée de dix jours, propose des activités réparties en deux ateliers distincts : un atelier consacré au camp traditionnel, et un second axé sur la programmation et la robotique.",
-    en: "The Benin Maths Camp 2025, lasting ten days, offers activities divided into two distinct workshops: one dedicated to the traditional camp, and a second focused on programming and robotics."
+    fr: "Le Benin Maths Camp 2025 propose des activités réparties en deux ateliers distincts : un atelier consacré au camp traditionnel, et un second axé sur la programmation et la robotique.",
+    en: "The Benin Maths Camp 2025 offers activities divided into two distinct workshops: one dedicated to the traditional camp, and a second focused on programming and robotics."
   },
   "register.now": {
     fr: "S'inscrire maintenant",
@@ -237,10 +237,6 @@ const translations: Record<string, Record<Language, string>> = {
     en: "A camp specially designed for mathematics enthusiasts"
   },
   "program.stats.days": {
-    fr: "Jours d'immersion",
-    en: "Days of immersion"
-  },
-  "program.stats.workshops": {
     fr: "Ateliers interactifs",
     en: "Interactive workshops"
   },
@@ -249,8 +245,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Recognized experts"
   },
   "program.stats.participants": {
-    fr: "Participants attendus",
-    en: "Expected participants"
+    fr: "Participants",
+    en: "Participants"
   },
   
   // Gallery section
@@ -451,8 +447,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Phone"
   },
   "contact.phone.placeholder": {
-    fr: "0140642494",
-    en: "0140642494"
+    fr: "0197240900",
+    en: "0197240900"
   },
   "contact.interested.as": {
     fr: "Je suis intéressé(e) en tant que :",

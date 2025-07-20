@@ -36,6 +36,7 @@ const inscriptionSchema = z.object({
   nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   email: z.string().email("Email invalide"),
   telephone: z.string().min(8, "Numéro de téléphone invalide").regex(/^(\+229)?[0-9]{8,}$/, "Format de téléphone invalide"),
+  telephone: z.string().min(8, "Numéro de téléphone invalide").regex(/^(\+229\s?)?[0-9]{8,}$/, "Format de téléphone invalide"),
   age: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 14 && Number(val) <= 18, {
     message: "L'âge doit être entre 14 et 18 ans",
   }),
@@ -111,7 +112,7 @@ const Inscription = () => {
         prenom: data.prenom.trim(),
         nom: data.nom.trim(),
         email: data.email.toLowerCase().trim(),
-        telephone: data.telephone.replace(/\s+/g, ''),
+        telephone: data.telephone.replace(/\s+/g, '').replace(/^\+229/, '+229'),
         age: data.age,
         niveau: data.niveau,
         ecole: data.ecole.trim(),
@@ -140,10 +141,14 @@ const Inscription = () => {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
         } catch {
-          const errorText = await response.text();
-          errorMessage = errorText || errorMessage;
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch {
+            errorMessage = `Erreur HTTP ${response.status}`;
+          }
         }
-        console.error('Registration error response:', errorData);
+        console.error('Registration error response:', errorMessage);
         throw new Error(errorMessage);
       }
       
@@ -325,7 +330,7 @@ const Inscription = () => {
                   <Input
                     id="telephone"
                     {...register("telephone")}
-                    placeholder="Ex: +229 12345678 ou 12345678"
+                    placeholder="Ex: +229 12345678, +22912345678 ou 12345678"
                     className={errors.telephone ? "border-destructive" : ""}
                     autoComplete="tel"
                   />
@@ -334,8 +339,8 @@ const Inscription = () => {
                   )}
                   <p className="text-xs text-muted-foreground">
                     {language === 'fr' 
-                      ? "Format: +229 suivi de 8 chiffres ou directement 8 chiffres"
-                      : "Format: +229 followed by 8 digits or directly 8 digits"}
+                      ? "Format: +229 suivi de 8 chiffres (avec ou sans espace) ou directement 8 chiffres"
+                      : "Format: +229 followed by 8 digits (with or without space) or directly 8 digits"}
                   </p>
                 </div>
                 
