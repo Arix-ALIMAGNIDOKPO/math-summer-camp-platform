@@ -43,7 +43,7 @@ const Hero = () => {
               <div className="aspect-video w-full max-w-5xl mx-auto overflow-hidden rounded-lg md:rounded-2xl shadow-xl md:shadow-2xl relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
                 <iframe
-                  src="https://www.youtube.com/embed/1-IJrwTKVzE?si=SoLg5U558vH3Fh-7&autoplay=1&mute=0" 
+                  src="https://www.youtube.com/embed/1-IJrwTKVzE?si=SoLg5U558vH3Fh-7&autoplay=0&mute=0&controls=1&rel=0&modestbranding=1" 
                   title="Summer Maths Camp Video"
                   className="w-full h-full border-0"
                   frameBorder="0"

@@ -299,6 +299,93 @@ def update_student_status(student_id):
         app.logger.error(f"Error updating student status: {e}")
         return jsonify({"error": "Erreur lors de la mise à jour"}), 500
 
+@app.route('/api/students/<student_id>', methods=['DELETE'])
+def delete_student(student_id):
+    """Delete a student"""
+    try:
+        students = load_data(STUDENTS_FILE)
+        student = next((s for s in students if s.get('id') == student_id), None)
+        
+        if not student:
+            return jsonify({"error": "Étudiant non trouvé"}), 404
+        
+        students = [s for s in students if s.get('id') != student_id]
+        save_data(STUDENTS_FILE, students)
+        
+        app.logger.info(f"Student deleted: {student_id}")
+        
+        return jsonify({"message": "Étudiant supprimé avec succès"})
+        
+    except Exception as e:
+        app.logger.error(f"Error deleting student: {e}")
+        return jsonify({"error": "Erreur lors de la suppression"}), 500
+
+@app.route('/api/messages', methods=['GET'])
+def get_messages():
+    """Get all messages"""
+    try:
+        messages = load_data(MESSAGES_FILE)
+        # Sort by creation date (newest first)
+        messages.sort(key=lambda x: x.get('createdAt', ''), reverse=True)
+        return jsonify(messages)
+    except Exception as e:
+        app.logger.error(f"Error getting messages: {e}")
+        return jsonify({"error": "Erreur lors de la récupération des messages"}), 500
+
+@app.route('/api/messages/<message_id>/status', methods=['PUT'])
+def update_message_status(message_id):
+    """Update message status"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "Données manquantes"}), 400
+            
+        new_status = data.get('status')
+        if new_status not in ['new', 'read', 'replied']:
+            return jsonify({"error": "Statut invalide"}), 400
+        
+        messages = load_data(MESSAGES_FILE)
+        message = next((m for m in messages if m.get('id') == message_id), None)
+        
+        if not message:
+            return jsonify({"error": "Message non trouvé"}), 404
+        
+        message['status'] = new_status
+        message['statusUpdatedAt'] = datetime.now().isoformat()
+        
+        save_data(MESSAGES_FILE, messages)
+        
+        app.logger.info(f"Message status updated: {message_id} -> {new_status}")
+        
+        return jsonify({"message": "Statut du message mis à jour avec succès"})
+        
+    except Exception as e:
+        app.logger.error(f"Error updating message status: {e}")
+        return jsonify({"error": "Erreur lors de la mise à jour"}), 500
+
+@app.route('/api/messages/<message_id>', methods=['DELETE'])
+def delete_message(message_id):
+    """Delete a message"""
+    try:
+        messages = load_data(MESSAGES_FILE)
+        message = next((m for m in messages if m.get('id') == message_id), None)
+        
+        if not message:
+            return jsonify({"error": "Message non trouvé"}), 404
+        
+        messages = [m for m in messages if m.get('id') != message_id]
+        save_data(MESSAGES_FILE, messages)
+        
+        app.logger.info(f"Message deleted: {message_id}")
+        
+        return jsonify({"message": "Message supprimé avec succès"})
+        
+        
+    except Exception as e:
+        app.logger.error(f"Error deleting message: {e}")
+        return jsonify({"error": "Erreur lors de la suppression"}), 500
+
 @app.route('/api/export/students')
 def export_students():
     """Export students to Excel"""

@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MscLogo } from "@/components/ui-custom/MscLogo";
 import { Users, Download, Eye, Calendar, Mail, Phone, GraduationCap, MessageSquare, User, MapPin, School } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Student {
@@ -159,21 +160,28 @@ const Admin = () => {
         console.error('Error response:', errorText);
       }
 
-      // Load messages (simulate for now since endpoint doesn't exist yet)
-      // In a real implementation, you would fetch from an API endpoint
-      const mockMessages: Message[] = [
-        {
-          id: "MSG001",
-          name: "Jean Dupont",
-          email: "jean.dupont@email.com",
-          phone: "+22901234567",
-          interest: "parent",
-          message: "Bonjour, je souhaiterais avoir plus d'informations sur le camp de mathématiques pour mon fils qui est en seconde.",
-          createdAt: new Date().toISOString(),
-          status: "new"
+      // Load messages
+      try {
+        const messagesResponse = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/messages', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (messagesResponse.ok) {
+          const messagesData = await messagesResponse.json();
+          console.log('Messages data loaded:', messagesData.length, 'messages');
+          setMessages(messagesData);
+        } else {
+          console.error('Failed to load messages:', messagesResponse.status);
+          // Fallback to empty array if endpoint doesn't exist yet
+          setMessages([]);
         }
-      ];
-      setMessages(mockMessages);
+      } catch (error) {
+        console.error('Error loading messages:', error);
+        setMessages([]);
+      }
     } catch (error) {
       console.error('Error loading data:', error);
       console.error('Error details:', {
@@ -209,6 +217,87 @@ const Admin = () => {
     } catch (error) {
       console.error('Error updating student status:', error);
       toast.error("Erreur lors de la mise à jour");
+    }
+  };
+
+  const deleteStudent = async (studentId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette inscription ?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/students/${studentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        await loadData();
+        toast.success("Inscription supprimée avec succès");
+        setSelectedStudent(null);
+      } else {
+        const errorText = await response.text();
+        console.error('Delete student error:', response.status, errorText);
+        toast.error("Erreur lors de la suppression");
+      }
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      toast.error("Erreur lors de la suppression");
+    }
+  };
+
+  const updateMessageStatus = async (messageId: string, newStatus: string) => {
+    try {
+      const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/messages/${messageId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        await loadData();
+        toast.success("Statut du message mis à jour");
+        setSelectedMessage(null);
+      } else {
+        const errorText = await response.text();
+        console.error('Update message status error:', response.status, errorText);
+        toast.error("Erreur lors de la mise à jour");
+      }
+    } catch (error) {
+      console.error('Error updating message status:', error);
+      toast.error("Erreur lors de la mise à jour");
+    }
+  };
+
+  const deleteMessage = async (messageId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce message ?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/messages/${messageId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        await loadData();
+        toast.success("Message supprimé avec succès");
+        setSelectedMessage(null);
+      } else {
+        const errorText = await response.text();
+        console.error('Delete message error:', response.status, errorText);
+        toast.error("Erreur lors de la suppression");
+      }
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast.error("Erreur lors de la suppression");
     }
   };
 
@@ -483,7 +572,7 @@ const Admin = () => {
                           <TableHead className="min-w-[100px]">Niveau</TableHead>
                           <TableHead className="min-w-[120px]">Ville</TableHead>
                           <TableHead className="min-w-[100px]">Statut</TableHead>
-                          <TableHead className="min-w-[100px]">Actions</TableHead>
+                          <TableHead className="min-w-[150px]">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -499,152 +588,169 @@ const Admin = () => {
                             <TableCell>{student.ville}</TableCell>
                             <TableCell>{getStatusBadge(student.status)}</TableCell>
                             <TableCell>
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => setSelectedStudent(student)}
-                                  >
-                                    <Eye className="h-4 w-4" />
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-4xl max-h-[90vh]">
-                                  <DialogHeader>
-                                    <DialogTitle className="flex items-center gap-2">
-                                      <User className="h-5 w-5" />
-                                      {selectedStudent?.prenom} {selectedStudent?.nom}
-                                    </DialogTitle>
-                                  </DialogHeader>
-                                  {selectedStudent && (
-                                    <ScrollArea className="max-h-[70vh] pr-4">
-                                      <div className="space-y-6">
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              <div className="flex gap-2">
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => setSelectedStudent(student)}
+                                    >
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-4xl max-h-[90vh]">
+                                    <DialogHeader>
+                                      <DialogTitle className="flex items-center gap-2">
+                                        <User className="h-5 w-5" />
+                                        {selectedStudent?.prenom} {selectedStudent?.nom}
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    {selectedStudent && (
+                                      <ScrollArea className="max-h-[70vh] pr-4">
+                                        <div className="space-y-6">
+                                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            <Card className="p-4">
+                                              <div className="flex items-center gap-2 mb-3">
+                                                <User className="h-4 w-4 text-blue-600" />
+                                                <Label className="text-sm font-semibold">Informations personnelles</Label>
+                                              </div>
+                                              <div className="space-y-3 text-sm">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                  <span className="font-medium">Email:</span>
+                                                  <span className="break-all">{selectedStudent.email}</span>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                  <span className="font-medium">Téléphone:</span>
+                                                  <span>{selectedStudent.telephone}</span>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                  <span className="font-medium">Âge:</span>
+                                                  <span>{selectedStudent.age} ans</span>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                  <span className="font-medium">Niveau:</span>
+                                                  <span className="capitalize">{selectedStudent.niveau}</span>
+                                                </div>
+                                              </div>
+                                            </Card>
+
+                                            <Card className="p-4">
+                                              <div className="flex items-center gap-2 mb-3">
+                                                <MapPin className="h-4 w-4 text-green-600" />
+                                                <Label className="text-sm font-semibold">Localisation</Label>
+                                              </div>
+                                              <div className="space-y-3 text-sm">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                  <span className="font-medium">Ville:</span>
+                                                  <span>{selectedStudent.ville}</span>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                  <span className="font-medium">Département:</span>
+                                                  <span>{selectedStudent.departement}</span>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                  <span className="font-medium">Commune:</span>
+                                                  <span>{selectedStudent.commune}</span>
+                                                </div>
+                                              </div>
+                                            </Card>
+
+                                            <Card className="p-4">
+                                              <div className="flex items-center gap-2 mb-3">
+                                                <School className="h-4 w-4 text-purple-600" />
+                                                <Label className="text-sm font-semibold">Établissement</Label>
+                                              </div>
+                                              <div className="space-y-3 text-sm">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                  <span className="font-medium">École:</span>
+                                                  <span>{selectedStudent.ecole}</span>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                  <span className="font-medium">Inscription:</span>
+                                                  <span>{new Date(selectedStudent.registeredAt).toLocaleDateString('fr-FR')}</span>
+                                                </div>
+                                              </div>
+                                            </Card>
+
+                                            <Card className="p-4">
+                                              <div className="flex items-center gap-2 mb-3">
+                                                <Calendar className="h-4 w-4 text-orange-600" />
+                                                <Label className="text-sm font-semibold">Statut</Label>
+                                              </div>
+                                              <div className="space-y-3">
+                                                <div>{getStatusBadge(selectedStudent.status)}</div>
+                                                <div className="flex flex-wrap gap-2">
+                                                  <Button 
+                                                    size="sm" 
+                                                    variant={selectedStudent.status === 'pending' ? 'default' : 'outline'}
+                                                    onClick={() => updateStudentStatus(selectedStudent.id, 'pending')}
+                                                  >
+                                                    En attente
+                                                  </Button>
+                                                  <Button 
+                                                    size="sm" 
+                                                    variant={selectedStudent.status === 'confirmed' ? 'default' : 'outline'}
+                                                    onClick={() => updateStudentStatus(selectedStudent.id, 'confirmed')}
+                                                  >
+                                                    Confirmer
+                                                  </Button>
+                                                  <Button 
+                                                    size="sm" 
+                                                    variant={selectedStudent.status === 'rejected' ? 'destructive' : 'outline'}
+                                                    onClick={() => updateStudentStatus(selectedStudent.id, 'rejected')}
+                                                  >
+                                                    Rejeter
+                                                  </Button>
+                                                </div>
+                                              </div>
+                                            </Card>
+                                          </div>
+                                          
                                           <Card className="p-4">
-                                            <div className="flex items-center gap-2 mb-3">
-                                              <User className="h-4 w-4 text-blue-600" />
-                                              <Label className="text-sm font-semibold">Informations personnelles</Label>
-                                            </div>
-                                            <div className="space-y-3 text-sm">
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <span className="font-medium">Email:</span>
-                                                <span className="break-all">{selectedStudent.email}</span>
-                                              </div>
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <span className="font-medium">Téléphone:</span>
-                                                <span>{selectedStudent.telephone}</span>
-                                              </div>
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <span className="font-medium">Âge:</span>
-                                                <span>{selectedStudent.age} ans</span>
-                                              </div>
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <span className="font-medium">Niveau:</span>
-                                                <span className="capitalize">{selectedStudent.niveau}</span>
-                                              </div>
-                                            </div>
+                                            <Label className="text-sm font-semibold mb-3 block">Lettre de motivation</Label>
+                                            <ScrollArea className="h-32 w-full rounded border p-3 bg-gray-50">
+                                              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                                {selectedStudent.motivation}
+                                              </p>
+                                            </ScrollArea>
                                           </Card>
 
-                                          <Card className="p-4">
-                                            <div className="flex items-center gap-2 mb-3">
-                                              <MapPin className="h-4 w-4 text-green-600" />
-                                              <Label className="text-sm font-semibold">Localisation</Label>
-                                            </div>
-                                            <div className="space-y-3 text-sm">
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <span className="font-medium">Ville:</span>
-                                                <span>{selectedStudent.ville}</span>
-                                              </div>
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <span className="font-medium">Département:</span>
-                                                <span>{selectedStudent.departement}</span>
-                                              </div>
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <span className="font-medium">Commune:</span>
-                                                <span>{selectedStudent.commune}</span>
-                                              </div>
-                                            </div>
-                                          </Card>
-
-                                          <Card className="p-4">
-                                            <div className="flex items-center gap-2 mb-3">
-                                              <School className="h-4 w-4 text-purple-600" />
-                                              <Label className="text-sm font-semibold">Établissement</Label>
-                                            </div>
-                                            <div className="space-y-3 text-sm">
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <span className="font-medium">École:</span>
-                                                <span>{selectedStudent.ecole}</span>
-                                              </div>
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <span className="font-medium">Inscription:</span>
-                                                <span>{new Date(selectedStudent.registeredAt).toLocaleDateString('fr-FR')}</span>
-                                              </div>
-                                            </div>
-                                          </Card>
-
-                                          <Card className="p-4">
-                                            <div className="flex items-center gap-2 mb-3">
-                                              <Calendar className="h-4 w-4 text-orange-600" />
-                                              <Label className="text-sm font-semibold">Statut</Label>
-                                            </div>
-                                            <div className="space-y-3">
-                                              <div>{getStatusBadge(selectedStudent.status)}</div>
-                                              <div className="flex flex-wrap gap-2">
-                                                <Button 
-                                                  size="sm" 
-                                                  variant={selectedStudent.status === 'pending' ? 'default' : 'outline'}
-                                                  onClick={() => updateStudentStatus(selectedStudent.id, 'pending')}
-                                                >
-                                                  En attente
-                                                </Button>
-                                                <Button 
-                                                  size="sm" 
-                                                  variant={selectedStudent.status === 'confirmed' ? 'default' : 'outline'}
-                                                  onClick={() => updateStudentStatus(selectedStudent.id, 'confirmed')}
-                                                >
-                                                  Confirmer
-                                                </Button>
-                                                <Button 
-                                                  size="sm" 
-                                                  variant={selectedStudent.status === 'rejected' ? 'destructive' : 'outline'}
-                                                  onClick={() => updateStudentStatus(selectedStudent.id, 'rejected')}
-                                                >
-                                                  Rejeter
-                                                </Button>
-                                              </div>
-                                            </div>
-                                          </Card>
+                                          <div className="flex flex-wrap gap-2 pt-4 border-t">
+                                            <Button variant="outline" size="sm" asChild>
+                                              <a href={`mailto:${selectedStudent.email}`}>
+                                                <Mail className="h-4 w-4 mr-2" />
+                                                Email
+                                              </a>
+                                            </Button>
+                                            <Button variant="outline" size="sm" asChild>
+                                              <a href={`tel:${selectedStudent.telephone}`}>
+                                                <Phone className="h-4 w-4 mr-2" />
+                                                Appeler
+                                              </a>
+                                            </Button>
+                                            <Button 
+                                              variant="destructive" 
+                                              size="sm"
+                                              onClick={() => deleteStudent(selectedStudent.id)}
+                                            >
+                                              <Trash2 className="h-4 w-4 mr-2" />
+                                              Supprimer
+                                            </Button>
+                                          </div>
                                         </div>
-                                        
-                                        <Card className="p-4">
-                                          <Label className="text-sm font-semibold mb-3 block">Lettre de motivation</Label>
-                                          <ScrollArea className="h-32 w-full rounded border p-3 bg-gray-50">
-                                            <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                                              {selectedStudent.motivation}
-                                            </p>
-                                          </ScrollArea>
-                                        </Card>
-
-                                        <div className="flex flex-wrap gap-2 pt-4 border-t">
-                                          <Button variant="outline" size="sm" asChild>
-                                            <a href={`mailto:${selectedStudent.email}`}>
-                                              <Mail className="h-4 w-4 mr-2" />
-                                              Email
-                                            </a>
-                                          </Button>
-                                          <Button variant="outline" size="sm" asChild>
-                                            <a href={`tel:${selectedStudent.telephone}`}>
-                                              <Phone className="h-4 w-4 mr-2" />
-                                              Appeler
-                                            </a>
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </ScrollArea>
-                                  )}
-                                </DialogContent>
-                              </Dialog>
+                                      </ScrollArea>
+                                    )}
+                                  </DialogContent>
+                                </Dialog>
+                                <Button 
+                                  variant="destructive" 
+                                  size="sm"
+                                  onClick={() => deleteStudent(student.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -697,74 +803,114 @@ const Admin = () => {
                           <TableCell>{new Date(message.createdAt).toLocaleDateString('fr-FR')}</TableCell>
                           <TableCell>{getMessageStatusBadge(message.status)}</TableCell>
                           <TableCell>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => setSelectedMessage(message)}
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
-                                <DialogHeader>
-                                  <DialogTitle className="flex items-center gap-2">
-                                    <MessageSquare className="h-5 w-5" />
-                                    Message de {selectedMessage?.name}
-                                  </DialogTitle>
-                                </DialogHeader>
-                                {selectedMessage && (
-                                  <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div>
-                                        <Label className="text-sm font-medium">Informations de contact</Label>
-                                        <div className="mt-2 space-y-1 text-sm">
-                                          <p><strong>Email:</strong> {selectedMessage.email}</p>
-                                          {selectedMessage.phone && (
-                                            <p><strong>Téléphone:</strong> {selectedMessage.phone}</p>
-                                          )}
-                                          <p><strong>Intérêt:</strong> {getInterestLabel(selectedMessage.interest)}</p>
-                                          <p><strong>Date:</strong> {new Date(selectedMessage.createdAt).toLocaleString('fr-FR')}</p>
+                            <div className="flex gap-2">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => setSelectedMessage(message)}
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-2xl">
+                                  <DialogHeader>
+                                    <DialogTitle className="flex items-center gap-2">
+                                      <MessageSquare className="h-5 w-5" />
+                                      Message de {selectedMessage?.name}
+                                    </DialogTitle>
+                                  </DialogHeader>
+                                  {selectedMessage && (
+                                    <div className="space-y-4">
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <Label className="text-sm font-medium">Informations de contact</Label>
+                                          <div className="mt-2 space-y-1 text-sm">
+                                            <p><strong>Email:</strong> {selectedMessage.email}</p>
+                                            {selectedMessage.phone && (
+                                              <p><strong>Téléphone:</strong> {selectedMessage.phone}</p>
+                                            )}
+                                            <p><strong>Intérêt:</strong> {getInterestLabel(selectedMessage.interest)}</p>
+                                            <p><strong>Date:</strong> {new Date(selectedMessage.createdAt).toLocaleString('fr-FR')}</p>
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium">Statut</Label>
+                                          <div className="mt-2 space-y-2">
+                                            <div>{getMessageStatusBadge(selectedMessage.status)}</div>
+                                            <div className="flex flex-wrap gap-1">
+                                              <Button 
+                                                size="sm" 
+                                                variant={selectedMessage.status === 'new' ? 'default' : 'outline'}
+                                                onClick={() => updateMessageStatus(selectedMessage.id, 'new')}
+                                              >
+                                                Nouveau
+                                              </Button>
+                                              <Button 
+                                                size="sm" 
+                                                variant={selectedMessage.status === 'read' ? 'default' : 'outline'}
+                                                onClick={() => updateMessageStatus(selectedMessage.id, 'read')}
+                                              >
+                                                Lu
+                                              </Button>
+                                              <Button 
+                                                size="sm" 
+                                                variant={selectedMessage.status === 'replied' ? 'default' : 'outline'}
+                                                onClick={() => updateMessageStatus(selectedMessage.id, 'replied')}
+                                              >
+                                                Répondu
+                                              </Button>
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
+                                      
                                       <div>
-                                        <Label className="text-sm font-medium">Statut</Label>
-                                        <div className="mt-2">
-                                          {getMessageStatusBadge(selectedMessage.status)}
-                                        </div>
+                                        <Label className="text-sm font-medium">Message</Label>
+                                        <ScrollArea className="h-32 w-full rounded border p-3 bg-gray-50 mt-2">
+                                          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                            {selectedMessage.message}
+                                          </p>
+                                        </ScrollArea>
                                       </div>
-                                    </div>
-                                    
-                                    <div>
-                                      <Label className="text-sm font-medium">Message</Label>
-                                      <ScrollArea className="h-32 w-full rounded border p-3 bg-gray-50 mt-2">
-                                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                                          {selectedMessage.message}
-                                        </p>
-                                      </ScrollArea>
-                                    </div>
 
-                                    <div className="flex flex-wrap gap-2 pt-4 border-t">
-                                      <Button variant="outline" size="sm" asChild>
-                                        <a href={`mailto:${selectedMessage.email}?subject=Re: Votre message concernant le Summer Maths Camp`}>
-                                          <Mail className="h-4 w-4 mr-2" />
-                                          Répondre
-                                        </a>
-                                      </Button>
-                                      {selectedMessage.phone && (
+                                      <div className="flex flex-wrap gap-2 pt-4 border-t">
                                         <Button variant="outline" size="sm" asChild>
-                                          <a href={`tel:${selectedMessage.phone}`}>
-                                            <Phone className="h-4 w-4 mr-2" />
-                                            Appeler
+                                          <a href={`mailto:${selectedMessage.email}?subject=Re: Votre message concernant le Summer Maths Camp`}>
+                                            <Mail className="h-4 w-4 mr-2" />
+                                            Répondre
                                           </a>
                                         </Button>
-                                      )}
+                                        {selectedMessage.phone && (
+                                          <Button variant="outline" size="sm" asChild>
+                                            <a href={`tel:${selectedMessage.phone}`}>
+                                              <Phone className="h-4 w-4 mr-2" />
+                                              Appeler
+                                            </a>
+                                          </Button>
+                                        )}
+                                        <Button 
+                                          variant="destructive" 
+                                          size="sm"
+                                          onClick={() => deleteMessage(selectedMessage.id)}
+                                        >
+                                          <Trash2 className="h-4 w-4 mr-2" />
+                                          Supprimer
+                                        </Button>
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
-                              </DialogContent>
-                            </Dialog>
+                                  )}
+                                </DialogContent>
+                              </Dialog>
+                              <Button 
+                                variant="destructive" 
+                                size="sm"
+                                onClick={() => deleteMessage(message.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
