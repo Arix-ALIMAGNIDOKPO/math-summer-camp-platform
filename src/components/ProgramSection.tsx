@@ -1,6 +1,7 @@
 
 import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Chip } from "@/components/ui-custom/Chip";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -57,16 +58,29 @@ const ProgramSection = () => {
     }
   ];
 
-  const session = {
-    name: t("program.session.math"),
-    description: t("program.session.math.description"),
-    themes: [
-      t("program.session.math.theme1"),
-      t("program.session.math.theme2"),
-      t("program.session.math.theme3"),
-      t("program.session.math.theme4")
-    ]
-  };
+  const sessions = [
+    {
+      name: t("program.session.math"),
+      description: t("program.session.math.description"),
+      themes: [
+        t("program.session.math.theme1"),
+        t("program.session.math.theme2"),
+        t("program.session.math.theme3"),
+        t("program.session.math.theme4")
+      ]
+    },
+    {
+      name: t("program.session.programming"),
+      description: t("program.session.programming.description"),
+      themes: [
+        t("program.session.programming.theme1"),
+        t("program.session.programming.theme2"),
+        t("program.session.programming.theme3"),
+        t("program.session.programming.theme4"),
+        t("program.session.programming.theme5")
+      ]
+    }
+  ];
 
   return (
     <section id="program" className="section-padding bg-gray-50 relative">
@@ -82,57 +96,75 @@ const ProgramSection = () => {
         </AnimatedSection>
         
         <AnimatedSection>
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="space-y-6">
-              <h3 className="heading-md mb-4">{session.name}</h3>
-              <p className="text-muted-foreground mb-8">
-                {session.description}
-              </p>
-              
-              <div className="space-y-3">
-                <h4 className="font-medium text-lg">{t("program.themes")}</h4>
-                <ul className="space-y-2">
-                  {session.themes.map((theme, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <div className="mt-1 rounded-full bg-primary/10 p-1 flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      </div>
-                      <span>{theme}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-4">
-              {activities.map((activity, index) => (
-                <Card key={index} className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-all">
-                  <CardContent className="p-0">
-                    <div className="flex flex-col sm:flex-row">
-                      <div className="bg-primary/5 p-6 flex items-center justify-center sm:w-24">
-                        {activity.icon}
-                      </div>
-                      <div className="p-6">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold">{activity.title}</h4>
-                          <Chip variant="outline" className="text-xs">{activity.time}</Chip>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{activity.description}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+          <Tabs defaultValue="0" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              {sessions.map((session, index) => (
+                <TabsTrigger key={index} value={index.toString()}>
+                  {session.name}
+                </TabsTrigger>
               ))}
-            </div>
-          </div>
+            </TabsList>
+            
+            {sessions.map((session, index) => (
+              <TabsContent key={index} value={index.toString()}>
+                <div className="grid md:grid-cols-2 gap-16 items-center">
+                  <div className="space-y-6">
+                    <h3 className="heading-md mb-4">{session.name}</h3>
+                    <p className="text-muted-foreground mb-8">
+                      {session.description}
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-lg">{t("program.themes")}</h4>
+                      <ul className="space-y-2">
+                        {session.themes.map((theme, themeIndex) => (
+                          <li key={themeIndex} className="flex items-start gap-2">
+                            <div className="mt-1 rounded-full bg-primary/10 p-1 flex-shrink-0">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </div>
+                            <span>{theme}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-4">
+                    {activities.map((activity, activityIndex) => (
+                      <Card key={activityIndex} className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-all">
+                        <CardContent className="p-0">
+                          <div className="flex flex-col sm:flex-row">
+                            <div className="bg-primary/5 p-6 flex items-center justify-center sm:w-24">
+                              {activity.icon}
+                            </div>
+                            <div className="p-6">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="font-semibold">{activity.title}</h4>
+                                <Chip variant="outline" className="text-xs">{activity.time}</Chip>
+                              </div>
+                              <p className="text-sm text-muted-foreground">{activity.description}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
         </AnimatedSection>
         
         <AnimatedSection className="mt-20 text-center">
           <div className="glass-effect rounded-xl p-8 md:p-12 max-w-4xl mx-auto">
             <h3 className="heading-sm mb-6">{t("program.specially.designed")}</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
+              <div className="flex flex-col items-center">
+                <div className="font-display text-4xl font-bold text-primary mb-2">10</div>
+                <div className="text-sm text-center">{t("program.stats.days")}</div>
+              </div>
               <div className="flex flex-col items-center">
                 <div className="font-display text-4xl font-bold text-primary mb-2">30+</div>
                 <div className="text-sm text-center">{t("program.stats.workshops")}</div>
@@ -142,7 +174,7 @@ const ProgramSection = () => {
                 <div className="text-sm text-center">{t("program.stats.experts")}</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="font-display text-4xl font-bold text-primary mb-2">70</div>
+                <div className="font-display text-4xl font-bold text-primary mb-2">120</div>
                 <div className="text-sm text-center">{t("program.stats.participants")}</div>
               </div>
             </div>
