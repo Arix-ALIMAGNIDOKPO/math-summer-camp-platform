@@ -140,24 +140,31 @@ const Admin = () => {
     setLoading(true);
     try {
       console.log('Loading data from API...');
+      
       // Load students
-      const studentsResponse = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/students', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      console.log('Students response status:', studentsResponse.status);
-      
-      if (studentsResponse.ok) {
-        const studentsData = await studentsResponse.json();
-        console.log('Students data loaded:', studentsData.length, 'students');
-        setStudents(studentsData);
-      } else {
-        console.error('Failed to load students:', studentsResponse.status, studentsResponse.statusText);
-        const errorText = await studentsResponse.text();
-        console.error('Error response:', errorText);
+      try {
+        const studentsResponse = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/students', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        });
+        
+        console.log('Students response status:', studentsResponse.status);
+        
+        if (studentsResponse.ok) {
+          const studentsData = await studentsResponse.json();
+          console.log('Students data loaded:', studentsData.length, 'students');
+          setStudents(Array.isArray(studentsData) ? studentsData : []);
+        } else {
+          console.error('Failed to load students:', studentsResponse.status, studentsResponse.statusText);
+          const errorText = await studentsResponse.text();
+          console.error('Students error response:', errorText);
+          setStudents([]);
+        }
+      } catch (studentsError) {
+        console.error('Error loading students:', studentsError);
         setStudents([]);
       }
 
@@ -167,6 +174,7 @@ const Admin = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
           },
         });
         
@@ -175,28 +183,20 @@ const Admin = () => {
         if (messagesResponse.ok) {
           const messagesData = await messagesResponse.json();
           console.log('Messages data loaded:', messagesData.length, 'messages');
-          setMessages(messagesData);
+          setMessages(Array.isArray(messagesData) ? messagesData : []);
         } else {
           console.error('Failed to load messages:', messagesResponse.status, messagesResponse.statusText);
           const errorText = await messagesResponse.text();
           console.error('Messages error response:', errorText);
-          // Fallback to empty array if endpoint doesn't exist yet
           setMessages([]);
         }
-      } catch (error) {
-        console.error('Error loading messages:', error);
+      } catch (messagesError) {
+        console.error('Error loading messages:', messagesError);
         setMessages([]);
       }
     } catch (error) {
       console.error('Error loading data:', error);
-      console.error('Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      });
       toast.error("Erreur lors du chargement des données");
-      setStudents([]);
-      setMessages([]);
     } finally {
       setLoading(false);
     }
@@ -204,14 +204,18 @@ const Admin = () => {
 
   const updateStudentStatus = async (studentId: string, newStatus: string) => {
     try {
+      console.log('Updating student status:', studentId, 'to', newStatus);
+      
       const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/students/${studentId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({ status: newStatus }),
       });
 
+      console.log('Update status response:', response.status);
       if (response.ok) {
         await loadData();
         toast.success("Statut mis à jour avec succès");
@@ -219,11 +223,11 @@ const Admin = () => {
       } else {
         const errorText = await response.text();
         console.error('Update status error:', response.status, errorText);
-        toast.error("Erreur lors de la mise à jour");
+        toast.error(`Erreur lors de la mise à jour: ${errorText}`);
       }
     } catch (error) {
       console.error('Error updating student status:', error);
-      toast.error("Erreur lors de la mise à jour");
+      toast.error(`Erreur lors de la mise à jour: ${error.message}`);
     }
   };
 
@@ -260,14 +264,18 @@ const Admin = () => {
 
   const updateMessageStatus = async (messageId: string, newStatus: string) => {
     try {
+      console.log('Updating message status:', messageId, 'to', newStatus);
+      
       const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/messages/${messageId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({ status: newStatus }),
       });
 
+      console.log('Update message status response:', response.status);
       if (response.ok) {
         await loadData();
         toast.success("Statut du message mis à jour");
@@ -275,11 +283,11 @@ const Admin = () => {
       } else {
         const errorText = await response.text();
         console.error('Update message status error:', response.status, errorText);
-        toast.error("Erreur lors de la mise à jour");
+        toast.error(`Erreur lors de la mise à jour: ${errorText}`);
       }
     } catch (error) {
       console.error('Error updating message status:', error);
-      toast.error("Erreur lors de la mise à jour");
+      toast.error(`Erreur lors de la mise à jour: ${error.message}`);
     }
   };
 
@@ -316,15 +324,21 @@ const Admin = () => {
 
   const exportToExcel = async () => {
     try {
+      console.log('Starting export...');
+      
       const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/export/students', {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         },
       });
       
+      console.log('Export response status:', response.status);
+      
       if (response.ok) {
         const blob = await response.blob();
+        console.log('Export blob size:', blob.size);
+        
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -337,11 +351,11 @@ const Admin = () => {
       } else {
         const errorText = await response.text();
         console.error('Export error:', response.status, errorText);
-        toast.error("Erreur lors de l'export");
+        toast.error(`Erreur lors de l'export: ${errorText}`);
       }
     } catch (error) {
       console.error('Error exporting:', error);
-      toast.error("Erreur lors de l'export");
+      toast.error(`Erreur lors de l'export: ${error.message}`);
     }
   };
 

@@ -39,12 +39,39 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
+      // Validation côté client
+      if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim() || !formData.interest) {
+        throw new Error('Tous les champs obligatoires doivent être remplis');
+      }
+
+      // Nettoyer les données
+      const cleanedData = {
+        name: formData.name.trim(),
+        email: formData.email.toLowerCase().trim(),
+        phone: formData.phone.trim(),
+        interest: formData.interest,
+        message: formData.message.trim()
+      };
+
+      console.log('Sending contact data:', cleanedData);
+      
       // For partnership inquiries, send directly to email
       if (formData.interest === "partenaire") {
-        window.location.href = `mailto:info.imacbenin@gmail.com?subject=Partnership%20Inquiry%20for%20Summer%20Maths%20Camp&body=Name:%20${formData.name}%0APhone:%20${formData.phone}%0AEmail:%20${formData.email}%0A%0AMessage:%20${formData.message}`;
+        const subject = encodeURIComponent('Partnership Inquiry for Summer Maths Camp');
+        const body = encodeURIComponent(`Name: ${cleanedData.name}\nPhone: ${cleanedData.phone}\nEmail: ${cleanedData.email}\n\nMessage: ${cleanedData.message}`);
+        window.location.href = `mailto:info.imacbenin@gmail.com?subject=${subject}&body=${body}`;
         
         setTimeout(() => {
           setIsSubmitting(false);
+          // Reset form
+          setFormData({
+            name: "",
+            email: "",
+            phone: "",
+            message: "",
+            interest: "participant"
+          });
+          toast.success(t("contact.success"));
         }, 1000);
         return;
       }
@@ -54,15 +81,21 @@ const ContactSection = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(cleanedData),
       });
       
+      console.log('Contact response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Erreur lors de l\'envoi');
+        const errorData = await response.text();
+        console.error('Contact error response:', errorData);
+        throw new Error(`Erreur ${response.status}: ${errorData}`);
       }
       
       const result = await response.json();
+      console.log('Contact success:', result);
       
       // Reset form
       setFormData({
@@ -76,7 +109,7 @@ const ContactSection = () => {
         toast.success(t("contact.success"));
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      toast.error(t("contact.error"));
+      toast.error(`${t("contact.error")}: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }

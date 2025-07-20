@@ -35,7 +35,7 @@ const inscriptionSchema = z.object({
   prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
   nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   email: z.string().email("Email invalide"),
-  telephone: z.string().min(8, "Numéro de téléphone invalide"),
+  telephone: z.string().min(8, "Numéro de téléphone invalide").regex(/^(\+229)?[0-9]{8,}$/, "Format de téléphone invalide"),
   age: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 14 && Number(val) <= 18, {
     message: "L'âge doit être entre 14 et 18 ans",
   }),
@@ -98,19 +98,40 @@ const Inscription = () => {
     setIsSubmitting(true);
     
     try {
+      // Nettoyer et formater les données avant envoi
+      const cleanedData = {
+        ...data,
+        age: parseInt(data.age),
+        telephone: data.telephone.replace(/\s+/g, ''), // Supprimer les espaces
+        email: data.email.toLowerCase().trim(),
+        prenom: data.prenom.trim(),
+        nom: data.nom.trim(),
+        ecole: data.ecole.trim(),
+        ville: data.ville.trim(),
+        motivation: data.motivation.trim()
+      };
+
+      console.log('Sending registration data:', cleanedData);
+      
       const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(cleanedData),
       });
       
+      console.log('Registration response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Erreur lors de l\'envoi');
+        const errorData = await response.text();
+        console.error('Registration error response:', errorData);
+        throw new Error(`Erreur ${response.status}: ${errorData}`);
       }
       
       const result = await response.json();
+      console.log('Registration success:', result);
       
       // Réinitialiser le formulaire
       reset();
@@ -122,11 +143,12 @@ const Inscription = () => {
       setIsSuccess(true);
     } catch (error) {
       console.error("Erreur lors de l'envoi du formulaire:", error);
+      
       toast({
         title: language === 'fr' ? "Erreur lors de l'envoi" : "Error sending form",
         description: language === 'fr'
-          ? "Veuillez réessayer plus tard ou nous contacter directement."
-          : "Please try again later or contact us directly.",
+          ? `Erreur: ${error.message}. Veuillez vérifier vos informations et réessayer.`
+          : `Error: ${error.message}. Please check your information and try again.`,
         variant: "destructive",
       });
     } finally {
@@ -286,13 +308,18 @@ const Inscription = () => {
                   <Input
                     id="telephone"
                     {...register("telephone")}
-                    placeholder="+229 XXXXXXXX"
+                    placeholder="Ex: +229 12345678 ou 12345678"
                     className={errors.telephone ? "border-destructive" : ""}
                     autoComplete="tel"
                   />
                   {errors.telephone && (
                     <p className="text-xs text-destructive">{errors.telephone.message}</p>
                   )}
+                  <p className="text-xs text-muted-foreground">
+                    {language === 'fr' 
+                      ? "Format: +229 suivi de 8 chiffres ou directement 8 chiffres"
+                      : "Format: +229 followed by 8 digits or directly 8 digits"}
+                  </p>
                 </div>
                 
                 <div className="space-y-2">

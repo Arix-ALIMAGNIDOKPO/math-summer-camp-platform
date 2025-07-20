@@ -50,11 +50,17 @@ def validate_email(email):
 
 def validate_phone(phone):
     """Validate phone number format"""
-    # Remove spaces and special characters
+    if not phone:
+        return False
+    
+    # Remove spaces and special characters except +
     clean_phone = re.sub(r'[^\d+]', '', phone)
-    # Check if it's a valid format (8-15 digits, optionally starting with +)
-    pattern = r'^\+?[0-9]{8,15}$'
-    return re.match(pattern, clean_phone) is not None
+    
+    # Check if it's a valid format for Benin (+229 followed by 8 digits) or international
+    benin_pattern = r'^(\+229)?[0-9]{8}$'
+    international_pattern = r'^\+?[0-9]{8,15}$'
+    
+    return bool(re.match(benin_pattern, clean_phone)) or bool(re.match(international_pattern, clean_phone))
 
 def sanitize_input(text):
     """Basic input sanitization"""
@@ -70,20 +76,29 @@ def rate_limit_check(request):
 
 def load_data(filename):
     """Load data from JSON file"""
-    if os.path.exists(filename):
-        try:
-            with open(filename, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except (json.JSONDecodeError, FileNotFoundError):
-            app.logger.error(f"Error loading data from {filename}")
+    try:
+        # Ensure the file exists
+        if not os.path.exists(filename):
+            app.logger.info(f"Creating new data file: {filename}")
+            save_data(filename, [])
             return []
-    return []
+            
+        with open(filename, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return data if isinstance(data, list) else []
+    except (json.JSONDecodeError, FileNotFoundError, Exception) as e:
+        app.logger.error(f"Error loading data from {filename}: {e}")
+        return []
 
 def save_data(filename, data):
     """Save data to JSON file"""
     try:
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
+        app.logger.info(f"Data saved successfully to {filename}")
     except Exception as e:
         app.logger.error(f"Error saving data to {filename}: {e}")
         raise
@@ -124,27 +139,41 @@ def register_student():
         if not data:
             return jsonify({"error": "Données manquantes"}), 400
         
+        # Log received data for debugging
+        app.logger.info(f"Received registration data: {data}")
+        
         # Validate required fields
         required_fields = ['prenom', 'nom', 'email', 'telephone', 'age', 'niveau', 'ecole', 'ville', 'departement', 'commune', 'motivation']
         for field in required_fields:
             if not data.get(field):
+                app.logger.error(f"Missing required field: {field}")
                 return jsonify({"error": f"Le champ {field} est requis"}), 400
         
         # Validate email format
         if not validate_email(data['email']):
+            app.logger.error(f"Invalid email format: {data['email']}")
             return jsonify({"error": "Format d'email invalide"}), 400
             
         # Validate phone format
         if not validate_phone(data['telephone']):
+            app.logger.error(f"Invalid phone format: {data['telephone']}")
             return jsonify({"error": "Format de téléphone invalide"}), 400
             
         # Validate age
         try:
-            age = int(data['age'])
+            age = int(data['age']) if isinstance(data['age'], str) else data['age']
             if age < 14 or age > 18:
+                app.logger.error(f"Invalid age: {age}")
                 return jsonify({"error": "L'âge doit être entre 14 et 18 ans"}), 400
         except ValueError:
+            app.logger.error(f"Age conversion error: {data['age']}")
             return jsonify({"error": "Âge invalide"}), 400
+        
+        # Validate niveau
+        valid_niveaux = ['quatrieme', 'troisieme', 'seconde', 'premiere', 'terminale']
+        if data['niveau'] not in valid_niveaux:
+            app.logger.error(f"Invalid niveau: {data['niveau']}")
+            return jsonify({"error": "Niveau scolaire invalide"}), 400
         
         # Sanitize inputs
         for field in data:
@@ -157,6 +186,7 @@ def register_student():
         # Check if email already exists
         existing_emails = [student.get('email', '').lower() for student in students]
         if data['email'].lower() in existing_emails:
+            app.logger.error(f"Email already exists: {data['email']}")
             return jsonify({"error": "Cette adresse email est déjà utilisée"}), 400
         
         # Create new student record
@@ -166,7 +196,7 @@ def register_student():
             "nom": data['nom'],
             "email": data['email'].lower(),
             "telephone": data['telephone'],
-            "age": int(data['age']),
+            "age": age,
             "niveau": data['niveau'],
             "ecole": data['ecole'],
             "ville": data['ville'],
@@ -190,6 +220,7 @@ def register_student():
         
     except Exception as e:
         app.logger.error(f"Error registering student: {e}")
+        app.logger.error(f"Error details: {str(e)}")
         return jsonify({"error": "Erreur lors de l'enregistrement"}), 500
 
 @app.route('/api/contact', methods=['POST'])
@@ -205,19 +236,31 @@ def contact_message():
         if not data:
             return jsonify({"error": "Données manquantes"}), 400
         
+        # Log received data for debugging
+        app.logger.info(f"Received contact data: {data}")
+        
         # Validate required fields
         required_fields = ['name', 'email', 'message', 'interest']
         for field in required_fields:
             if not data.get(field):
+                app.logger.error(f"Missing required field: {field}")
                 return jsonify({"error": f"Le champ {field} est requis"}), 400
         
         # Validate email format
         if not validate_email(data['email']):
+            app.logger.error(f"Invalid email format: {data['email']}")
             return jsonify({"error": "Format d'email invalide"}), 400
             
         # Validate phone if provided
         if data.get('phone') and not validate_phone(data['phone']):
+            app.logger.error(f"Invalid phone format: {data['phone']}")
             return jsonify({"error": "Format de téléphone invalide"}), 400
+        
+        # Validate interest
+        valid_interests = ['participant', 'parent', 'intervenant', 'partenaire']
+        if data['interest'] not in valid_interests:
+            app.logger.error(f"Invalid interest: {data['interest']}")
+            return jsonify({"error": "Type d'intérêt invalide"}), 400
         
         # Sanitize inputs
         for field in data:
@@ -252,6 +295,7 @@ def contact_message():
         
     except Exception as e:
         app.logger.error(f"Error saving message: {e}")
+        app.logger.error(f"Error details: {str(e)}")
         return jsonify({"error": "Erreur lors de l'envoi du message"}), 500
 
 # API Routes for Admin
@@ -443,6 +487,7 @@ def export_students():
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
+    app.logger.warning(f"404 error: {request.url}")
     return jsonify({"error": "Endpoint non trouvé"}), 404
 
 @app.errorhandler(500)
@@ -450,8 +495,14 @@ def internal_error(error):
     app.logger.error(f"Internal error: {error}")
     return jsonify({"error": "Erreur interne du serveur"}), 500
 
+@app.errorhandler(400)
+def bad_request(error):
+    app.logger.error(f"Bad request: {error}")
+    return jsonify({"error": "Requête invalide"}), 400
+
 @app.errorhandler(429)
 def rate_limit_exceeded(error):
+    app.logger.warning(f"Rate limit exceeded: {request.remote_addr}")
     return jsonify({"error": "Trop de requêtes"}), 429
 
 if __name__ == '__main__':
