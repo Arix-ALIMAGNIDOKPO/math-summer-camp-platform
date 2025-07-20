@@ -63,6 +63,20 @@ const Admin = () => {
 
   useEffect(() => {
     document.title = "Admin - Summer Maths Camp";
+    
+    // Test API connectivity on component mount
+    const testAPI = async () => {
+      try {
+        console.log('Testing API connectivity...');
+        const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/health');
+        const data = await response.json();
+        console.log('API Health Check:', data);
+      } catch (error) {
+        console.error('API connectivity test failed:', error);
+      }
+    };
+    
+    testAPI();
 
     // Check if blocked
     const blockTime = localStorage.getItem('admin_block_time');
@@ -124,11 +138,25 @@ const Admin = () => {
   const loadData = async () => {
     setLoading(true);
     try {
+      console.log('Loading data from API...');
       // Load students
-      const studentsResponse = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/students');
+      const studentsResponse = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/students', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log('Students response status:', studentsResponse.status);
+      
       if (studentsResponse.ok) {
         const studentsData = await studentsResponse.json();
+        console.log('Students data loaded:', studentsData.length, 'students');
         setStudents(studentsData);
+      } else {
+        console.error('Failed to load students:', studentsResponse.status, studentsResponse.statusText);
+        const errorText = await studentsResponse.text();
+        console.error('Error response:', errorText);
       }
 
       // Load messages (simulate for now since endpoint doesn't exist yet)
@@ -148,6 +176,11 @@ const Admin = () => {
       setMessages(mockMessages);
     } catch (error) {
       console.error('Error loading data:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       toast.error("Erreur lors du chargement des données");
     } finally {
       setLoading(false);
@@ -169,6 +202,8 @@ const Admin = () => {
         toast.success("Statut mis à jour avec succès");
         setSelectedStudent(null);
       } else {
+        const errorText = await response.text();
+        console.error('Update status error:', response.status, errorText);
         toast.error("Erreur lors de la mise à jour");
       }
     } catch (error) {
@@ -179,7 +214,13 @@ const Admin = () => {
 
   const exportToExcel = async () => {
     try {
-      const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/export/students');
+      const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/export/students', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -192,6 +233,8 @@ const Admin = () => {
         document.body.removeChild(a);
         toast.success("Export réussi !");
       } else {
+        const errorText = await response.text();
+        console.error('Export error:', response.status, errorText);
         toast.error("Erreur lors de l'export");
       }
     } catch (error) {
