@@ -968,19 +968,21 @@ const Admin = () => {
                                           </a>
                                         </Button>
                                         {selectedMessage.phone && (
-                                          <Button variant="outline" size="sm" asChild>
-                                            <a href={`tel:${selectedMessage.phone}`}>
-                                              <Phone className="h-4 w-4 mr-2" />
-                                              Appeler
-                                            </a>
-                                          </Button>
-                                          <Button 
-                                            variant="outline" 
-                                            size="sm"
-                                            onClick={() => setSelectedMessage(null)}
-                                          >
-                                            Fermer
-                                          </Button>
+                                          <>
+                                            <Button variant="outline" size="sm" asChild>
+                                              <a href={`tel:${selectedMessage.phone}`}>
+                                                <Phone className="h-4 w-4 mr-2" />
+                                                Appeler
+                                              </a>
+                                            </Button>
+                                            <Button 
+                                              variant="outline" 
+                                              size="sm"
+                                              onClick={() => setSelectedMessage(null)}
+                                            >
+                                              Fermer
+                                            </Button>
+                                          </>
                                         )}
                                         <Button 
                                           variant="destructive" 
