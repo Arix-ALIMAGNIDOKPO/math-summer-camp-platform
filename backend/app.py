@@ -111,17 +111,23 @@ def validate_email(email):
 
 def validate_phone(phone):
     """Validate phone number format"""
-    if not phone or not isinstance(phone, str):
+    if not phone:
+        return True  # Phone is optional in some contexts
+    
+    if not isinstance(phone, str):
         return False
 
-    # Remove all non-digit characters but preserve leading +
+    # Clean the phone number - remove spaces and non-digit characters except +
     phone = phone.strip()
-    has_plus = phone.startswith('+')
-    digits_only = re.sub(r'\D', '', phone)
-    clean_phone = f"+{digits_only}" if has_plus else digits_only
-
-    # Accept numbers between 8 and 15 digits
-    return bool(re.match(r'^\+?\d{8,15}$', clean_phone))
+    
+    # Multiple valid formats for Benin
+    patterns = [
+        r'^\+229\s?[0-9]{8}$',     # +229 12345678 or +22912345678
+        r'^[0-9]{8}$',             # 12345678
+        r'^\+?[0-9]{8,15}$'        # International format
+    ]
+    
+    return any(re.match(pattern, phone) for pattern in patterns)
 
 def sanitize_string(text, max_length=1000):
     """Sanitize string input"""
@@ -228,10 +234,14 @@ def register_student():
                 return jsonify({"error": "Format de téléphone invalide"}), 400
             
             # Clean and format phone number
-            if telephone.startswith('+229'):
-                telephone = telephone.replace(' ', '')
-            elif len(telephone) == 8 and telephone.isdigit():
+            # Clean and format phone number - be more flexible
+            telephone_clean = re.sub(r'[^\d+]', '', telephone)
+            if telephone_clean.startswith('+229'):
+                telephone = telephone_clean
+            elif len(telephone_clean) == 8 and telephone_clean.isdigit():
                 telephone = f"+229{telephone}"
+            else:
+                telephone = telephone_clean
             
             # Validate niveau
             valid_niveaux = ['quatrieme', 'troisieme', 'seconde', 'premiere', 'terminale']
@@ -345,10 +355,6 @@ def contact_message():
             
             # Clean and format phone number if provided
             if phone:
-                if phone.startswith('+229'):
-                    phone = phone.replace(' ', '')
-                elif len(phone) == 8 and phone.isdigit():
-                    phone = f"+229{phone}"
            
             # Validate interest
             valid_interests = ['participant', 'parent', 'intervenant', 'partenaire']

@@ -143,7 +143,8 @@ const Admin = () => {
       
       // Load students
       try {
-        const studentsResponse = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/students', {
+        const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+        const studentsResponse = await fetch(`${API_URL}/api/students`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -171,9 +172,6 @@ const Admin = () => {
             try {
               const errorText = await studentsResponse.text();
               errorMessage = errorText || errorMessage;
-            } catch {
-              errorMessage = `Erreur HTTP ${studentsResponse.status}`;
-            }
           }
           console.error('Students error:', errorMessage);
           setStudents([]);
@@ -188,7 +186,7 @@ const Admin = () => {
 
       // Load messages
       try {
-        const messagesResponse = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/messages', {
+        const messagesResponse = await fetch(`${API_URL}/api/messages`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -216,9 +214,6 @@ const Admin = () => {
             try {
               const errorText = await messagesResponse.text();
               errorMessage = errorText || errorMessage;
-            } catch {
-              errorMessage = `Erreur HTTP ${messagesResponse.status}`;
-            }
           }
           console.error('Messages error:', errorMessage);
           setMessages([]);
@@ -241,7 +236,8 @@ const Admin = () => {
     try {
       console.log('Updating student status:', studentId, 'to', newStatus);
       
-      const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/students/${studentId}/status`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      const response = await fetch(`${API_URL}/api/students/${studentId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -284,7 +280,8 @@ const Admin = () => {
 
     try {
       console.log('Deleting student:', studentId);
-      const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/students/${studentId}`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      const response = await fetch(`${API_URL}/api/students/${studentId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -312,7 +309,8 @@ const Admin = () => {
     try {
       console.log('Updating message status:', messageId, 'to', newStatus);
       
-      const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/messages/${messageId}/status`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      const response = await fetch(`${API_URL}/api/messages/${messageId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -354,7 +352,8 @@ const Admin = () => {
 
     try {
       console.log('Deleting message:', messageId);
-      const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/messages/${messageId}`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      const response = await fetch(`${API_URL}/api/messages/${messageId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -382,7 +381,8 @@ const Admin = () => {
     try {
       console.log('Starting export...');
       
-      const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/export/students', {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      const response = await fetch(`${API_URL}/api/export/students`, {
         method: 'GET',
         headers: {
           'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

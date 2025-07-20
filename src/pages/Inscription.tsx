@@ -112,7 +112,7 @@ const Inscription = () => {
         prenom: data.prenom.trim(),
         nom: data.nom.trim(),
         email: data.email.toLowerCase().trim(),
-        telephone: data.telephone.replace(/\s+/g, '').replace(/^\+229/, '+229'),
+        telephone: data.telephone.trim(),
         age: data.age,
         niveau: data.niveau,
         ecole: data.ecole.trim(),
@@ -124,7 +124,8 @@ const Inscription = () => {
 
       console.log('Sending registration data:', cleanedData);
       
-      const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/register', {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      const response = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,7 +137,7 @@ const Inscription = () => {
       console.log('Registration response status:', response.status);
       
       if (!response.ok) {
-        let errorMessage = 'Erreur lors de l\'inscription';
+        let errorMessage = language === 'fr' ? 'Erreur lors de l\'inscription' : 'Registration error';
         try {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;

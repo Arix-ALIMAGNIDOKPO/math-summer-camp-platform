@@ -56,7 +56,7 @@ const ContactSection = () => {
       console.log('Sending contact data:', cleanedData);
       
       // For partnership inquiries, send directly to email
-      if (formData.interest === "partenaire") {
+      if (cleanedData.interest === "partenaire") {
         const subject = encodeURIComponent('Partnership Inquiry for Summer Maths Camp');
         const body = encodeURIComponent(`Name: ${cleanedData.name}\nPhone: ${cleanedData.phone || 'Non fourni'}\nEmail: ${cleanedData.email}\n\nMessage: ${cleanedData.message}`);
         window.location.href = `mailto:info.imacbenin@gmail.com?subject=${subject}&body=${body}`;
@@ -77,7 +77,8 @@ const ContactSection = () => {
       }
       
       // For other inquiries, send to backend with proper error handling
-      const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/contact', {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +90,7 @@ const ContactSection = () => {
       console.log('Contact response status:', response.status);
       
       if (!response.ok) {
-        let errorMessage = 'Erreur lors de l\'envoi du message';
+        let errorMessage = t("contact.error");
         let errorData;
         try {
           errorData = await response.json();
