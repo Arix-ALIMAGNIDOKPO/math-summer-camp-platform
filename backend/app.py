@@ -115,13 +115,14 @@ def validate_phone(phone):
         return False
     
     # Clean phone number
-    clean_phone = re.sub(r'[^\d+]', '', phone.strip())
+    clean_phone = re.sub(r'[^\d+]', '', phone.strip().replace(' ', ''))
     
     # Benin format: +229 followed by 8 digits or just 8 digits
     patterns = [
         r'^\+229[0-9]{8}$',  # +229 + 8 digits
         r'^[0-9]{8}$',       # 8 digits
-        r'^\+?[0-9]{8,15}$'  # International format
+        r'^\+229\s?[0-9]{8}$',  # +229 with optional space + 8 digits
+        r'^\+?[0-9]{8,15}$'  # International format (flexible)
     ]
     
     return any(re.match(pattern, clean_phone) for pattern in patterns)
@@ -228,7 +229,7 @@ def register_student():
             
             # Validate phone
             if not validate_phone(telephone):
-                return jsonify({"error": "Format de téléphone invalide"}), 400
+                return jsonify({"error": "Format de téléphone invalide. Utilisez +229 suivi de 8 chiffres ou directement 8 chiffres"}), 400
             
             # Validate niveau
             valid_niveaux = ['quatrieme', 'troisieme', 'seconde', 'premiere', 'terminale']
@@ -338,7 +339,7 @@ def contact_message():
             
             # Validate phone if provided
             if phone and not validate_phone(phone):
-                return jsonify({"error": "Format de téléphone invalide"}), 400
+                return jsonify({"error": "Format de téléphone invalide. Utilisez +229 suivi de 8 chiffres ou directement 8 chiffres"}), 400
             
             # Validate interest
             valid_interests = ['participant', 'parent', 'intervenant', 'partenaire']
