@@ -156,16 +156,29 @@ const Admin = () => {
         if (studentsResponse.ok) {
           const studentsData = await studentsResponse.json();
           console.log('Students data loaded:', studentsData.length, 'students');
-          setStudents(Array.isArray(studentsData) ? studentsData : []);
+          if (Array.isArray(studentsData)) {
+            setStudents(studentsData);
+          } else {
+            console.error('Students data is not an array:', studentsData);
+            setStudents([]);
+          }
         } else {
-          console.error('Failed to load students:', studentsResponse.status, studentsResponse.statusText);
-          const errorText = await studentsResponse.text();
-          console.error('Students error response:', errorText);
+          let errorMessage = 'Erreur lors du chargement des étudiants';
+          try {
+            const errorData = await studentsResponse.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch {
+            const errorText = await studentsResponse.text();
+            errorMessage = errorText || errorMessage;
+          }
+          console.error('Students error:', errorMessage);
           setStudents([]);
+          toast.error(errorMessage);
         }
       } catch (studentsError) {
         console.error('Error loading students:', studentsError);
         setStudents([]);
+        toast.error('Impossible de charger les étudiants');
       }
 
       // Load messages
@@ -183,16 +196,29 @@ const Admin = () => {
         if (messagesResponse.ok) {
           const messagesData = await messagesResponse.json();
           console.log('Messages data loaded:', messagesData.length, 'messages');
-          setMessages(Array.isArray(messagesData) ? messagesData : []);
+          if (Array.isArray(messagesData)) {
+            setMessages(messagesData);
+          } else {
+            console.error('Messages data is not an array:', messagesData);
+            setMessages([]);
+          }
         } else {
-          console.error('Failed to load messages:', messagesResponse.status, messagesResponse.statusText);
-          const errorText = await messagesResponse.text();
-          console.error('Messages error response:', errorText);
+          let errorMessage = 'Erreur lors du chargement des messages';
+          try {
+            const errorData = await messagesResponse.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch {
+            const errorText = await messagesResponse.text();
+            errorMessage = errorText || errorMessage;
+          }
+          console.error('Messages error:', errorMessage);
           setMessages([]);
+          toast.error(errorMessage);
         }
       } catch (messagesError) {
         console.error('Error loading messages:', messagesError);
         setMessages([]);
+        toast.error('Impossible de charger les messages');
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -221,13 +247,20 @@ const Admin = () => {
         toast.success("Statut mis à jour avec succès");
         setSelectedStudent(null);
       } else {
-        const errorText = await response.text();
-        console.error('Update status error:', response.status, errorText);
-        toast.error(`Erreur lors de la mise à jour: ${errorText}`);
+        let errorMessage = 'Erreur lors de la mise à jour';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
+        console.error('Update status error:', errorMessage);
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error('Error updating student status:', error);
-      toast.error(`Erreur lors de la mise à jour: ${error.message}`);
+      toast.error('Erreur lors de la mise à jour du statut');
     }
   };
 
@@ -339,6 +372,11 @@ const Admin = () => {
         const blob = await response.blob();
         console.log('Export blob size:', blob.size);
         
+        if (blob.size === 0) {
+          toast.error("Aucune donnée à exporter");
+          return;
+        }
+        
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -349,13 +387,20 @@ const Admin = () => {
         document.body.removeChild(a);
         toast.success("Export réussi !");
       } else {
-        const errorText = await response.text();
-        console.error('Export error:', response.status, errorText);
-        toast.error(`Erreur lors de l'export: ${errorText}`);
+        let errorMessage = 'Erreur lors de l\'export';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
+        console.error('Export error:', errorMessage);
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error('Error exporting:', error);
-      toast.error(`Erreur lors de l'export: ${error.message}`);
+      toast.error('Erreur lors de l\'export');
     }
   };
 

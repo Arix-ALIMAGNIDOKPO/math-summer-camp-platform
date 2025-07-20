@@ -89,9 +89,16 @@ const ContactSection = () => {
       console.log('Contact response status:', response.status);
       
       if (!response.ok) {
-        const errorData = await response.text();
+        let errorMessage = 'Erreur lors de l\'envoi du message';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
         console.error('Contact error response:', errorData);
-        throw new Error(`Erreur ${response.status}: ${errorData}`);
+        throw new Error(errorMessage);
       }
       
       const result = await response.json();
@@ -109,7 +116,7 @@ const ContactSection = () => {
         toast.success(t("contact.success"));
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      toast.error(`${t("contact.error")}: ${error.message}`);
+      toast.error(error.message);
     } finally {
       setIsSubmitting(false);
     }

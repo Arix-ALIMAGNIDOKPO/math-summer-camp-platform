@@ -98,16 +98,26 @@ const Inscription = () => {
     setIsSubmitting(true);
     
     try {
-      // Nettoyer et formater les données avant envoi
+      // Validation côté client avant envoi
+      if (!data.prenom?.trim() || !data.nom?.trim() || !data.email?.trim() || 
+          !data.telephone?.trim() || !data.age || !data.niveau || 
+          !data.ecole?.trim() || !data.ville?.trim() || !data.departement || 
+          !data.commune || !data.motivation?.trim()) {
+        throw new Error('Tous les champs sont obligatoires');
+      }
+
+      // Nettoyer et formater les données
       const cleanedData = {
-        ...data,
-        age: parseInt(data.age),
-        telephone: data.telephone.replace(/\s+/g, ''), // Supprimer les espaces
-        email: data.email.toLowerCase().trim(),
         prenom: data.prenom.trim(),
         nom: data.nom.trim(),
+        email: data.email.toLowerCase().trim(),
+        telephone: data.telephone.replace(/\s+/g, ''),
+        age: data.age,
+        niveau: data.niveau,
         ecole: data.ecole.trim(),
         ville: data.ville.trim(),
+        departement: data.departement,
+        commune: data.commune,
         motivation: data.motivation.trim()
       };
 
@@ -125,9 +135,16 @@ const Inscription = () => {
       console.log('Registration response status:', response.status);
       
       if (!response.ok) {
-        const errorData = await response.text();
+        let errorMessage = 'Erreur lors de l\'inscription';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
         console.error('Registration error response:', errorData);
-        throw new Error(`Erreur ${response.status}: ${errorData}`);
+        throw new Error(errorMessage);
       }
       
       const result = await response.json();
@@ -147,8 +164,8 @@ const Inscription = () => {
       toast({
         title: language === 'fr' ? "Erreur lors de l'envoi" : "Error sending form",
         description: language === 'fr'
-          ? `Erreur: ${error.message}. Veuillez vérifier vos informations et réessayer.`
-          : `Error: ${error.message}. Please check your information and try again.`,
+          ? `${error.message}. Veuillez vérifier vos informations et réessayer.`
+          : `${error.message}. Please check your information and try again.`,
         variant: "destructive",
       });
     } finally {
