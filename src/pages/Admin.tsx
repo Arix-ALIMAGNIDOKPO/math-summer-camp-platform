@@ -168,17 +168,22 @@ const Admin = () => {
             const errorData = await studentsResponse.json();
             errorMessage = errorData.error || errorMessage;
           } catch {
-            const errorText = await studentsResponse.text();
-            errorMessage = errorText || errorMessage;
+            try {
+              const errorText = await studentsResponse.text();
+              errorMessage = errorText || errorMessage;
+            } catch {
+              errorMessage = `Erreur HTTP ${studentsResponse.status}`;
+            }
           }
           console.error('Students error:', errorMessage);
           setStudents([]);
-          toast.error(errorMessage);
+          if (studentsResponse.status !== 404) {
+            toast.error(errorMessage);
+          }
         }
       } catch (studentsError) {
         console.error('Error loading students:', studentsError);
         setStudents([]);
-        toast.error('Impossible de charger les étudiants');
       }
 
       // Load messages
@@ -208,21 +213,25 @@ const Admin = () => {
             const errorData = await messagesResponse.json();
             errorMessage = errorData.error || errorMessage;
           } catch {
-            const errorText = await messagesResponse.text();
-            errorMessage = errorText || errorMessage;
+            try {
+              const errorText = await messagesResponse.text();
+              errorMessage = errorText || errorMessage;
+            } catch {
+              errorMessage = `Erreur HTTP ${messagesResponse.status}`;
+            }
           }
           console.error('Messages error:', errorMessage);
           setMessages([]);
-          toast.error(errorMessage);
+          if (messagesResponse.status !== 404) {
+            toast.error(errorMessage);
+          }
         }
       } catch (messagesError) {
         console.error('Error loading messages:', messagesError);
         setMessages([]);
-        toast.error('Impossible de charger les messages');
       }
     } catch (error) {
       console.error('Error loading data:', error);
-      toast.error("Erreur lors du chargement des données");
     } finally {
       setLoading(false);
     }
@@ -252,8 +261,12 @@ const Admin = () => {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
         } catch {
-          const errorText = await response.text();
-          errorMessage = errorText || errorMessage;
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch {
+            errorMessage = `Erreur HTTP ${response.status}`;
+          }
         }
         console.error('Update status error:', errorMessage);
         toast.error(errorMessage);
@@ -318,8 +331,12 @@ const Admin = () => {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
         } catch {
-          const errorText = await response.text();
-          errorMessage = errorText || errorMessage;
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch {
+            errorMessage = `Erreur HTTP ${response.status}`;
+          }
         }
         console.error('Update message status error:', response.status, errorMessage);
         toast.error(errorMessage);
@@ -398,8 +415,12 @@ const Admin = () => {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
         } catch {
-          const errorText = await response.text();
-          errorMessage = errorText || errorMessage;
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch {
+            errorMessage = `Erreur HTTP ${response.status}`;
+          }
         }
         console.error('Export error:', errorMessage);
         toast.error(errorMessage);

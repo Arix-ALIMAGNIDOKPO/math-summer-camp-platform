@@ -1,7 +1,6 @@
 
 import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Chip } from "@/components/ui-custom/Chip";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -58,29 +57,16 @@ const ProgramSection = () => {
     }
   ];
 
-  const sessions = [
-    {
-      name: t("program.session.math"),
-      description: t("program.session.math.description"),
-      themes: [
-        t("program.session.math.theme1"),
-        t("program.session.math.theme2"),
-        t("program.session.math.theme3"),
-        t("program.session.math.theme4")
-      ]
-    },
-    {
-      name: t("program.session.programming"),
-      description: t("program.session.programming.description"),
-      themes: [
-        t("program.session.programming.theme1"),
-        t("program.session.programming.theme2"),
-        t("program.session.programming.theme3"),
-        t("program.session.programming.theme4"),
-        t("program.session.programming.theme5")
-      ]
-    }
-  ];
+  const session = {
+    name: t("program.session.math"),
+    description: t("program.session.math.description"),
+    themes: [
+      t("program.session.math.theme1"),
+      t("program.session.math.theme2"),
+      t("program.session.math.theme3"),
+      t("program.session.math.theme4")
+    ]
+  };
 
   return (
     <section id="program" className="section-padding bg-gray-50 relative">
@@ -98,15 +84,15 @@ const ProgramSection = () => {
         <AnimatedSection>
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="space-y-6">
-              <h3 className="heading-md mb-4">{sessions[0].name}</h3>
+              <h3 className="heading-md mb-4">{session.name}</h3>
               <p className="text-muted-foreground mb-8">
-                {sessions[0].description}
+                {session.description}
               </p>
               
               <div className="space-y-3">
                 <h4 className="font-medium text-lg">{t("program.themes")}</h4>
                 <ul className="space-y-2">
-                  {sessions[0].themes.map((theme, index) => (
+                  {session.themes.map((theme, index) => (
                     <li key={index} className="flex items-start gap-2">
                       <div className="mt-1 rounded-full bg-primary/10 p-1 flex-shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
