@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 # Configure CORS with specific origins for production
 if os.environ.get('FLASK_ENV') == 'production':
-    CORS(app, origins=['https://math-summer-camp-platform.netlify.app', 'https://math-summer-camp-platform.onrender.com'])
+    CORS(app, origins=['https://math-summer-camp-platform.netlify.app', 'http://localhost:8080'])
 else:
     CORS(app)
 
