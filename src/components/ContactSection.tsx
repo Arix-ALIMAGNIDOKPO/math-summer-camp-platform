@@ -58,7 +58,7 @@ const ContactSection = () => {
       // For partnership inquiries, send directly to email
       if (formData.interest === "partenaire") {
         const subject = encodeURIComponent('Partnership Inquiry for Summer Maths Camp');
-        const body = encodeURIComponent(`Name: ${cleanedData.name}\nPhone: ${cleanedData.phone}\nEmail: ${cleanedData.email}\n\nMessage: ${cleanedData.message}`);
+        const body = encodeURIComponent(`Name: ${cleanedData.name}\nPhone: ${cleanedData.phone || 'Non fourni'}\nEmail: ${cleanedData.email}\n\nMessage: ${cleanedData.message}`);
         window.location.href = `mailto:info.imacbenin@gmail.com?subject=${subject}&body=${body}`;
         
         setTimeout(() => {
@@ -76,7 +76,7 @@ const ContactSection = () => {
         return;
       }
       
-      // For other inquiries, send to backend
+      // For other inquiries, send to backend with proper error handling
       const response = await fetch('https://math-summer-camp-platform-backend.onrender.com/api/contact', {
         method: 'POST',
         headers: {
@@ -90,14 +90,18 @@ const ContactSection = () => {
       
       if (!response.ok) {
         let errorMessage = 'Erreur lors de l\'envoi du message';
+        let errorData;
         try {
-          const errorData = await response.json();
+          errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
         } catch {
-          const errorText = await response.text();
-          errorMessage = errorText || errorMessage;
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch {
+            errorMessage = `Erreur HTTP ${response.status}`;
+          }
         }
-        console.error('Contact error response:', errorData);
         throw new Error(errorMessage);
       }
       
@@ -116,7 +120,7 @@ const ContactSection = () => {
         toast.success(t("contact.success"));
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      toast.error(error.message);
+      toast.error(error.message || 'Erreur lors de l\'envoi du message');
     } finally {
       setIsSubmitting(false);
     }

@@ -312,15 +312,21 @@ const Admin = () => {
       if (response.ok) {
         await loadData();
         toast.success("Statut du message mis à jour");
-        setSelectedMessage(null);
       } else {
-        const errorText = await response.text();
-        console.error('Update message status error:', response.status, errorText);
-        toast.error(`Erreur lors de la mise à jour: ${errorText}`);
+        let errorMessage = 'Erreur lors de la mise à jour';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
+        console.error('Update message status error:', response.status, errorMessage);
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error('Error updating message status:', error);
-      toast.error(`Erreur lors de la mise à jour: ${error.message}`);
+      toast.error('Erreur lors de la mise à jour du statut');
     }
   };
 
@@ -967,6 +973,13 @@ const Admin = () => {
                                               <Phone className="h-4 w-4 mr-2" />
                                               Appeler
                                             </a>
+                                          </Button>
+                                          <Button 
+                                            variant="outline" 
+                                            size="sm"
+                                            onClick={() => setSelectedMessage(null)}
+                                          >
+                                            Fermer
                                           </Button>
                                         )}
                                         <Button 
