@@ -158,6 +158,7 @@ const Admin = () => {
         console.error('Failed to load students:', studentsResponse.status, studentsResponse.statusText);
         const errorText = await studentsResponse.text();
         console.error('Error response:', errorText);
+        setStudents([]);
       }
 
       // Load messages
@@ -169,12 +170,16 @@ const Admin = () => {
           },
         });
         
+        console.log('Messages response status:', messagesResponse.status);
+        
         if (messagesResponse.ok) {
           const messagesData = await messagesResponse.json();
           console.log('Messages data loaded:', messagesData.length, 'messages');
           setMessages(messagesData);
         } else {
-          console.error('Failed to load messages:', messagesResponse.status);
+          console.error('Failed to load messages:', messagesResponse.status, messagesResponse.statusText);
+          const errorText = await messagesResponse.text();
+          console.error('Messages error response:', errorText);
           // Fallback to empty array if endpoint doesn't exist yet
           setMessages([]);
         }
@@ -190,6 +195,8 @@ const Admin = () => {
         name: error.name
       });
       toast.error("Erreur lors du chargement des données");
+      setStudents([]);
+      setMessages([]);
     } finally {
       setLoading(false);
     }
@@ -226,6 +233,7 @@ const Admin = () => {
     }
 
     try {
+      console.log('Deleting student:', studentId);
       const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/students/${studentId}`, {
         method: 'DELETE',
         headers: {
@@ -233,6 +241,8 @@ const Admin = () => {
         },
       });
 
+      console.log('Delete student response status:', response.status);
+      
       if (response.ok) {
         await loadData();
         toast.success("Inscription supprimée avec succès");
@@ -279,6 +289,7 @@ const Admin = () => {
     }
 
     try {
+      console.log('Deleting message:', messageId);
       const response = await fetch(`https://math-summer-camp-platform-backend.onrender.com/api/messages/${messageId}`, {
         method: 'DELETE',
         headers: {
@@ -286,6 +297,8 @@ const Admin = () => {
         },
       });
 
+      console.log('Delete message response status:', response.status);
+      
       if (response.ok) {
         await loadData();
         toast.success("Message supprimé avec succès");
@@ -782,6 +795,13 @@ const Admin = () => {
                 </div>
               </CardHeader>
               <CardContent>
+                {loading ? (
+                  <div className="text-center py-8">Chargement des messages...</div>
+                ) : filteredMessages.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    {messageFilter === 'all' ? 'Aucun message trouvé' : `Aucun message ${messageFilter === 'new' ? 'nouveau' : messageFilter === 'read' ? 'lu' : 'répondu'} trouvé`}
+                  </div>
+                ) : (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -917,6 +937,7 @@ const Admin = () => {
                     </TableBody>
                   </Table>
                 </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
