@@ -113,18 +113,15 @@ def validate_phone(phone):
     """Validate phone number format"""
     if not phone or not isinstance(phone, str):
         return False
-    
-    # Clean phone number
-    clean_phone = re.sub(r'[^\d+]', '', phone.strip())
-    
-    # Benin format: +229 followed by 8 digits or just 8 digits
-    patterns = [
-        r'^\+229[0-9]{8}$',  # +229 + 8 digits
-        r'^[0-9]{8}$',       # 8 digits
-        r'^\+?[0-9]{8,15}$'  # International format
-    ]
-    
-    return any(re.match(pattern, clean_phone) for pattern in patterns)
+
+    # Remove all non-digit characters but preserve leading +
+    phone = phone.strip()
+    has_plus = phone.startswith('+')
+    digits_only = re.sub(r'\D', '', phone)
+    clean_phone = f"+{digits_only}" if has_plus else digits_only
+
+    # Accept numbers between 8 and 15 digits
+    return bool(re.match(r'^\+?\d{8,15}$', clean_phone))
 
 def sanitize_string(text, max_length=1000):
     """Sanitize string input"""
@@ -346,12 +343,12 @@ def contact_message():
             if phone and not validate_phone(phone):
                 return jsonify({"error": "Format de téléphone invalide"}), 400
             
-           # Clean and format phone number if provided
-           if phone:
-               if phone.startswith('+229'):
-                   phone = phone.replace(' ', '')
-               elif len(phone) == 8 and phone.isdigit():
-                   phone = f"+229{phone}"
+            # Clean and format phone number if provided
+            if phone:
+                if phone.startswith('+229'):
+                    phone = phone.replace(' ', '')
+                elif len(phone) == 8 and phone.isdigit():
+                    phone = f"+229{phone}"
            
             # Validate interest
             valid_interests = ['participant', 'parent', 'intervenant', 'partenaire']
