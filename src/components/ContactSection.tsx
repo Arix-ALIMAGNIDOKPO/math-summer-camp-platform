@@ -80,12 +80,34 @@ const ContactSection = () => {
       const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
       console.log('Contact API URL:', API_URL);
       
+      // Test de connectivité d'abord
+      try {
+        const healthCheck = await fetch(`${API_URL}/api/health`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          signal: AbortSignal.timeout(10000), // 10 secondes timeout
+        });
+        
+        if (!healthCheck.ok) {
+          console.warn('Backend health check failed:', healthCheck.status);
+        }
+      } catch (healthError) {
+        console.error('Backend health check error:', healthError);
+        // Continue anyway, maybe the health endpoint is not available but the contact endpoint is
+      }
+      
       const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'Origin': window.location.origin,
         },
+        mode: 'cors',
+        credentials: 'omit',
+        signal: AbortSignal.timeout(30000), // 30 secondes timeout
         body: JSON.stringify(cleanedData),
       });
       
@@ -123,9 +145,36 @@ const ContactSection = () => {
       });
       
       toast.success(t("contact.success"));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting contact form:", error);
-      toast.error((error instanceof Error ? error.message : 'Erreur inconnue') || 'Erreur lors de l\'envoi du message');
+      
+      let errorMessage = t("contact.error");
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError' || error.message.includes('timeout')) {
+          errorMessage = 'Délai d\'attente dépassé. Veuillez vérifier votre connexion internet et réessayer.';
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('ERR_FAILED')) {
+          errorMessage = 'Impossible de contacter le serveur. Veuillez vérifier votre connexion internet ou réessayer plus tard.';
+        } else if (error.message.includes('CORS')) {
+          errorMessage = 'Erreur de configuration du serveur. Veuillez contacter l\'administrateur.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      toast.error(errorMessage);
+      
+      // Fallback: ouvrir l'email client en cas d'échec
+      if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_FAILED')) {
+        setTimeout(() => {
+          const subject = encodeURIComponent('Contact - Summer Maths Camp');
+          const body = encodeURIComponent(`Nom: ${formData.name}\nEmail: ${formData.email}\nTéléphone: ${formData.phone || 'Non fourni'}\nIntérêt: ${formData.interest}\n\nMessage: ${formData.message}`);
+          
+          if (confirm('Le serveur semble indisponible. Voulez-vous envoyer votre message par email ?')) {
+            window.location.href = `mailto:info.imacbenin@gmail.com?subject=${subject}&body=${body}`;
+          }
+        }, 2000);
+      }
     } finally {
       setIsSubmitting(false);
     }

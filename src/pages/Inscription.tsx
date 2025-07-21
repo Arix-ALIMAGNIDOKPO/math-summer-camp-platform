@@ -129,12 +129,39 @@ const Inscription = () => {
       const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
       console.log('API URL:', API_URL);
       
+      // Test de connectivité d'abord
+      try {
+        console.log('Testing backend connectivity...');
+        const healthCheck = await fetch(`${API_URL}/api/health`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          signal: AbortSignal.timeout(10000), // 10 secondes timeout
+        });
+        
+        console.log('Health check response:', healthCheck.status);
+        if (!healthCheck.ok) {
+          console.warn('Backend health check failed:', healthCheck.status);
+        } else {
+          const healthData = await healthCheck.json();
+          console.log('Backend health data:', healthData);
+        }
+      } catch (healthError) {
+        console.error('Backend health check error:', healthError);
+        // Continue anyway, maybe the health endpoint is not available but the register endpoint is
+      }
+      
       const response = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'Origin': window.location.origin,
         },
+        mode: 'cors',
+        credentials: 'omit',
+        signal: AbortSignal.timeout(30000), // 30 secondes timeout
         body: JSON.stringify(cleanedData),
       });
       
@@ -179,16 +206,63 @@ const Inscription = () => {
       setIsSuccess(true);
       
       console.log('Registration completed successfully, student ID:', result.studentId);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erreur lors de l'envoi du formulaire:", error);
+      
+      let errorMessage = language === 'fr' ? "Erreur lors de l'inscription" : "Registration error";
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError' || error.message.includes('timeout')) {
+          errorMessage = language === 'fr' 
+            ? 'Délai d\'attente dépassé. Veuillez vérifier votre connexion internet et réessayer.'
+            : 'Request timeout. Please check your internet connection and try again.';
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('ERR_FAILED')) {
+          errorMessage = language === 'fr'
+            ? 'Impossible de contacter le serveur. Veuillez vérifier votre connexion internet ou réessayer plus tard.'
+            : 'Unable to contact the server. Please check your internet connection or try again later.';
+        } else if (error.message.includes('CORS')) {
+          errorMessage = language === 'fr'
+            ? 'Erreur de configuration du serveur. Veuillez contacter l\'administrateur.'
+            : 'Server configuration error. Please contact the administrator.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
       
       toast({
         title: language === 'fr' ? "Erreur lors de l'envoi" : "Error sending form",
-        description: language === 'fr'
-          ? `${error instanceof Error ? error.message : 'Erreur inconnue'}. Veuillez vérifier vos informations et réessayer.`
-          : `${error instanceof Error ? error.message : 'Unknown error'}. Please check your information and try again.`,
+        description: errorMessage,
         variant: "destructive",
       });
+      
+      // Fallback: proposer l'envoi par email en cas d'échec réseau
+      if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_FAILED')) {
+        setTimeout(() => {
+          const subject = encodeURIComponent('Inscription Summer Maths Camp 2025');
+          const body = encodeURIComponent(`
+Prénom: ${data.prenom}
+Nom: ${data.nom}
+Email: ${data.email}
+Téléphone: ${data.telephone}
+Âge: ${data.age}
+Niveau: ${data.niveau}
+École: ${data.ecole}
+Ville: ${data.ville}
+Département: ${data.departement}
+Commune: ${data.commune}
+
+Motivation:
+${data.motivation}
+          `);
+          
+          if (confirm(language === 'fr' 
+            ? 'Le serveur semble indisponible. Voulez-vous envoyer votre inscription par email ?'
+            : 'The server seems unavailable. Would you like to send your registration by email?'
+          )) {
+            window.location.href = `mailto:info.imacbenin@gmail.com?subject=${subject}&body=${body}`;
+          }
+        }, 2000);
+      }
     } finally {
       setIsSubmitting(false);
     }

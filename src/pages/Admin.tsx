@@ -94,12 +94,37 @@ const Admin: React.FC = () => {
       
       console.log('Fetching data from:', API_URL);
       
+      // Test de connectivité d'abord
+      try {
+        const healthCheck = await fetch(`${API_URL}/api/health`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          signal: AbortSignal.timeout(10000),
+        });
+        
+        if (healthCheck.ok) {
+          const healthData = await healthCheck.json();
+          console.log('Backend health:', healthData);
+        } else {
+          console.warn('Backend health check failed:', healthCheck.status);
+        }
+      } catch (healthError) {
+        console.error('Backend health check error:', healthError);
+        toast.error('Le serveur semble indisponible. Certaines fonctionnalités peuvent ne pas fonctionner.');
+      }
+      
       const studentsRes = await fetch(`${API_URL}/api/students`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Origin': window.location.origin,
         },
+        mode: 'cors',
+        credentials: 'omit',
+        signal: AbortSignal.timeout(30000),
       });
       
       const messagesRes = await fetch(`${API_URL}/api/messages`, {
@@ -107,7 +132,11 @@ const Admin: React.FC = () => {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Origin': window.location.origin,
         },
+        mode: 'cors',
+        credentials: 'omit',
+        signal: AbortSignal.timeout(30000),
       });
       
       console.log('Students response status:', studentsRes.status);
@@ -121,6 +150,7 @@ const Admin: React.FC = () => {
         console.error('Failed to fetch students:', studentsRes.status, studentsRes.statusText);
         const errorText = await studentsRes.text();
         console.error('Students error response:', errorText);
+        toast.error('Erreur lors du chargement des inscriptions');
       }
 
       if (messagesRes.ok) {
@@ -131,10 +161,22 @@ const Admin: React.FC = () => {
         console.error('Failed to fetch messages:', messagesRes.status, messagesRes.statusText);
         const errorText = await messagesRes.text();
         console.error('Messages error response:', errorText);
+        toast.error('Erreur lors du chargement des messages');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching data:', error);
-      toast.error('Erreur lors du chargement des données');
+      
+      let errorMessage = 'Erreur lors du chargement des données';
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError' || error.message.includes('timeout')) {
+          errorMessage = 'Délai d\'attente dépassé. Veuillez vérifier votre connexion internet.';
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('ERR_FAILED')) {
+          errorMessage = 'Impossible de contacter le serveur. Veuillez vérifier votre connexion internet.';
+        }
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
