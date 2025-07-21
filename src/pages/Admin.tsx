@@ -435,95 +435,97 @@ const Admin: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-auto">
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <MscLogo />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Administration</h1>
-                <p className="text-gray-600">Summer Maths Camp - Gestion des inscriptions</p>
+                <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Administration</h1>
+                <p className="text-sm sm:text-base text-gray-600">Summer Maths Camp - Gestion des inscriptions</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <Button onClick={exportStudents} className="flex items-center gap-2">
-                <Download className="w-4 h-4" />
-                Exporter Excel
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              <Button onClick={exportStudents} className="flex items-center gap-2 text-sm" size="sm">
+                <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Exporter Excel</span>
+                <span className="sm:hidden">Export</span>
               </Button>
-              <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2">
-                <LogOut className="w-4 h-4" />
-                Déconnexion
+              <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2 text-sm" size="sm">
+                <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Déconnexion</span>
+                <span className="sm:hidden">Logout</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Inscriptions</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Total Inscriptions</CardTitle>
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalStudents}</div>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-lg sm:text-2xl font-bold">{stats.totalStudents}</div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">En Attente</CardTitle>
-              <Clock className="h-4 w-4 text-yellow-600" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">En Attente</CardTitle>
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{stats.pendingStudents}</div>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-lg sm:text-2xl font-bold text-yellow-600">{stats.pendingStudents}</div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Confirmés</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Confirmés</CardTitle>
+              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.confirmedStudents}</div>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-lg sm:text-2xl font-bold text-green-600">{stats.confirmedStudents}</div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Messages</CardTitle>
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Messages</CardTitle>
+              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalMessages}</div>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-lg sm:text-2xl font-bold">{stats.totalMessages}</div>
               {stats.newMessages > 0 && (
-                <p className="text-xs text-red-600 mt-1">{stats.newMessages} nouveaux</p>
+                <p className="text-xs text-red-600 mt-1">{stats.newMessages} nouveau{stats.newMessages > 1 ? 'x' : ''}</p>
               )}
             </CardContent>
           </Card>
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="students" className="space-y-6">
-          <TabsList>
+        <Tabs defaultValue="students" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="students">Inscriptions ({stats.totalStudents})</TabsTrigger>
             <TabsTrigger value="messages">Messages ({stats.totalMessages})</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="students" className="space-y-6">
+          <TabsContent value="students" className="space-y-4 sm:space-y-6">
             {/* Filtres et recherche */}
             <Card>
               <CardHeader>
-                <CardTitle>Filtres</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Filtres</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-3 sm:p-6">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
-                    <Label htmlFor="search">Rechercher</Label>
+                    <Label htmlFor="search" className="text-sm">Rechercher</Label>
                     <Input
                       id="search"
                       placeholder="Nom, prénom, email ou ID..."
@@ -533,7 +535,7 @@ const Admin: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="status-filter">Statut</Label>
+                    <Label htmlFor="status-filter" className="text-sm">Statut</Label>
                     <select
                       id="status-filter"
                       value={statusFilter}
@@ -552,73 +554,70 @@ const Admin: React.FC = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Liste des Inscriptions ({filteredStudents.length})</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Liste des Inscriptions ({filteredStudents.length})</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
+              <CardContent className="p-0 sm:p-6">
+                <div className="overflow-x-auto min-w-full">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Nom Complet</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Téléphone</TableHead>
-                        <TableHead>Âge</TableHead>
-                        <TableHead>Niveau</TableHead>
-                        <TableHead>Ville</TableHead>
-                        <TableHead>Statut</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[80px]">ID</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[150px]">Nom Complet</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[200px]">Email</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[120px]">Téléphone</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[60px]">Âge</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[80px]">Niveau</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[100px]">Ville</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[100px]">Statut</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[150px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredStudents.length > 0 ? filteredStudents.map((student) => (
                         <TableRow key={student.id}>
-                          <TableCell className="font-mono text-sm">{student.id}</TableCell>
-                          <TableCell className="font-medium">
+                          <TableCell className="font-mono text-xs sm:text-sm p-2 sm:p-4">{student.id}</TableCell>
+                          <TableCell className="font-medium text-xs sm:text-sm p-2 sm:p-4">
                             {student.prenom} {student.nom}
                           </TableCell>
-                          <TableCell>{student.email}</TableCell>
-                          <TableCell>{student.telephone}</TableCell>
-                          <TableCell>{student.age} ans</TableCell>
-                          <TableCell>{student.niveau}</TableCell>
-                          <TableCell>{student.ville}</TableCell>
-                          <TableCell>{getStatusBadge(student.status)}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
+                          <TableCell className="text-xs sm:text-sm p-2 sm:p-4 max-w-[200px] truncate">{student.email}</TableCell>
+                          <TableCell className="text-xs sm:text-sm p-2 sm:p-4">{student.telephone}</TableCell>
+                          <TableCell className="text-xs sm:text-sm p-2 sm:p-4">{student.age} ans</TableCell>
+                          <TableCell className="text-xs sm:text-sm p-2 sm:p-4">{student.niveau}</TableCell>
+                          <TableCell className="text-xs sm:text-sm p-2 sm:p-4">{student.ville}</TableCell>
+                          <TableCell className="p-2 sm:p-4">{getStatusBadge(student.status)}</TableCell>
+                          <TableCell className="p-2 sm:p-4">
+                            <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => setSelectedStudent(student)}
+                                className="h-7 w-7 p-0 sm:h-8 sm:w-8"
                               >
-                                <Eye className="w-3 h-3" />
+                                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
-                              {student.status === 'pending' && (
-                                <>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="text-green-600 hover:text-green-700"
-                                    onClick={() => updateStudentStatus(student.id, 'confirmed')}
-                                  >
-                                    <CheckCircle className="w-3 h-3" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="text-red-600 hover:text-red-700"
-                                    onClick={() => updateStudentStatus(student.id, 'rejected')}
-                                  >
-                                    <XCircle className="w-3 h-3" />
-                                  </Button>
-                                </>
-                              )}
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-red-600 hover:text-red-700"
+                                className="text-green-600 hover:text-green-700 h-7 w-7 p-0 sm:h-8 sm:w-8"
+                                onClick={() => updateStudentStatus(student.id, 'confirmed')}
+                              >
+                                <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-600 hover:text-red-700 h-7 w-7 p-0 sm:h-8 sm:w-8"
+                                onClick={() => updateStudentStatus(student.id, 'rejected')}
+                              >
+                                <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-600 hover:text-red-700 h-7 w-7 p-0 sm:h-8 sm:w-8"
                                 onClick={() => deleteStudent(student.id)}
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                             </div>
                           </TableCell>
@@ -640,49 +639,54 @@ const Admin: React.FC = () => {
           <TabsContent value="messages" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Messages de Contact</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Messages de Contact</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
+              <CardContent className="p-0 sm:p-6">
+                <div className="overflow-x-auto min-w-full">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Nom</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Téléphone</TableHead>
-                        <TableHead>Intérêt</TableHead>
-                        <TableHead>Message</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Statut</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[120px]">Nom</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[180px]">Email</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[120px]">Téléphone</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[100px]">Intérêt</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[200px]">Message</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[100px]">Date</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[100px]">Statut</TableHead>
+                        <TableHead className="text-xs sm:text-sm min-w-[120px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {messages.length > 0 ? messages.map((message) => (
                         <TableRow key={message.id}>
-                          <TableCell className="font-medium">{message.name}</TableCell>
-                          <TableCell>{message.email}</TableCell>
-                          <TableCell>{message.phone || '-'}</TableCell>
-                          <TableCell>{getInterestBadge(message.interest)}</TableCell>
-                          <TableCell className="max-w-xs truncate">{message.message}</TableCell>
-                          <TableCell>{new Date(message.createdAt).toLocaleDateString('fr-FR')}</TableCell>
-                          <TableCell>{getMessageStatusBadge(message.status)}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
+                          <TableCell className="font-medium text-xs sm:text-sm p-2 sm:p-4">{message.name}</TableCell>
+                          <TableCell className="text-xs sm:text-sm p-2 sm:p-4 max-w-[180px] truncate">{message.email}</TableCell>
+                          <TableCell className="text-xs sm:text-sm p-2 sm:p-4">{message.phone || '-'}</TableCell>
+                          <TableCell className="p-2 sm:p-4">{getInterestBadge(message.interest)}</TableCell>
+                          <TableCell className="text-xs sm:text-sm p-2 sm:p-4 max-w-[200px]">
+                            <div className="truncate" title={message.message}>
+                              {message.message.length > 50 ? `${message.message.substring(0, 50)}...` : message.message}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-xs sm:text-sm p-2 sm:p-4">{new Date(message.createdAt).toLocaleDateString('fr-FR')}</TableCell>
+                          <TableCell className="p-2 sm:p-4">{getMessageStatusBadge(message.status)}</TableCell>
+                          <TableCell className="p-2 sm:p-4">
+                            <div className="flex items-center gap-1 sm:gap-2">
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => setSelectedMessage(message)}
+                                className="h-7 w-7 p-0 sm:h-8 sm:w-8"
                               >
-                                <Eye className="w-3 h-3" />
+                                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-red-600 hover:text-red-700"
+                                className="text-red-600 hover:text-red-700 h-7 w-7 p-0 sm:h-8 sm:w-8"
                                 onClick={() => deleteMessage(message.id)}
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                             </div>
                           </TableCell>
@@ -705,11 +709,11 @@ const Admin: React.FC = () => {
 
       {/* Student Detail Modal */}
       {selectedStudent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
               <div className="flex justify-between items-start mb-6">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-lg sm:text-xl font-bold pr-4">
                   Détails de l'inscription - {selectedStudent.prenom} {selectedStudent.nom}
                 </h2>
                 <Button
@@ -721,7 +725,7 @@ const Admin: React.FC = () => {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="text-sm font-medium text-gray-500">ID</label>
                   <p className="font-mono">{selectedStudent.id}</p>
@@ -766,7 +770,9 @@ const Admin: React.FC = () => {
 
               <div className="mb-6">
                 <label className="text-sm font-medium text-gray-500">Motivation</label>
-                <p className="mt-1 p-3 bg-gray-50 rounded-md text-sm">{selectedStudent.motivation}</p>
+                <div className="mt-1 p-3 bg-gray-50 rounded-md text-sm max-h-40 overflow-y-auto">
+                  <p className="whitespace-pre-wrap break-words">{selectedStudent.motivation}</p>
+                </div>
               </div>
 
               <div className="mb-6">
@@ -774,29 +780,37 @@ const Admin: React.FC = () => {
                 <p>{new Date(selectedStudent.registeredAt).toLocaleString('fr-FR')}</p>
               </div>
 
-              {selectedStudent.status === 'pending' && (
-                <div className="flex gap-3">
-                  <Button
-                    className="flex-1"
-                    onClick={() => {
-                      updateStudentStatus(selectedStudent.id, 'confirmed');
-                    }}
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Confirmer
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1 text-red-600 hover:text-red-700"
-                    onClick={() => {
-                      updateStudentStatus(selectedStudent.id, 'rejected');
-                    }}
-                  >
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Rejeter
-                  </Button>
-                </div>
-              )}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  className="flex-1"
+                  onClick={() => {
+                    updateStudentStatus(selectedStudent.id, 'confirmed');
+                  }}
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Confirmer
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 text-red-600 hover:text-red-700"
+                  onClick={() => {
+                    updateStudentStatus(selectedStudent.id, 'rejected');
+                  }}
+                >
+                  <XCircle className="w-4 h-4 mr-2" />
+                  Rejeter
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 text-yellow-600 hover:text-yellow-700"
+                  onClick={() => {
+                    updateStudentStatus(selectedStudent.id, 'pending');
+                  }}
+                >
+                  <Clock className="w-4 h-4 mr-2" />
+                  En attente
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -804,11 +818,11 @@ const Admin: React.FC = () => {
 
       {/* Message Detail Modal */}
       {selectedMessage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
               <div className="flex justify-between items-start mb-6">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-lg sm:text-xl font-bold pr-4">
                   Message de {selectedMessage.name}
                 </h2>
                 <Button
@@ -820,7 +834,7 @@ const Admin: React.FC = () => {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="text-sm font-medium text-gray-500">Nom</label>
                   <p>{selectedMessage.name}</p>
@@ -849,10 +863,12 @@ const Admin: React.FC = () => {
 
               <div className="mb-6">
                 <label className="text-sm font-medium text-gray-500">Message</label>
-                <p className="mt-1 p-3 bg-gray-50 rounded-md text-sm whitespace-pre-wrap">{selectedMessage.message}</p>
+                <div className="mt-1 p-3 bg-gray-50 rounded-md text-sm max-h-60 overflow-y-auto">
+                  <p className="whitespace-pre-wrap break-words">{selectedMessage.message}</p>
+                </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 {selectedMessage.status === 'new' && (
                   <Button
                     variant="outline"

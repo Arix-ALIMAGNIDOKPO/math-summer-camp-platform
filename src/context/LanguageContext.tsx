@@ -25,8 +25,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: "Edition II"
   },
   "hero.description": {
-    fr: "Le Benin Maths Camp 2025 propose des activités réparties en deux ateliers distincts : un atelier consacré au camp traditionnel, et un second axé sur la programmation et la robotique.",
-    en: "The Benin Maths Camp 2025 offers activities divided into two distinct workshops: one dedicated to the traditional camp, and a second focused on programming and robotics."
+    fr: "Notre camp d'été intensif entièrement gratuit en mathématiques est conçu pour les élèves passionnés qui souhaitent approfondir leurs connaissances dans un environnement académique stimulant et collaboratif.",
+    en: "Our completely free intensive mathematics summer camp is designed for passionate students who want to deepen their knowledge in a stimulating and collaborative academic environment."
   },
   "register.now": {
     fr: "S'inscrire maintenant",

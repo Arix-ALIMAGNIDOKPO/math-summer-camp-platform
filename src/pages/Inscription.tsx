@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { AnimatedSection } from "@/components/ui-custom/AnimatedSection";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 // Données des départements et communes du Bénin
 const beninData = {
@@ -50,12 +52,12 @@ const inscriptionSchema = z.object({
 type InscriptionFormValues = z.infer<typeof inscriptionSchema>;
 
 const Inscription = () => {
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [studentId, setStudentId] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [availableCommunes, setAvailableCommunes] = useState<string[]>([]);
+  const [submitError, setSubmitError] = useState<string>("");
   const { t, language } = useLanguage();
 
   const {
@@ -96,6 +98,7 @@ const Inscription = () => {
 
   const onSubmit = async (data: InscriptionFormValues) => {
     setIsSubmitting(true);
+    setSubmitError("");
     
     try {
       console.log('Starting form submission...');
@@ -231,10 +234,7 @@ const Inscription = () => {
       }
       
       toast({
-        title: language === 'fr' ? "Erreur lors de l'envoi" : "Error sending form",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      setSubmitError(errorMessage);
       
       // Fallback: proposer l'envoi par email en cas d'échec réseau
       if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_FAILED')) {
@@ -293,29 +293,6 @@ ${data.motivation}
                   </p>
                 </div>
                 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="bg-blue-100 rounded-full p-3">
-                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2 text-blue-900">
-                    {language === 'fr' ? "Votre numéro de candidature" : "Your application number"}
-                  </h3>
-                  <div className="bg-white border-2 border-dashed border-blue-300 rounded-lg p-4 mb-4">
-                    <p className="text-2xl font-mono font-bold text-blue-800 text-center">
-                      {studentId}
-                    </p>
-                  </div>
-                  <p className="text-sm text-blue-700">
-                    {language === 'fr'
-                      ? "Conservez précieusement ce numéro, il vous sera demandé pour tout suivi de votre candidature."
-                      : "Keep this number carefully, it will be required for any follow-up on your application."}
-                  </p>
-                </div>
-                
                 <div className="bg-blue-50 rounded-lg p-6 mb-8">
                   <h2 className="font-semibold text-lg mb-3 text-blue-900">
                     {language === 'fr' ? "Prochaines étapes" : "Next steps"}
@@ -325,8 +302,8 @@ ${data.motivation}
                       <Mail className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-blue-800">
                         {language === 'fr'
-                          ? "Vous recevrez un email de confirmation dans les prochaines heures"
-                          : "You will receive a confirmation email in the next few hours"}
+                          ? "Vous recevrez un email de confirmation dans les prochains jours"
+                          : "You will receive a confirmation email in the next few days"}
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
@@ -345,44 +322,6 @@ ${data.motivation}
                           : "If selected, you will receive all practical information (location, schedule, materials to bring)"}
                       </p>
                     </div>
-                  </div>
-                </div>
-                
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
-                  <h3 className="font-semibold text-lg mb-3 text-green-900">
-                    {language === 'fr' ? "Informations importantes" : "Important information"}
-                  </h3>
-                  <div className="space-y-2 text-left text-sm text-green-800">
-                    <p>
-                      <strong>
-                        {language === 'fr' ? "• Participation 100% gratuite" : "• 100% free participation"}
-                      </strong>
-                      {language === 'fr' 
-                        ? " - Hébergement, repas et activités inclus"
-                        : " - Accommodation, meals and activities included"}
-                    </p>
-                    <p>
-                      <strong>
-                        {language === 'fr' ? "• Transport à votre charge" : "• Transportation at your expense"}
-                      </strong>
-                      {language === 'fr' 
-                        ? " - Nous vous aiderons à organiser le covoiturage si nécessaire"
-                        : " - We will help organize carpooling if necessary"}
-                    </p>
-                    <p>
-                      <strong>
-                        {language === 'fr' ? "• Dates" : "• Dates"}
-                      </strong>
-                      : 18-22 Août 2025
-                    </p>
-                    <p>
-                      <strong>
-                        {language === 'fr' ? "• Lieu" : "• Location"}
-                      </strong>
-                      {language === 'fr' 
-                        ? " - Sera communiqué aux participants sélectionnés"
-                        : " - Will be communicated to selected participants"}
-                    </p>
                   </div>
                 </div>
                 
@@ -443,6 +382,15 @@ ${data.motivation}
           
           <AnimatedSection delay={200}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              {submitError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    {submitError}
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label htmlFor="prenom" className="text-sm font-medium">
