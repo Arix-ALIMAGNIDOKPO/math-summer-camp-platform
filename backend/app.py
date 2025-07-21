@@ -355,7 +355,14 @@ def contact_message():
             
             # Clean and format phone number if provided
             if phone:
-           
+                phone_clean = re.sub(r'[^\d+]', '', phone)
+                if phone_clean.startswith('+229'):
+                    phone = phone_clean
+                elif len(phone_clean) == 8 and phone_clean.isdigit():
+                    phone = f"+229{phone_clean}"
+                else:
+                    phone = phone_clean
+            
             # Validate interest
             valid_interests = ['participant', 'parent', 'intervenant', 'partenaire']
             if interest not in valid_interests:
