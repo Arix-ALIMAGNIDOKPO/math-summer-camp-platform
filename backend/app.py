@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 # Configure CORS properly
 CORS(app, 
-     origins=["https://beninmathscamp.vercel.app", "http://localhost:8080", "http://localhost:3000"],
+     origins=["https://beninmathscamp.vercel.app", "http://localhost:8080", "http://localhost:3000", "https://math-summer-camp-platform-backend.onrender.com"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
      allow_headers=["Content-Type", "Authorization", "Accept"],
      supports_credentials=True)
@@ -624,7 +624,8 @@ def method_not_allowed(error):
 def after_request(response):
     """Add CORS headers to all responses"""
     origin = request.headers.get('Origin')
-    if origin in ["https://beninmathscamp.vercel.app", "http://localhost:8080", "http://localhost:3000"]:
+    allowed_origins = ["https://beninmathscamp.vercel.app", "http://localhost:8080", "http://localhost:3000"]
+    if origin in allowed_origins:
         response.headers.add('Access-Control-Allow-Origin', origin)
     else:
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -638,4 +639,8 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     
     logger.info(f"Starting server on port {port}, debug={debug_mode}")
+    
+    # Initialize data files before starting
+    init_data_files()
+    
     app.run(debug=debug_mode, host='0.0.0.0', port=port)
