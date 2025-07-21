@@ -233,7 +233,7 @@ const Inscription = () => {
         }
       }
       
-      toast({
+      toast.error(errorMessage);
       setSubmitError(errorMessage);
       
       // Fallback: proposer l'envoi par email en cas d'échec réseau
