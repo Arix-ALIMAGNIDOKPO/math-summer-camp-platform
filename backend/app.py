@@ -12,12 +12,13 @@ from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
-# Configure CORS more permissively for debugging
+# Configure CORS - let Flask-CORS handle all headers automatically
 CORS(app, 
-     origins=["*"],  # Allow all origins for now
+     origins=["https://beninmathscamp.vercel.app", "http://localhost:5173", "http://localhost:3000"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
-     supports_credentials=False)  # Disable credentials for broader compatibility
+     allow_headers=["Content-Type", "Authorization", "Accept", "Cache-Control"],
+     supports_credentials=False,
+     max_age=86400)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -159,12 +160,8 @@ def handle_preflight():
     if request.method == "OPTIONS":
         print(f"OPTIONS request from origin: {request.headers.get('Origin')}")
         print(f"Request headers: {dict(request.headers)}")
-        response = jsonify({'status': 'ok'})
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization,Accept,Origin,X-Requested-With")
-        response.headers.add('Access-Control-Allow-Methods', "GET,PUT,POST,DELETE,OPTIONS")
-        response.headers.add('Access-Control-Max-Age', '86400')
-        return response
+        # Let Flask-CORS handle the response automatically
+        return '', 200
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -631,11 +628,10 @@ def method_not_allowed(error):
 
 @app.after_request
 def after_request(response):
-    """Add CORS headers to all responses"""
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin,X-Requested-With')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    response.headers.add('Access-Control-Max-Age', '86400')
+    """Log response for debugging"""
+    print(f"Response to {request.method} {request.path}: {response.status_code}")
+    if request.method == "OPTIONS":
+        print(f"CORS headers: {dict(response.headers)}")
     return response
 
 if __name__ == '__main__':
