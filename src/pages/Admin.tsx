@@ -100,8 +100,9 @@ const Admin: React.FC = () => {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
+            'Cache-Control': 'no-cache',
           },
-          signal: AbortSignal.timeout(10000),
+          signal: AbortSignal.timeout(15000),
         });
         
         if (healthCheck.ok) {
@@ -120,11 +121,11 @@ const Admin: React.FC = () => {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Origin': window.location.origin,
+          'Cache-Control': 'no-cache',
         },
         mode: 'cors',
         credentials: 'omit',
-        signal: AbortSignal.timeout(30000),
+        signal: AbortSignal.timeout(45000),
       });
       
       const messagesRes = await fetch(`${API_URL}/api/messages`, {
@@ -132,11 +133,11 @@ const Admin: React.FC = () => {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Origin': window.location.origin,
+          'Cache-Control': 'no-cache',
         },
         mode: 'cors',
         credentials: 'omit',
-        signal: AbortSignal.timeout(30000),
+        signal: AbortSignal.timeout(45000),
       });
       
       console.log('Students response status:', studentsRes.status);

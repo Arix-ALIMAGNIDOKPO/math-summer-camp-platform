@@ -136,8 +136,9 @@ const Inscription = () => {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
+            'Cache-Control': 'no-cache',
           },
-          signal: AbortSignal.timeout(10000), // 10 secondes timeout
+          signal: AbortSignal.timeout(15000), // 15 secondes timeout
         });
         
         console.log('Health check response:', healthCheck.status);
@@ -157,16 +158,16 @@ const Inscription = () => {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Origin': window.location.origin,
+          'Cache-Control': 'no-cache',
         },
         mode: 'cors',
         credentials: 'omit',
-        signal: AbortSignal.timeout(30000), // 30 secondes timeout
+        signal: AbortSignal.timeout(45000), // 45 secondes timeout
         body: JSON.stringify(cleanedData),
       });
       
       console.log('Registration response status:', response.status);
-      console.log('Registration response headers:', response.headers);
+      console.log('Registration response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
         let errorMessage = language === 'fr' ? 'Erreur lors de l\'inscription' : 'Registration error';

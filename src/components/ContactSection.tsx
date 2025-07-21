@@ -86,12 +86,16 @@ const ContactSection = () => {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
+            'Cache-Control': 'no-cache',
           },
-          signal: AbortSignal.timeout(10000), // 10 secondes timeout
+          signal: AbortSignal.timeout(15000), // 15 secondes timeout
         });
         
         if (!healthCheck.ok) {
           console.warn('Backend health check failed:', healthCheck.status);
+        } else {
+          const healthData = await healthCheck.json();
+          console.log('Backend health check success:', healthData);
         }
       } catch (healthError) {
         console.error('Backend health check error:', healthError);
@@ -103,15 +107,16 @@ const ContactSection = () => {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Origin': window.location.origin,
+          'Cache-Control': 'no-cache',
         },
         mode: 'cors',
-        credentials: 'omit',
-        signal: AbortSignal.timeout(30000), // 30 secondes timeout
+        credentials: 'omit', 
+        signal: AbortSignal.timeout(45000), // 45 secondes timeout
         body: JSON.stringify(cleanedData),
       });
       
       console.log('Contact response status:', response.status);
+      console.log('Contact response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
         let errorMessage = t("contact.error");
@@ -170,7 +175,9 @@ const ContactSection = () => {
           const subject = encodeURIComponent('Contact - Summer Maths Camp');
           const body = encodeURIComponent(`Nom: ${formData.name}\nEmail: ${formData.email}\nTéléphone: ${formData.phone || 'Non fourni'}\nIntérêt: ${formData.interest}\n\nMessage: ${formData.message}`);
           
-          if (confirm('Le serveur semble indisponible. Voulez-vous envoyer votre message par email ?')) {
+          if (confirm(language === 'fr' 
+            ? 'Le serveur semble indisponible. Voulez-vous envoyer votre message par email ?' 
+            : 'The server seems unavailable. Would you like to send your message by email?')) {
             window.location.href = `mailto:info.imacbenin@gmail.com?subject=${subject}&body=${body}`;
           }
         }, 2000);

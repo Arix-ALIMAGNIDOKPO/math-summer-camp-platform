@@ -12,12 +12,12 @@ from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
-# Configure CORS properly
+# Configure CORS more permissively for debugging
 CORS(app, 
-     origins=["https://beninmathscamp.vercel.app", "http://localhost:8080", "http://localhost:3000", "https://math-summer-camp-platform-backend.onrender.com"],
+     origins=["*"],  # Allow all origins for now
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization", "Accept"],
-     supports_credentials=True)
+     allow_headers=["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
+     supports_credentials=False)  # Disable credentials for broader compatibility
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -157,11 +157,13 @@ init_data_files()
 def handle_preflight():
     """Handle CORS preflight requests"""
     if request.method == "OPTIONS":
+        print(f"OPTIONS request from origin: {request.headers.get('Origin')}")
+        print(f"Request headers: {dict(request.headers)}")
         response = jsonify({'status': 'ok'})
-        response.headers.add("Access-Control-Allow-Origin", request.headers.get('Origin', '*'))
-        response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization,Accept")
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization,Accept,Origin,X-Requested-With")
         response.headers.add('Access-Control-Allow-Methods', "GET,PUT,POST,DELETE,OPTIONS")
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers.add('Access-Control-Max-Age', '86400')
         return response
 
 @app.route('/api/health', methods=['GET'])
@@ -179,6 +181,10 @@ def health_check():
 def register_student():
     """Register a new student"""
     try:
+        print(f"POST /api/register - Origin: {request.headers.get('Origin')}")
+        print(f"Content-Type: {request.headers.get('Content-Type')}")
+        print(f"Request method: {request.method}")
+        
         # Get JSON data
         if not request.is_json:
             logger.error("Request is not JSON")
@@ -307,6 +313,9 @@ def register_student():
 def contact_message():
     """Save contact message"""
     try:
+        print(f"POST /api/contact - Origin: {request.headers.get('Origin')}")
+        print(f"Content-Type: {request.headers.get('Content-Type')}")
+        
         # Get JSON data
         if not request.is_json:
             logger.error("Contact request is not JSON")
@@ -623,15 +632,10 @@ def method_not_allowed(error):
 @app.after_request
 def after_request(response):
     """Add CORS headers to all responses"""
-    origin = request.headers.get('Origin')
-    allowed_origins = ["https://beninmathscamp.vercel.app", "http://localhost:8080", "http://localhost:3000"]
-    if origin in allowed_origins:
-        response.headers.add('Access-Control-Allow-Origin', origin)
-    else:
-        response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin,X-Requested-With')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add('Access-Control-Max-Age', '86400')
     return response
 
 if __name__ == '__main__':
@@ -639,8 +643,10 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     
     logger.info(f"Starting server on port {port}, debug={debug_mode}")
+    logger.info("CORS configured for all origins (*)")
+    logger.info("Available endpoints: /api/health, /api/register, /api/contact, /api/students, /api/messages")
     
     # Initialize data files before starting
     init_data_files()
     
-    app.run(debug=debug_mode, host='0.0.0.0', port=port)
+    app.run(debug=debug_mode, host='0.0.0.0', port=port, threaded=True)
