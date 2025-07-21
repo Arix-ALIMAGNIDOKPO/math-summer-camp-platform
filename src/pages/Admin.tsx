@@ -4,8 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Users, MessageSquare, Download, Eye, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Users, MessageSquare, Download, Eye, Trash2, CheckCircle, XCircle, Clock, LogOut, Lock } from 'lucide-react';
+import { MscLogo } from '@/components/ui-custom/MscLogo';
 
 interface Student {
   id: string;
@@ -36,16 +39,54 @@ interface Message {
 }
 
 const Admin: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [loginError, setLoginError] = useState('');
   const [students, setStudents] = useState<Student[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
 
+  // Vérifier l'authentification au chargement
   useEffect(() => {
-    fetchData();
+    const authToken = localStorage.getItem('admin_auth');
+    if (authToken === 'authenticated') {
+      setIsAuthenticated(true);
+      fetchData();
+    }
   }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+
+    // Identifiants par défaut (à changer en production)
+    const validUsername = 'Admin25';
+    const validPassword = 'SMCII';
+
+    if (loginForm.username === validUsername && loginForm.password === validPassword) {
+      setIsAuthenticated(true);
+      localStorage.setItem('admin_auth', 'authenticated');
+      fetchData();
+      toast.success('Connexion réussie');
+    } else {
+      setLoginError('Nom d\'utilisateur ou mot de passe incorrect');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('admin_auth');
+    setStudents([]);
+    setMessages([]);
+    setLoginForm({ username: '', password: '' });
+    toast.success('Déconnexion réussie');
+  };
 
   const fetchData = async () => {
     try {
@@ -89,12 +130,39 @@ const Admin: React.FC = () => {
           )
         );
         toast.success('Statut mis à jour avec succès');
+        if (selectedStudent && selectedStudent.id === studentId) {
+          setSelectedStudent({ ...selectedStudent, status: status as any });
+        }
       } else {
         throw new Error('Erreur lors de la mise à jour');
       }
     } catch (error) {
       console.error('Error updating student status:', error);
       toast.error('Erreur lors de la mise à jour du statut');
+    }
+  };
+
+  const updateMessageStatus = async (messageId: string, status: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/messages/${messageId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (response.ok) {
+        setMessages(prev => 
+          prev.map(message => 
+            message.id === messageId ? { ...message, status: status as any } : message
+          )
+        );
+        toast.success('Statut du message mis à jour');
+      }
+    } catch (error) {
+      console.error('Error updating message status:', error);
+      toast.error('Erreur lors de la mise à jour du statut du message');
     }
   };
 
@@ -109,12 +177,38 @@ const Admin: React.FC = () => {
       if (response.ok) {
         setStudents(prev => prev.filter(student => student.id !== studentId));
         toast.success('Étudiant supprimé avec succès');
+        if (selectedStudent && selectedStudent.id === studentId) {
+          setSelectedStudent(null);
+        }
       } else {
         throw new Error('Erreur lors de la suppression');
       }
     } catch (error) {
       console.error('Error deleting student:', error);
       toast.error('Erreur lors de la suppression');
+    }
+  };
+
+  const deleteMessage = async (messageId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) return;
+
+    try {
+      const response = await fetch(`${API_URL}/api/messages/${messageId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setMessages(prev => prev.filter(message => message.id !== messageId));
+        toast.success('Message supprimé avec succès');
+        if (selectedMessage && selectedMessage.id === messageId) {
+          setSelectedMessage(null);
+        }
+      } else {
+        throw new Error('Erreur lors de la suppression');
+      }
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast.error('Erreur lors de la suppression du message');
     }
   };
 
@@ -170,6 +264,30 @@ const Admin: React.FC = () => {
     );
   };
 
+  const getMessageStatusBadge = (status: string) => {
+    switch (status) {
+      case 'new':
+        return <Badge className="bg-red-100 text-red-800">Nouveau</Badge>;
+      case 'read':
+        return <Badge variant="outline" className="text-blue-600">Lu</Badge>;
+      case 'replied':
+        return <Badge variant="outline" className="text-green-600">Répondu</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  // Filtrer les étudiants
+  const filteredStudents = students.filter(student => {
+    const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
+    const matchesSearch = searchTerm === '' || 
+      student.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.id.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
   const stats = {
     totalStudents: students.length,
     pendingStudents: students.filter(s => s.status === 'pending').length,
@@ -178,6 +296,62 @@ const Admin: React.FC = () => {
     totalMessages: messages.length,
     newMessages: messages.filter(m => m.status === 'new').length,
   };
+
+  // Page de connexion
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md w-full space-y-8 p-8">
+          <div className="text-center">
+            <MscLogo className="mx-auto mb-6" />
+            <h2 className="text-3xl font-bold text-gray-900">Administration</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Connectez-vous pour accéder au panneau d'administration
+            </p>
+          </div>
+          
+          <Card>
+            <CardContent className="p-6">
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <Label htmlFor="username">Nom d'utilisateur</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    value={loginForm.username}
+                    onChange={(e) => setLoginForm(prev => ({ ...prev, username: e.target.value }))}
+                    required
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={loginForm.password}
+                    onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
+                    required
+                    className="mt-1"
+                  />
+                </div>
+                
+                {loginError && (
+                  <div className="text-red-600 text-sm">{loginError}</div>
+                )}
+                
+                <Button type="submit" className="w-full">
+                  <Lock className="w-4 h-4 mr-2" />
+                  Se connecter
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -195,14 +369,23 @@ const Admin: React.FC = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Administration</h1>
-              <p className="text-gray-600">Summer Maths Camp - Gestion des inscriptions</p>
+            <div className="flex items-center gap-4">
+              <MscLogo />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Administration</h1>
+                <p className="text-gray-600">Summer Maths Camp - Gestion des inscriptions</p>
+              </div>
             </div>
-            <Button onClick={exportStudents} className="flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Exporter Excel
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button onClick={exportStudents} className="flex items-center gap-2">
+                <Download className="w-4 h-4" />
+                Exporter Excel
+              </Button>
+              <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2">
+                <LogOut className="w-4 h-4" />
+                Déconnexion
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -262,9 +445,44 @@ const Admin: React.FC = () => {
           </TabsList>
 
           <TabsContent value="students" className="space-y-6">
+            {/* Filtres et recherche */}
             <Card>
               <CardHeader>
-                <CardTitle>Liste des Inscriptions</CardTitle>
+                <CardTitle>Filtres</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1">
+                    <Label htmlFor="search">Rechercher</Label>
+                    <Input
+                      id="search"
+                      placeholder="Nom, prénom, email ou ID..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="status-filter">Statut</Label>
+                    <select
+                      id="status-filter"
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background mt-1"
+                    >
+                      <option value="all">Tous</option>
+                      <option value="pending">En attente</option>
+                      <option value="confirmed">Confirmés</option>
+                      <option value="rejected">Rejetés</option>
+                    </select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Liste des Inscriptions ({filteredStudents.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -283,7 +501,7 @@ const Admin: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {students.map((student) => (
+                      {filteredStudents.map((student) => (
                         <TableRow key={student.id}>
                           <TableCell className="font-mono text-sm">{student.id}</TableCell>
                           <TableCell className="font-medium">
@@ -360,6 +578,7 @@ const Admin: React.FC = () => {
                         <TableHead>Message</TableHead>
                         <TableHead>Date</TableHead>
                         <TableHead>Statut</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -371,10 +590,25 @@ const Admin: React.FC = () => {
                           <TableCell>{getInterestBadge(message.interest)}</TableCell>
                           <TableCell className="max-w-xs truncate">{message.message}</TableCell>
                           <TableCell>{new Date(message.createdAt).toLocaleDateString('fr-FR')}</TableCell>
+                          <TableCell>{getMessageStatusBadge(message.status)}</TableCell>
                           <TableCell>
-                            <Badge variant={message.status === 'new' ? 'default' : 'outline'}>
-                              {message.status}
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setSelectedMessage(message)}
+                              >
+                                <Eye className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-600 hover:text-red-700"
+                                onClick={() => deleteMessage(message.id)}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -464,7 +698,6 @@ const Admin: React.FC = () => {
                     className="flex-1"
                     onClick={() => {
                       updateStudentStatus(selectedStudent.id, 'confirmed');
-                      setSelectedStudent(null);
                     }}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
@@ -475,7 +708,6 @@ const Admin: React.FC = () => {
                     className="flex-1 text-red-600 hover:text-red-700"
                     onClick={() => {
                       updateStudentStatus(selectedStudent.id, 'rejected');
-                      setSelectedStudent(null);
                     }}
                   >
                     <XCircle className="w-4 h-4 mr-2" />
@@ -483,6 +715,84 @@ const Admin: React.FC = () => {
                   </Button>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Message Detail Modal */}
+      {selectedMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-xl font-bold">
+                  Message de {selectedMessage.name}
+                </h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedMessage(null)}
+                >
+                  ✕
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Nom</label>
+                  <p>{selectedMessage.name}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Email</label>
+                  <p>{selectedMessage.email}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Téléphone</label>
+                  <p>{selectedMessage.phone || 'Non fourni'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Intérêt</label>
+                  <div className="mt-1">{getInterestBadge(selectedMessage.interest)}</div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Date</label>
+                  <p>{new Date(selectedMessage.createdAt).toLocaleString('fr-FR')}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Statut</label>
+                  <div className="mt-1">{getMessageStatusBadge(selectedMessage.status)}</div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <label className="text-sm font-medium text-gray-500">Message</label>
+                <p className="mt-1 p-3 bg-gray-50 rounded-md text-sm whitespace-pre-wrap">{selectedMessage.message}</p>
+              </div>
+
+              <div className="flex gap-3">
+                {selectedMessage.status === 'new' && (
+                  <Button
+                    variant="outline"
+                    onClick={() => updateMessageStatus(selectedMessage.id, 'read')}
+                  >
+                    Marquer comme lu
+                  </Button>
+                )}
+                {selectedMessage.status !== 'replied' && (
+                  <Button
+                    onClick={() => updateMessageStatus(selectedMessage.id, 'replied')}
+                  >
+                    Marquer comme répondu
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  onClick={() => window.open(`mailto:${selectedMessage.email}?subject=Re: Votre message concernant le Summer Maths Camp`)}
+                >
+                  Répondre par email
+                </Button>
+              </div>
             </div>
           </div>
         </div>
