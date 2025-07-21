@@ -35,7 +35,6 @@ const inscriptionSchema = z.object({
   prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
   nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   email: z.string().email("Email invalide"),
-  telephone: z.string().min(8, "Numéro de téléphone invalide").regex(/^(\+229)?[0-9]{8,}$/, "Format de téléphone invalide"),
   telephone: z.string().min(8, "Numéro de téléphone invalide").regex(/^(\+229\s?)?[0-9]{8,}$/, "Format de téléphone invalide"),
   age: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 14 && Number(val) <= 18, {
     message: "L'âge doit être entre 14 et 18 ans",
@@ -99,11 +98,14 @@ const Inscription = () => {
     setIsSubmitting(true);
     
     try {
+      console.log('Starting form submission...');
+      
       // Validation côté client avant envoi
       if (!data.prenom?.trim() || !data.nom?.trim() || !data.email?.trim() || 
           !data.telephone?.trim() || !data.age || !data.niveau || 
           !data.ecole?.trim() || !data.ville?.trim() || !data.departement || 
           !data.commune || !data.motivation?.trim()) {
+        console.error('Validation failed: missing required fields');
         throw new Error('Tous les champs sont obligatoires');
       }
 
@@ -113,7 +115,7 @@ const Inscription = () => {
         nom: data.nom.trim(),
         email: data.email.toLowerCase().trim(),
         telephone: data.telephone.trim(),
-        age: data.age,
+        age: parseInt(data.age),
         niveau: data.niveau,
         ecole: data.ecole.trim(),
         ville: data.ville.trim(),
@@ -125,6 +127,8 @@ const Inscription = () => {
       console.log('Sending registration data:', cleanedData);
       
       const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      console.log('API URL:', API_URL);
+      
       const response = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: {
@@ -135,15 +139,19 @@ const Inscription = () => {
       });
       
       console.log('Registration response status:', response.status);
+      console.log('Registration response headers:', response.headers);
       
       if (!response.ok) {
         let errorMessage = language === 'fr' ? 'Erreur lors de l\'inscription' : 'Registration error';
+        let errorData;
         try {
-          const errorData = await response.json();
+          errorData = await response.json();
+          console.error('Error response data:', errorData);
           errorMessage = errorData.error || errorMessage;
         } catch {
           try {
             const errorText = await response.text();
+            console.error('Error response text:', errorText);
             errorMessage = errorText || errorMessage;
           } catch {
             errorMessage = `Erreur HTTP ${response.status}`;
@@ -156,6 +164,11 @@ const Inscription = () => {
       const result = await response.json();
       console.log('Registration success:', result);
       
+      if (!result.studentId) {
+        console.error('No student ID in response:', result);
+        throw new Error('Réponse invalide du serveur');
+      }
+      
       // Réinitialiser le formulaire
       reset();
       setSelectedDepartment("");
@@ -164,14 +177,16 @@ const Inscription = () => {
       // Afficher la page de succès
       setStudentId(result.studentId);
       setIsSuccess(true);
+      
+      console.log('Registration completed successfully, student ID:', result.studentId);
     } catch (error) {
       console.error("Erreur lors de l'envoi du formulaire:", error);
       
       toast({
         title: language === 'fr' ? "Erreur lors de l'envoi" : "Error sending form",
         description: language === 'fr'
-          ? `${error.message}. Veuillez vérifier vos informations et réessayer.`
-          : `${error.message}. Please check your information and try again.`,
+          ? `${error instanceof Error ? error.message : 'Erreur inconnue'}. Veuillez vérifier vos informations et réessayer.`
+          : `${error instanceof Error ? error.message : 'Unknown error'}. Please check your information and try again.`,
         variant: "destructive",
       });
     } finally {
@@ -440,6 +455,9 @@ const Inscription = () => {
                   {errors.age && (
                     <p className="text-xs text-destructive">{errors.age.message}</p>
                   )}
+                  <p className="text-xs text-muted-foreground">
+                    {language === 'fr' ? "Entre 14 et 18 ans" : "Between 14 and 18 years old"}
+                  </p>
                 </div>
                 
                 <div className="space-y-2">

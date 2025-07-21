@@ -91,19 +91,46 @@ const Admin: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [studentsRes, messagesRes] = await Promise.all([
-        fetch(`${API_URL}/api/students`),
-        fetch(`${API_URL}/api/messages`)
-      ]);
+      
+      console.log('Fetching data from:', API_URL);
+      
+      const studentsRes = await fetch(`${API_URL}/api/students`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const messagesRes = await fetch(`${API_URL}/api/messages`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log('Students response status:', studentsRes.status);
+      console.log('Messages response status:', messagesRes.status);
 
       if (studentsRes.ok) {
         const studentsData = await studentsRes.json();
+        console.log('Students data:', studentsData);
         setStudents(studentsData);
+      } else {
+        console.error('Failed to fetch students:', studentsRes.status, studentsRes.statusText);
+        const errorText = await studentsRes.text();
+        console.error('Students error response:', errorText);
       }
 
       if (messagesRes.ok) {
         const messagesData = await messagesRes.json();
+        console.log('Messages data:', messagesData);
         setMessages(messagesData);
+      } else {
+        console.error('Failed to fetch messages:', messagesRes.status, messagesRes.statusText);
+        const errorText = await messagesRes.text();
+        console.error('Messages error response:', errorText);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -501,7 +528,7 @@ const Admin: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredStudents.map((student) => (
+                      {filteredStudents.length > 0 ? filteredStudents.map((student) => (
                         <TableRow key={student.id}>
                           <TableCell className="font-mono text-sm">{student.id}</TableCell>
                           <TableCell className="font-medium">
@@ -553,7 +580,13 @@ const Admin: React.FC = () => {
                             </div>
                           </TableCell>
                         </TableRow>
-                      ))}
+                      )) : (
+                        <TableRow>
+                          <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                            {loading ? "Chargement des inscriptions..." : "Aucune inscription trouvée"}
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -582,7 +615,7 @@ const Admin: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {messages.map((message) => (
+                      {messages.length > 0 ? messages.map((message) => (
                         <TableRow key={message.id}>
                           <TableCell className="font-medium">{message.name}</TableCell>
                           <TableCell>{message.email}</TableCell>
@@ -611,7 +644,13 @@ const Admin: React.FC = () => {
                             </div>
                           </TableCell>
                         </TableRow>
-                      ))}
+                      )) : (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                            {loading ? "Chargement des messages..." : "Aucun message trouvé"}
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </div>

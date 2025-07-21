@@ -78,6 +78,8 @@ const ContactSection = () => {
       
       // For other inquiries, send to backend with proper error handling
       const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      console.log('Contact API URL:', API_URL);
+      
       const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: {
@@ -94,10 +96,12 @@ const ContactSection = () => {
         let errorData;
         try {
           errorData = await response.json();
+          console.error('Contact error data:', errorData);
           errorMessage = errorData.error || errorMessage;
         } catch {
           try {
             const errorText = await response.text();
+            console.error('Contact error text:', errorText);
             errorMessage = errorText || errorMessage;
           } catch {
             errorMessage = `Erreur HTTP ${response.status}`;
@@ -118,10 +122,10 @@ const ContactSection = () => {
         interest: "participant"
       });
       
-        toast.success(t("contact.success"));
+      toast.success(t("contact.success"));
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      toast.error(error.message || 'Erreur lors de l\'envoi du message');
+      toast.error((error instanceof Error ? error.message : 'Erreur inconnue') || 'Erreur lors de l\'envoi du message');
     } finally {
       setIsSubmitting(false);
     }
