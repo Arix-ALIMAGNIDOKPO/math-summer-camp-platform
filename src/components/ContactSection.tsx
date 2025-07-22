@@ -77,7 +77,7 @@ const ContactSection = () => {
       }
       
       // For other inquiries, send to backend with proper error handling
-      const API_URL = import.meta.env.VITE_API_URL || 'https://math-summer-camp-platform-backend.onrender.com';
+      const API_URL = import.meta.env.VITE_API_URL || 'https://benmathcamps-1d1322513d9c.herokuapp.com';
       console.log('Contact API URL:', API_URL);
       
       // Test de connectivité d'abord
