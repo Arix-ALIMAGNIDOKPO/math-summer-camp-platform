@@ -39,7 +39,7 @@ db = client.get_default_database()
 students_col = db.students
 messages_col = db.messages
 # Unique index on student email to prevent duplicates
-students_col.create_index('email', ASCENDING, unique=True)
+students_col.create_index([('email', ASCENDING)], unique=True)
 
 # Validation and sanitization helpers
 
@@ -63,8 +63,9 @@ def validate_phone(phone: str) -> bool:
 def sanitize_string(text: str, max_length: int = 1000) -> str:
     if not isinstance(text, str):
         return ''
-    sanitized = re.sub(r'[<>"\'\x00-\x1f\x7f-\x9f]', '', text)
-    return sanitized.strip()[:max_length] 
+    # Escape both single and double quotes properly
+    sanitized = re.sub(r"[<>\"'\x00-\x1f\x7f-\x9f]", '', text)
+    return sanitized.strip()[:max_length]
 
 # Routes
 
@@ -87,7 +88,6 @@ def register_student():
     missing = [f for f in required if not data.get(f) or (isinstance(data.get(f), str) and not data[f].strip())]
     if missing:
         return jsonify({'error': f'Champs manquants: {", ".join(missing)}'}), 400
-    # Sanitize and validate inputs
     try:
         prenom = sanitize_string(data['prenom'], 100)
         nom = sanitize_string(data['nom'], 100)
@@ -101,7 +101,7 @@ def register_student():
         if not validate_phone(telephone):
             return jsonify({'error': 'Format de téléphone invalide'}), 400
         niveau = data['niveau'].strip()
-        if niveau not in ['quatrieme','troisieme','seconde','premiere','terminale']:
+        if niveau not in ['quatrieme', 'troisieme', 'seconde', 'premiere', 'terminale']:
             return jsonify({'error': 'Niveau scolaire invalide'}), 400
         motivation = sanitize_string(data['motivation'], 2000)
         if len(motivation) < 50:
@@ -109,7 +109,7 @@ def register_student():
     except Exception as e:
         logger.error(f'Validation error: {e}')
         return jsonify({'error': 'Données invalides'}), 400
-    # Prepare document
+
     student_doc = {
         'prenom': prenom,
         'nom': nom,
@@ -125,7 +125,6 @@ def register_student():
         'registeredAt': datetime.utcnow(),
         'status': 'pending'
     }
-    # Insert into MongoDB
     try:
         result = students_col.insert_one(student_doc)
         return jsonify({'message': 'Inscription enregistrée avec succès', 'studentId': str(result.inserted_id)}), 201
@@ -140,27 +139,28 @@ def contact_message():
     if not request.is_json:
         return jsonify({'error': 'Content-Type must be application/json'}), 400
     data = request.get_json()
-    required = ['name','email','message','interest']
+    required = ['name', 'email', 'message', 'interest']
     missing = [f for f in required if not data.get(f) or (isinstance(data.get(f), str) and not data[f].strip())]
     if missing:
         return jsonify({'error': f'Champs manquants: {", ".join(missing)}'}), 400
     try:
-        name = sanitize_string(data['name'],100)
+        name = sanitize_string(data['name'], 100)
         email = data['email'].strip().lower()
-        phone = sanitize_string(data.get('phone',''),20)
+        phone = sanitize_string(data.get('phone', ''), 20)
         if not validate_email(email):
             return jsonify({'error': 'Format d\'email invalide'}), 400
         if phone and not validate_phone(phone):
             return jsonify({'error': 'Format de téléphone invalide'}), 400
         interest = data['interest'].strip()
-        if interest not in ['participant','parent','intervenant','partenaire']:
+        if interest not in ['participant', 'parent', 'intervenant', 'partenaire']:
             return jsonify({'error': 'Type d\'intérêt invalide'}), 400
-        message = sanitize_string(data['message'],2000)
+        message = sanitize_string(data['message'], 2000)
         if len(message) < 10:
             return jsonify({'error': 'Le message doit contenir au moins 10 caractères'}), 400
     except Exception as e:
         logger.error(f'Contact validation error: {e}')
         return jsonify({'error': 'Données invalides'}), 400
+
     contact_doc = {
         '_id': str(uuid.uuid4()),
         'name': name,
@@ -194,7 +194,7 @@ def update_student_status(student_id):
         return jsonify({'error': 'Content-Type must be application/json'}), 400
     data = request.get_json()
     new_status = data.get('status')
-    if new_status not in ['pending','confirmed','rejected']:
+    if new_status not in ['pending', 'confirmed', 'rejected']:
         return jsonify({'error': 'Statut invalide'}), 400
     try:
         oid = ObjectId(student_id)
